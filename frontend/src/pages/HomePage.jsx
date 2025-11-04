@@ -1,0 +1,332 @@
+import React, { useState } from 'react';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import { Link } from 'react-router-dom';
+import { Button } from '../components/ui/button';
+import { ArrowRight, CheckCircle, Zap, Shield, TrendingUp, Code, Server } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { Card, CardContent } from '../components/ui/card';
+
+const HomePage = () => {
+  const [activeTab, setActiveTab] = useState('home');
+
+  const features = [
+    {
+      title: 'Faster Release, Lower Cost',
+      description: 'Speed up your product launches without any R&D expenses as we take care of all the backend work for you.',
+      icon: Zap,
+      image: 'https://images.unsplash.com/photo-1681164315430-6159b2361615',
+    },
+    {
+      title: 'Enterprise Grade Solution',
+      description: 'Elevate your business with our top-tier IoT platform, offering white labeling, active directory integration, and private cloud deployments for heightened security and control.',
+      icon: Shield,
+      image: 'https://images.unsplash.com/photo-1646724333918-374d81688c2d',
+    },
+    {
+      title: 'Market in No Time',
+      description: 'Stay ahead of competitors by swiftly bringing your IoT solutions to market with our platform.',
+      icon: TrendingUp,
+      image: 'https://images.unsplash.com/photo-1730382624709-81e52dd294d4',
+    },
+    {
+      title: 'No Coding Needed',
+      description: 'Avoid the hassle of hiring technical experts. Our intuitive platform requires no coding skills.',
+      icon: Code,
+      image: 'https://images.unsplash.com/photo-1757165792338-b4e8a88ae1c7',
+    },
+    {
+      title: 'Scalable and Reliable',
+      description: 'Count on our platform\'s scalability and reliability to support your project\'s growth seamlessly.',
+      icon: Server,
+      image: 'https://images.pexels.com/photos/34583511/pexels-photo-34583511.jpeg',
+    },
+  ];
+
+  const stats = [
+    { label: 'Smart Brands', value: '5+' },
+    { label: 'Devices Sold', value: '10L+' },
+    { label: 'Users', value: '5L+' },
+    { label: 'Smart Products', value: '30+' },
+  ];
+
+  const intelligentLiving = [
+    {
+      id: 'home',
+      title: 'For Home',
+      subtitle: 'Seamless Smart Home control,',
+      subtitle2: 'anytime, anywhere',
+      image: 'https://images.unsplash.com/photo-1751945965597-71171ec7a458',
+      link: '/smart-homes',
+    },
+    {
+      id: 'commercial',
+      title: 'For Commercial Space',
+      subtitle: 'Enterprise-Grade Intelligence',
+      subtitle2: 'for Optimized Operations',
+      image: 'https://images.unsplash.com/photo-1750768145651-86374acaff4e',
+      link: '/smart-commercial',
+    },
+    {
+      id: 'hospitality',
+      title: 'For Hospitality',
+      subtitle: 'Elevating Guest Experiences',
+      subtitle2: 'with Intelligent Luxury',
+      image: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461',
+      link: '/smart-hospitality',
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-black">
+      <Navbar />
+
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-black to-purple-900/20"></div>
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1679356505858-bf4129177392')] bg-cover bg-center opacity-20"></div>
+        <div className="container mx-auto px-4 lg:px-8 relative z-10 pt-20">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 animate-fade-in">
+              Empowering Brands with
+              <span className="block mt-2 bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
+                Smart Automation
+              </span>
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-300 mb-8">
+              White Label IoT Solutions Built with Excellence
+            </p>
+            <p className="text-lg text-gray-400 mb-12 max-w-3xl mx-auto">
+              Building your own IoT products has never been easier. Discover endless possibilities as we infuse intelligence into every device, empowering brands with our white-label solutions and IoT wizardry.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/contact">
+                <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-blue-500/50">
+                  Get Started <ArrowRight className="ml-2" />
+                </Button>
+              </Link>
+              <Link to="/products">
+                <Button variant="outline" className="border-2 border-blue-500 text-blue-400 hover:bg-blue-500/10 px-8 py-6 text-lg rounded-full transition-all duration-300">
+                  Explore Products
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="py-20 bg-gradient-to-br from-gray-900 to-black">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">How It Works</h2>
+            <p className="text-xl text-gray-400">Choose from our wide range of smart home products or upgrade your existing ones.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* Step 1 */}
+            <div className="relative group">
+              <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 p-8 rounded-2xl border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 h-full">
+                <div className="text-6xl font-bold text-blue-500 mb-4">1</div>
+                <h3 className="text-2xl font-bold text-white mb-3">Pick or Upgrade</h3>
+                <p className="text-gray-400">Choose from our wide range of smart home products or upgrade your existing ones.</p>
+              </div>
+              <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-blue-500">
+                <ArrowRight size={32} />
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="relative group">
+              <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-8 rounded-2xl border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 h-full">
+                <div className="text-6xl font-bold text-purple-500 mb-4">2</div>
+                <h3 className="text-2xl font-bold text-white mb-3">Customize Your App</h3>
+                <p className="text-gray-400">Personalize your application to match your brand or preferences.</p>
+              </div>
+              <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-purple-500">
+                <ArrowRight size={32} />
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="relative group">
+              <div className="bg-gradient-to-br from-pink-500/10 to-blue-500/10 p-8 rounded-2xl border border-pink-500/20 hover:border-pink-500/40 transition-all duration-300 h-full">
+                <div className="text-6xl font-bold text-pink-500 mb-4">3</div>
+                <h3 className="text-2xl font-bold text-white mb-3">Launch Your Product</h3>
+                <p className="text-gray-400">Get ready to unveil your smart product to the world hassle-free.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why InHaus */}
+      <section className="py-20 bg-black">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Why InHaus?</h2>
+          </div>
+
+          <div className="space-y-24">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12`}
+              >
+                <div className="lg:w-1/2">
+                  <img
+                    src={feature.image}
+                    alt={feature.title}
+                    className="w-full h-96 object-cover rounded-2xl shadow-2xl"
+                  />
+                </div>
+                <div className="lg:w-1/2">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="p-4 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl">
+                      <feature.icon size={32} className="text-blue-400" />
+                    </div>
+                  </div>
+                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">{feature.title}</h3>
+                  <p className="text-lg text-gray-400">{feature.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-20 bg-gradient-to-br from-blue-900/20 to-purple-900/20">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Streamlining Your Smart Product Journey
+            </h2>
+            <p className="text-xl text-gray-400">From Idea to Reality</p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text mb-2">
+                  {stat.value}
+                </div>
+                <div className="text-lg text-gray-400">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Intelligent Living */}
+      <section className="py-20 bg-black">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Intelligent Living, Tailored for any space
+            </h2>
+          </div>
+
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="max-w-6xl mx-auto">
+            <TabsList className="grid w-full grid-cols-3 mb-8 bg-gray-900">
+              {intelligentLiving.map((item) => (
+                <TabsTrigger key={item.id} value={item.id} className="data-[state=active]:bg-blue-500">
+                  {item.title}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+
+            {intelligentLiving.map((item) => (
+              <TabsContent key={item.id} value={item.id}>
+                <Card className="bg-gray-900 border-gray-800 overflow-hidden">
+                  <CardContent className="p-0">
+                    <div className="grid md:grid-cols-2 gap-0">
+                      <div className="p-12 flex flex-col justify-center">
+                        <h3 className="text-3xl font-bold text-white mb-4">{item.subtitle}</h3>
+                        <p className="text-2xl text-gray-400 mb-8">{item.subtitle2}</p>
+                        <Link to={item.link}>
+                          <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white w-fit">
+                            Explore More <ArrowRight className="ml-2" />
+                          </Button>
+                        </Link>
+                      </div>
+                      <div className="h-96 md:h-full">
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            ))}
+          </Tabs>
+        </div>
+      </section>
+
+      {/* Integration Section */}
+      <section className="py-20 bg-gradient-to-br from-gray-900 to-black">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                Seamlessly Connect to Your Smart Devices
+              </h2>
+              <p className="text-xl text-gray-400 mb-8">
+                Control all your smart home devices from one intuitive mobile application. Experience seamless integration with endless possibilities.
+              </p>
+              <ul className="space-y-4">
+                <li className="flex items-center gap-3 text-gray-300">
+                  <CheckCircle className="text-blue-400" size={24} />
+                  <span>Easy device pairing and setup</span>
+                </li>
+                <li className="flex items-center gap-3 text-gray-300">
+                  <CheckCircle className="text-blue-400" size={24} />
+                  <span>Voice control integration</span>
+                </li>
+                <li className="flex items-center gap-3 text-gray-300">
+                  <CheckCircle className="text-blue-400" size={24} />
+                  <span>Real-time monitoring and alerts</span>
+                </li>
+                <li className="flex items-center gap-3 text-gray-300">
+                  <CheckCircle className="text-blue-400" size={24} />
+                  <span>Schedule and automation</span>
+                </li>
+              </ul>
+            </div>
+            <div className="relative">
+              <img
+                src="https://images.unsplash.com/photo-1761305135267-892b33c19c61"
+                alt="Mobile App"
+                className="w-full max-w-md mx-auto rounded-2xl shadow-2xl"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div className="container mx-auto px-4 lg:px-8 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            Unlock Your Smart Future Today
+          </h2>
+          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+            Join the smart revolution today. Reach out to us and let's build your smarter future together.
+          </p>
+          <Link to="/contact">
+            <Button className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-6 text-lg rounded-full transition-all duration-300 shadow-lg">
+              Contact Us <ArrowRight className="ml-2" />
+            </Button>
+          </Link>
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default HomePage;
