@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
@@ -9,6 +9,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 
 const HomePage = () => {
   const [activeTab, setActiveTab] = useState('home');
+  const videoRefs = useRef([]);
+
+  useEffect(() => {
+    // Force play all videos
+    videoRefs.current.forEach(video => {
+      if (video) {
+        video.play().catch(err => console.log('Video play failed:', err));
+      }
+    });
+  }, []);
 
   const features = [
     {
