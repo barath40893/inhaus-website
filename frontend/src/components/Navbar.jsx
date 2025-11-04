@@ -34,12 +34,14 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-lg' : 'bg-white/95 backdrop-blur-sm'
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        isScrolled 
+          ? 'glass-dark shadow-2xl border-b border-white/10' 
+          : 'bg-gradient-to-r from-white/90 via-white/95 to-white/90 backdrop-blur-xl'
       }`}
     >
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="flex items-center justify-between h-24">
+      <div className=\"container mx-auto px-4 lg:px-8\">
+        <div className=\"flex items-center justify-between h-24\">
           <Link to="/" className="flex items-center space-x-2 group">
             <img
               src="/inhaus/grayscale_logo.png"
