@@ -412,7 +412,15 @@ const HomePage = () => {
                 className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12`}
               >
                 <div className="lg:w-1/2">
-                  {renderAnimatedGraphic(feature.animationType)}
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-96 object-cover rounded-2xl shadow-2xl"
+                  >
+                    <source src={feature.video} type="video/mp4" />
+                  </video>
                 </div>
                 <div className="lg:w-1/2">
                   <div className="flex items-center gap-4 mb-4">
