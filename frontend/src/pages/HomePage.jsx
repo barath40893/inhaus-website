@@ -173,18 +173,14 @@ const HomePage = () => {
                 </div>
               </div>
               
-              {/* Right Video */}
+              {/* Right Image */}
               <div className="relative">
                 <div className="relative z-10">
-                  <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-full rounded-3xl shadow-2xl object-cover aspect-video"
-                  >
-                    <source src="https://videos.pexels.com/video-files/6985269/6985269-sd_640_360_25fps.mp4" type="video/mp4" />
-                  </video>
+                  <img
+                    src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80"
+                    alt="Smart Home"
+                    className="w-full rounded-3xl shadow-2xl object-cover"
+                  />
                 </div>
                 <div className="absolute -bottom-6 -right-6 w-full h-full bg-gradient-to-br from-orange-200 to-red-200 rounded-3xl -z-10"></div>
               </div>
