@@ -163,14 +163,20 @@ const HomePage = () => {
                 </div>
               </div>
               
-              {/* Right Image */}
+              {/* Right Video/Image */}
               <div className="relative">
                 <div className="relative z-10">
-                  <img
-                    src="https://images.unsplash.com/photo-1679356505858-bf4129177392?w=800&q=80"
-                    alt="Modern Smart Home Automation"
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    poster="https://images.unsplash.com/photo-1679356505858-bf4129177392?w=800&q=80"
                     className="w-full rounded-3xl shadow-2xl"
-                  />
+                  >
+                    <source src="https://videos.pexels.com/video-files/5532782/5532782-uhd_2560_1440_30fps.mp4" type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
                 </div>
                 <div className="absolute -bottom-6 -right-6 w-full h-full bg-gradient-to-br from-orange-200 to-red-200 rounded-3xl -z-10"></div>
               </div>
