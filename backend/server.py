@@ -85,6 +85,63 @@ async def get_status_checks():
     
     return status_checks
 
+@api_router.post("/contact", response_model=ContactSubmission)
+async def create_contact_submission(input: ContactSubmissionCreate):
+    """Create a new contact form submission"""
+    try:
+        contact_dict = input.model_dump()
+        contact_obj = ContactSubmission(**contact_dict)
+        
+        # Convert to dict and serialize datetime to ISO string for MongoDB
+        doc = contact_obj.model_dump()
+        doc['timestamp'] = doc['timestamp'].isoformat()
+        
+        result = await db.contact_submissions.insert_one(doc)
+        
+        if not result.inserted_id:
+            raise HTTPException(status_code=500, detail="Failed to save contact submission")
+        
+        return contact_obj
+    except Exception as e:
+        logger.error(f"Error creating contact submission: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.get("/contact", response_model=List[ContactSubmission])
+async def get_contact_submissions():
+    """Get all contact form submissions"""
+    try:
+        # Exclude MongoDB's _id field from the query results
+        contacts = await db.contact_submissions.find({}, {"_id": 0}).sort("timestamp", -1).to_list(1000)
+        
+        # Convert ISO string timestamps back to datetime objects
+        for contact in contacts:
+            if isinstance(contact['timestamp'], str):
+                contact['timestamp'] = datetime.fromisoformat(contact['timestamp'])
+        
+        return contacts
+    except Exception as e:
+        logger.error(f"Error fetching contact submissions: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.get("/contact/{contact_id}", response_model=ContactSubmission)
+async def get_contact_submission(contact_id: str):
+    """Get a specific contact submission by ID"""
+    try:
+        contact = await db.contact_submissions.find_one({"id": contact_id}, {"_id": 0})
+        if not contact:
+            raise HTTPException(status_code=404, detail="Contact submission not found")
+        
+        # Convert ISO string timestamp back to datetime object
+        if isinstance(contact['timestamp'], str):
+            contact['timestamp'] = datetime.fromisoformat(contact['timestamp'])
+        
+        return ContactSubmission(**contact)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching contact submission: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
 # Include the router in the main app
 app.include_router(api_router)
 
