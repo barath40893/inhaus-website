@@ -402,11 +402,17 @@ const HomePage = () => {
             </div>
             <div className="relative">
               <div className="relative z-10">
-                <img
-                  src="https://images.unsplash.com/photo-1558002038-1055907df827?w=800&q=80"
-                  alt="Smart Home Mobile App Control"
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  poster="https://images.unsplash.com/photo-1558002038-1055907df827?w=800&q=80"
                   className="w-full max-w-md mx-auto rounded-2xl shadow-2xl"
-                />
+                >
+                  <source src="https://videos.pexels.com/video-files/7579556/7579556-uhd_2560_1440_25fps.mp4" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
               </div>
               <div className="absolute -bottom-6 -right-6 w-64 h-64 bg-gradient-to-br from-orange-300 to-red-300 rounded-full blur-3xl opacity-30 -z-10"></div>
             </div>
