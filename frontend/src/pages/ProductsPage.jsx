@@ -59,17 +59,17 @@ const ProductsPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-white">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-br from-blue-900/20 via-black to-purple-900/20">
+      <section className="pt-32 pb-20 bg-gradient-to-br from-orange-50 via-white to-red-50">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-              Our <span className="bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">Products</span>
+            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+              Our <span className="bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text">Products</span>
             </h1>
-            <p className="text-xl text-gray-400">
+            <p className="text-xl text-gray-600">
               Discover our comprehensive range of smart IoT products designed to transform any space into an intelligent environment
             </p>
           </div>
@@ -77,25 +77,25 @@ const ProductsPage = () => {
       </section>
 
       {/* Products Grid */}
-      <section className="py-20 bg-black">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {productCategories.map((product, index) => (
               <Card
                 key={index}
-                className="bg-gradient-to-br from-gray-900 to-black border-gray-800 hover:border-blue-500/50 transition-all duration-300 group"
+                className="bg-white border-2 border-orange-200 hover:border-orange-400 transition-all duration-300 group hover:shadow-xl"
               >
                 <CardContent className="p-6">
-                  <div className="mb-4 p-4 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl w-fit group-hover:scale-110 transition-transform duration-300">
-                    <product.icon size={32} className="text-blue-400" />
+                  <div className="mb-4 p-4 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl w-fit group-hover:scale-110 transition-transform duration-300">
+                    <product.icon size={32} className="text-orange-600" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-3">{product.title}</h3>
-                  <p className="text-gray-400 mb-4">{product.description}</p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">{product.title}</h3>
+                  <p className="text-gray-600 mb-4">{product.description}</p>
                   <div className="space-y-2">
                     {product.features.map((feature, idx) => (
                       <div key={idx} className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
-                        <span className="text-sm text-gray-500">{feature}</span>
+                        <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
+                        <span className="text-sm text-gray-600">{feature}</span>
                       </div>
                     ))}
                   </div>
@@ -107,16 +107,16 @@ const ProductsPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-900 to-black">
+      <section className="py-20 bg-gradient-to-br from-orange-50 to-red-50">
         <div className="container mx-auto px-4 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             Ready to Get Started?
           </h2>
-          <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             Contact us today to learn more about our products and how we can help you build your smart ecosystem.
           </p>
           <Link to="/contact">
-            <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-6 text-lg rounded-full">
+            <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-6 text-lg rounded-full">
               Contact Sales
             </Button>
           </Link>
