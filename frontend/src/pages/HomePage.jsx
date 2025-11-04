@@ -37,13 +37,13 @@ const HomePage = () => {
       icon: TrendingUp,
       title: 'Energy Efficient',
       description: 'Save up to 30% on electricity bills with smart energy tracking.',
-      image: 'https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1736488517606-ff7b014c07a6?w=800&q=80',
     },
     {
       icon: Smartphone,
       title: 'Easy Control',
       description: 'Intuitive mobile app for seamless control of your entire home.',
-      image: 'https://images.unsplash.com/photo-1608377205619-03a0b4c4e270?w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1650682009477-52fd77302b78?w=800&q=80',
     },
     {
       icon: Mic,
