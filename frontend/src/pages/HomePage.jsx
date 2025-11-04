@@ -5,8 +5,10 @@ import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { ArrowRight, CheckCircle, Zap, Shield, Star, Smartphone, Home, Lock, Lightbulb, Clock, TrendingUp, Mic } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 
 const HomePage = () => {
+  const [activeTab, setActiveTab] = useState('home');
 
   const features = [
     {
