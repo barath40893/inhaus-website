@@ -115,44 +115,44 @@ const HomePage = () => {
       </section>
 
       {/* How It Works */}
-      <section className="py-20 bg-gradient-to-br from-gray-900 to-black">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">How It Works</h2>
-            <p className="text-xl text-gray-400">Get started with your smart home in three simple steps</p>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">How It Works</h2>
+            <p className="text-xl text-gray-600">Get started with your smart home in three simple steps</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Step 1 */}
             <div className="relative group">
-              <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 p-8 rounded-2xl border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 h-full">
-                <div className="text-6xl font-bold text-blue-500 mb-4">1</div>
-                <h3 className="text-2xl font-bold text-white mb-3">Choose Your Devices</h3>
-                <p className="text-gray-400">Select from our range of smart lights, switches, sensors, and appliances that fit your needs.</p>
+              <div className="bg-gradient-to-br from-orange-50 to-red-50 p-8 rounded-2xl border-2 border-orange-200 hover:border-orange-400 transition-all duration-300 h-full hover:shadow-xl">
+                <div className="text-6xl font-bold text-orange-500 mb-4">1</div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">Choose Your Devices</h3>
+                <p className="text-gray-600">Select from our range of smart lights, switches, sensors, and appliances that fit your needs.</p>
               </div>
-              <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-blue-500">
+              <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-orange-500">
                 <ArrowRight size={32} />
               </div>
             </div>
 
             {/* Step 2 */}
             <div className="relative group">
-              <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-8 rounded-2xl border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 h-full">
-                <div className="text-6xl font-bold text-purple-500 mb-4">2</div>
-                <h3 className="text-2xl font-bold text-white mb-3">Easy Installation</h3>
-                <p className="text-gray-400">Simple DIY setup or professional installation. Connect devices to your Wi-Fi in minutes.</p>
+              <div className="bg-gradient-to-br from-red-50 to-orange-50 p-8 rounded-2xl border-2 border-red-200 hover:border-red-400 transition-all duration-300 h-full hover:shadow-xl">
+                <div className="text-6xl font-bold text-red-500 mb-4">2</div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">Easy Installation</h3>
+                <p className="text-gray-600">Simple DIY setup or professional installation. Connect devices to your Wi-Fi in minutes.</p>
               </div>
-              <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-purple-500">
+              <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-red-500">
                 <ArrowRight size={32} />
               </div>
             </div>
 
             {/* Step 3 */}
             <div className="relative group">
-              <div className="bg-gradient-to-br from-pink-500/10 to-blue-500/10 p-8 rounded-2xl border border-pink-500/20 hover:border-pink-500/40 transition-all duration-300 h-full">
-                <div className="text-6xl font-bold text-pink-500 mb-4">3</div>
-                <h3 className="text-2xl font-bold text-white mb-3">Control Everything</h3>
-                <p className="text-gray-400">Use your smartphone or voice commands to control your entire home from anywhere.</p>
+              <div className="bg-gradient-to-br from-orange-50 to-yellow-50 p-8 rounded-2xl border-2 border-orange-200 hover:border-orange-400 transition-all duration-300 h-full hover:shadow-xl">
+                <div className="text-6xl font-bold text-orange-600 mb-4">3</div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">Control Everything</h3>
+                <p className="text-gray-600">Use your smartphone or voice commands to control your entire home from anywhere.</p>
               </div>
             </div>
           </div>
