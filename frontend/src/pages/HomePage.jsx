@@ -131,7 +131,7 @@ const HomePage = () => {
                 <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
                   Transform Your Home with
                   <span className="block mt-2 gradient-text">
-                    InHaus Smart
+                    InHaus
                   </span>
                 </h1>
                 
