@@ -14,6 +14,7 @@ import TermsPage from './pages/TermsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import CheckoutPage from './pages/CheckoutPage';
 import { Toaster } from './components/ui/toaster';
+import WhatsAppButton from './components/WhatsAppButton';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
             <Route path="/terms" element={<TermsPage />} />
           </Routes>
           <Toaster />
+          <WhatsAppButton />
         </CartProvider>
       </BrowserRouter>
     </div>
