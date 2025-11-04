@@ -88,16 +88,16 @@ const HomePage = () => {
         <div className="container mx-auto px-4 lg:px-8 relative z-10 pt-20">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 animate-fade-in">
-              Empowering Brands with
+              Transform Your Home with
               <span className="block mt-2 bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
-                Smart Automation
+                Smart Living
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 mb-8">
-              White Label IoT Solutions Built with Excellence
+              The Future of Home Automation is Here
             </p>
             <p className="text-lg text-gray-400 mb-12 max-w-3xl mx-auto">
-              Building your own IoT products has never been easier. Discover endless possibilities as we infuse intelligence into every device, empowering brands with our white-label solutions and IoT wizardry.
+              Experience the ultimate convenience with InHaus smart home solutions. Control your lights, temperature, security, and more—all from your smartphone. Make your home smarter, safer, and more comfortable.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/contact">
