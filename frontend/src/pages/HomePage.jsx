@@ -395,8 +395,8 @@ const HomePage = () => {
             <div className="relative">
               <div className="relative z-10 w-full max-w-md mx-auto">
                 <img
-                  src="https://images.unsplash.com/photo-1751945965597-71171ec7a458?w=800&q=80"
-                  alt="Premium Smart Home Interior with Seamless Device Integration"
+                  src="https://images.unsplash.com/photo-1752262167753-37a0ec83f614?w=800&q=80"
+                  alt="Smart Home Hub - Seamless Device Connectivity"
                   className="w-full rounded-2xl shadow-2xl"
                 />
               </div>
