@@ -24,9 +24,9 @@ const VoiceAssistantSection = () => {
   ];
 
   return (
-    <section className=\"py-32 bg-slate-950 relative overflow-hidden\">
+    <section className="py-32 bg-slate-950 relative overflow-hidden">
       {/* Grid background */}
-      <div className=\"absolute inset-0\" style={{
+      <div className="absolute inset-0" style={{
         backgroundImage: 'linear-gradient(rgba(249, 115, 22, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(249, 115, 22, 0.05) 1px, transparent 1px)',
         backgroundSize: '50px 50px'
       }}></div>
