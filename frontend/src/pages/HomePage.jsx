@@ -25,25 +25,25 @@ const HomePage = () => {
       icon: Zap,
       title: 'Comfort & Convenience',
       description: 'Control all your devices from anywhere. Experience true convenience at your fingertips.',
-      video: 'https://videos.pexels.com/video-files/6774317/6774317-sd_640_360_25fps.mp4',
+      video: 'https://videos.pexels.com/video-files/7579978/7579978-sd_640_360_25fps.mp4',
     },
     {
       icon: Shield,
       title: 'Secure & Safe',
       description: 'Enterprise-grade security with real-time monitoring and instant alerts.',
-      video: 'https://videos.pexels.com/video-files/5532782/5532782-sd_640_360_30fps.mp4',
+      video: 'https://videos.pexels.com/video-files/8293612/8293612-sd_640_360_25fps.mp4',
     },
     {
       icon: TrendingUp,
       title: 'Energy Efficient',
       description: 'Save up to 30% on electricity bills with smart energy tracking.',
-      video: 'https://videos.pexels.com/video-files/7513157/7513157-sd_640_360_25fps.mp4',
+      video: 'https://videos.pexels.com/video-files/8853090/8853090-sd_640_360_25fps.mp4',
     },
     {
       icon: Smartphone,
       title: 'Easy Control',
       description: 'Intuitive mobile app for seamless control of your entire home.',
-      video: 'https://videos.pexels.com/video-files/7579978/7579978-sd_640_360_25fps.mp4',
+      video: 'https://videos.pexels.com/video-files/6774317/6774317-sd_640_360_25fps.mp4',
     },
     {
       icon: Mic,
@@ -55,7 +55,7 @@ const HomePage = () => {
       icon: Clock,
       title: 'Smart Automation',
       description: 'Set schedules and automations for a truly intelligent home.',
-      video: 'https://videos.pexels.com/video-files/6774684/6774684-sd_640_360_25fps.mp4',
+      video: 'https://videos.pexels.com/video-files/5532782/5532782-sd_640_360_30fps.mp4',
     },
   ];
 
