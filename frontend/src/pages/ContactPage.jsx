@@ -85,7 +85,7 @@ const ContactPage = () => {
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">Contact Information</h2>
               <p className="text-lg text-gray-400 mb-8">
-                Have a question or ready to start your IoT journey? We're here to help. Reach out to us through any of the following channels.
+                Have questions about our smart home products? Ready to transform your home? We're here to help! Reach out to us and let's get started.
               </p>
 
               <div className="space-y-6">
