@@ -34,11 +34,13 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
-            <img
-              src="/inhaus/grayscale_logo.png"
-              alt="InHaus"
-              className="h-16 w-auto mb-4"
-            />
+            <div className="bg-white p-4 rounded-xl inline-block mb-4">
+              <img
+                src="/inhaus/grayscale_logo.png"
+                alt="InHaus"
+                className="h-20 w-auto"
+              />
+            </div>
             <p className="text-gray-400 text-sm mb-4">
               Transform your home with intelligent automation. Experience comfort, security, and convenience like never before.
             </p>
