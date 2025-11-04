@@ -15,13 +15,13 @@ const HomePage = () => {
       icon: Zap,
       title: 'Comfort & Convenience',
       description: 'Control all your devices from anywhere. Experience true convenience at your fingertips.',
-      image: 'https://images.unsplash.com/photo-1751945965597-71171ec7a458?w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1752955471067-294a5de5bf48?w=800&q=80',
     },
     {
       icon: Shield,
       title: 'Secure & Safe',
       description: 'Enterprise-grade security with real-time monitoring and instant alerts.',
-      image: 'https://images.unsplash.com/photo-1633194883650-df448a10d554?w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1708807472445-d33589e6b090?w=800&q=80',
     },
     {
       icon: TrendingUp,
@@ -45,7 +45,7 @@ const HomePage = () => {
       icon: Clock,
       title: 'Smart Automation',
       description: 'Set schedules and automations for a truly intelligent home.',
-      image: 'https://images.unsplash.com/photo-1752262167753-37a0ec83f614?w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1591174425156-fd472f354be4?w=800&q=80',
     },
   ];
 
