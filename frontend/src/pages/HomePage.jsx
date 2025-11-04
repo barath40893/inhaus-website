@@ -7,7 +7,6 @@ import { ArrowRight, CheckCircle, Zap, Shield, Star, Smartphone, Home, Lock, Lig
 import { Card, CardContent } from '../components/ui/card';
 
 const HomePage = () => {
-  const [activeTab, setActiveTab] = useState('home');
 
   const features = [
     {
