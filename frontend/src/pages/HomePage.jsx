@@ -200,9 +200,9 @@ const HomePage = () => {
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Streamlining Your Smart Product Journey
+              Trusted by Thousands of Happy Homes
             </h2>
-            <p className="text-xl text-gray-400">From Idea to Reality</p>
+            <p className="text-xl text-gray-400">Join the Smart Home Revolution</p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
