@@ -471,7 +471,7 @@ const HomePage = () => {
         <div className="container mx-auto px-4 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 tracking-wide">
                 Seamlessly Connect to Your Smart Devices
               </h2>
               <p className="text-xl text-gray-600 mb-8">
