@@ -87,15 +87,20 @@ const ProductsPage = () => {
             {productCategories.map((product, index) => (
               <Card
                 key={index}
-                className="bg-white border-2 border-orange-200 hover:border-orange-400 transition-all duration-300 group hover:shadow-xl"
+                className="bg-white border-2 border-orange-200 hover:border-orange-400 transition-all duration-300 group hover:shadow-xl cursor-pointer"
               >
                 <CardContent className="p-6">
                   <div className="mb-4 p-4 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl w-fit group-hover:scale-110 transition-transform duration-300">
                     <product.icon size={32} className="text-orange-600" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">{product.title}</h3>
+                  {product.price && (
+                    <div className="mb-3">
+                      <span className="text-2xl font-bold gradient-text">₹{product.price}</span>
+                    </div>
+                  )}
                   <p className="text-gray-600 mb-4">{product.description}</p>
-                  <div className="space-y-2">
+                  <div className="space-y-2 mb-4">
                     {product.features.map((feature, idx) => (
                       <div key={idx} className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
@@ -103,6 +108,13 @@ const ProductsPage = () => {
                       </div>
                     ))}
                   </div>
+                  {product.link && (
+                    <Link to={product.link}>
+                      <Button className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white">
+                        View Details
+                      </Button>
+                    </Link>
+                  )}
                 </CardContent>
               </Card>
             ))}
