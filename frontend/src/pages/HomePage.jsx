@@ -218,18 +218,18 @@ const HomePage = () => {
       </section>
 
       {/* Intelligent Living */}
-      <section className="py-20 bg-black">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Intelligent Living, Tailored for any space
             </h2>
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="max-w-6xl mx-auto">
-            <TabsList className="grid w-full grid-cols-3 mb-8 bg-gray-900">
+            <TabsList className="grid w-full grid-cols-3 mb-8 bg-gray-100">
               {intelligentLiving.map((item) => (
-                <TabsTrigger key={item.id} value={item.id} className="data-[state=active]:bg-blue-500">
+                <TabsTrigger key={item.id} value={item.id} className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white">
                   {item.title}
                 </TabsTrigger>
               ))}
@@ -237,14 +237,14 @@ const HomePage = () => {
 
             {intelligentLiving.map((item) => (
               <TabsContent key={item.id} value={item.id}>
-                <Card className="bg-gray-900 border-gray-800 overflow-hidden">
+                <Card className="bg-white border-gray-200 overflow-hidden shadow-xl">
                   <CardContent className="p-0">
                     <div className="grid md:grid-cols-2 gap-0">
-                      <div className="p-12 flex flex-col justify-center">
-                        <h3 className="text-3xl font-bold text-white mb-4">{item.subtitle}</h3>
-                        <p className="text-2xl text-gray-400 mb-8">{item.subtitle2}</p>
+                      <div className="p-12 flex flex-col justify-center bg-gradient-to-br from-orange-50 to-red-50">
+                        <h3 className="text-3xl font-bold text-gray-900 mb-4">{item.subtitle}</h3>
+                        <p className="text-2xl text-gray-700 mb-8">{item.subtitle2}</p>
                         <Link to={item.link}>
-                          <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white w-fit">
+                          <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white w-fit">
                             Explore More <ArrowRight className="ml-2" />
                           </Button>
                         </Link>
