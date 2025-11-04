@@ -60,10 +60,10 @@ const FeaturesGridSection = () => {
   ];
 
   return (
-    <section className=\"py-32 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 relative overflow-hidden\">
-      <div className=\"absolute inset-0 hex-background opacity-10\"></div>
+    <section className="py-32 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 relative overflow-hidden">
+      <div className="absolute inset-0 hex-background opacity-10"></div>
 
-      <div className=\"container mx-auto px-4 lg:px-8 relative z-10\">
+      <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className=\"text-center mb-20\">
           <div className=\"inline-block mb-4 px-6 py-2 glass rounded-full border border-orange-500/30 animate-fadeInUp\">
             <span className=\"text-sm font-semibold gradient-text\">Premium Features</span>
