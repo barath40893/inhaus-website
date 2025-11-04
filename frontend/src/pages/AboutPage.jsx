@@ -96,7 +96,7 @@ const AboutPage = () => {
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">Our Team</h2>
             <p className="text-xl text-gray-400 mb-12">
-              We're a diverse team of engineers, designers, and innovators passionate about creating intelligent solutions that make a real difference. With decades of combined experience in IoT, cloud computing, and product development, we bring expertise and dedication to every project.
+              We're a passionate team of engineers, designers, and smart home enthusiasts dedicated to making your life easier and more comfortable. With years of experience in home automation and customer service, we're here to help you every step of the way.
             </p>
           </div>
 
