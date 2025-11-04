@@ -16,36 +16,42 @@ const HomePage = () => {
       title: 'Comfort & Convenience',
       description: 'Control all your devices from anywhere. Experience true convenience at your fingertips.',
       image: 'https://images.unsplash.com/photo-1752955471067-294a5de5bf48?w=800&q=80',
+      video: 'https://videos.pexels.com/video-files/6774317/6774317-uhd_2560_1440_25fps.mp4',
     },
     {
       icon: Shield,
       title: 'Secure & Safe',
       description: 'Enterprise-grade security with real-time monitoring and instant alerts.',
       image: 'https://images.unsplash.com/photo-1708807472445-d33589e6b090?w=800&q=80',
+      video: 'https://videos.pexels.com/video-files/8293700/8293700-uhd_2560_1440_25fps.mp4',
     },
     {
       icon: TrendingUp,
       title: 'Energy Efficient',
       description: 'Save up to 30% on electricity bills with smart energy tracking.',
       image: 'https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?w=800&q=80',
+      video: 'https://videos.pexels.com/video-files/7513157/7513157-uhd_2560_1440_25fps.mp4',
     },
     {
       icon: Smartphone,
       title: 'Easy Control',
       description: 'Intuitive mobile app for seamless control of your entire home.',
       image: 'https://images.unsplash.com/photo-1608377205619-03a0b4c4e270?w=800&q=80',
+      video: 'https://videos.pexels.com/video-files/7579978/7579978-uhd_2560_1440_25fps.mp4',
     },
     {
       icon: Mic,
       title: 'Voice Commands',
       description: 'Works with Alexa, Google Home, and Siri for hands-free control.',
       image: 'https://images.unsplash.com/photo-1519558260268-cde7e03a0152?w=800&q=80',
+      video: 'https://videos.pexels.com/video-files/8292946/8292946-uhd_2560_1440_25fps.mp4',
     },
     {
       icon: Clock,
       title: 'Smart Automation',
       description: 'Set schedules and automations for a truly intelligent home.',
       image: 'https://images.unsplash.com/photo-1591174425156-fd472f354be4?w=800&q=80',
+      video: 'https://videos.pexels.com/video-files/6774684/6774684-uhd_2560_1440_25fps.mp4',
     },
   ];
 
