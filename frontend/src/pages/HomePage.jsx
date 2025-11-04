@@ -86,9 +86,9 @@ const HomePage = () => {
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1679356505858-bf4129177392')] bg-cover bg-center opacity-10"></div>
         <div className="container mx-auto px-4 lg:px-8 relative z-10 pt-20">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 animate-fade-in">
+            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 animate-fade-in leading-tight">
               Transform Your Home with
-              <span className="block mt-2 bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text">
+              <span className="block mt-4 bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text pb-2">
                 Smart Living
               </span>
             </h1>
