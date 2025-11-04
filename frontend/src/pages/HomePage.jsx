@@ -266,31 +266,31 @@ const HomePage = () => {
       </section>
 
       {/* Integration Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-900 to-black">
+      <section className="py-20 bg-gradient-to-br from-gray-50 to-orange-50">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
                 Seamlessly Connect to Your Smart Devices
               </h2>
-              <p className="text-xl text-gray-400 mb-8">
+              <p className="text-xl text-gray-600 mb-8">
                 Control all your smart home devices from one intuitive mobile application. Experience seamless integration with endless possibilities.
               </p>
               <ul className="space-y-4">
-                <li className="flex items-center gap-3 text-gray-300">
-                  <CheckCircle className="text-blue-400" size={24} />
+                <li className="flex items-center gap-3 text-gray-700">
+                  <CheckCircle className="text-orange-500" size={24} />
                   <span>Easy device pairing and setup</span>
                 </li>
-                <li className="flex items-center gap-3 text-gray-300">
-                  <CheckCircle className="text-blue-400" size={24} />
+                <li className="flex items-center gap-3 text-gray-700">
+                  <CheckCircle className="text-orange-500" size={24} />
                   <span>Voice control integration</span>
                 </li>
-                <li className="flex items-center gap-3 text-gray-300">
-                  <CheckCircle className="text-blue-400" size={24} />
+                <li className="flex items-center gap-3 text-gray-700">
+                  <CheckCircle className="text-orange-500" size={24} />
                   <span>Real-time monitoring and alerts</span>
                 </li>
-                <li className="flex items-center gap-3 text-gray-300">
-                  <CheckCircle className="text-blue-400" size={24} />
+                <li className="flex items-center gap-3 text-gray-700">
+                  <CheckCircle className="text-orange-500" size={24} />
                   <span>Schedule and automation</span>
                 </li>
               </ul>
@@ -307,7 +307,7 @@ const HomePage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+      <section className="py-20 bg-gradient-to-r from-orange-500 to-red-500">
         <div className="container mx-auto px-4 lg:px-8 text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Ready to Make Your Home Smart?
@@ -316,7 +316,7 @@ const HomePage = () => {
             Join thousands of happy homeowners. Get started with InHaus today and experience the future of living.
           </p>
           <Link to="/contact">
-            <Button className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-6 text-lg rounded-full transition-all duration-300 shadow-lg">
+            <Button className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-6 text-lg rounded-full transition-all duration-300 shadow-lg">
               Get Started Now <ArrowRight className="ml-2" />
             </Button>
           </Link>
