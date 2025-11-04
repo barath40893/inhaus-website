@@ -37,10 +37,10 @@ const Footer = () => {
             <img
               src="/inhaus/fulllogo_transparent_nobuffer.png"
               alt="InHaus"
-              className="h-12 w-auto mb-4"
+              className="h-12 w-auto mb-4 brightness-110"
             />
             <p className="text-gray-400 text-sm mb-4">
-              Empowering brands with smart automation and white-label IoT solutions built with excellence.
+              Transform your home with intelligent automation. Experience comfort, security, and convenience like never before.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors duration-300">
