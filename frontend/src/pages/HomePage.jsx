@@ -181,12 +181,12 @@ const HomePage = () => {
                 </div>
                 <div className="lg:w-1/2">
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="p-4 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl">
-                      <feature.icon size={32} className="text-blue-400" />
+                    <div className="p-4 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl">
+                      <feature.icon size={32} className="text-orange-600" />
                     </div>
                   </div>
-                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">{feature.title}</h3>
-                  <p className="text-lg text-gray-400">{feature.description}</p>
+                  <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{feature.title}</h3>
+                  <p className="text-lg text-gray-600">{feature.description}</p>
                 </div>
               </div>
             ))}
