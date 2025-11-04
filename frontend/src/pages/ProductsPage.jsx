@@ -10,9 +10,11 @@ const ProductsPage = () => {
   const productCategories = [
     {
       icon: Home,
-      title: 'Electrical Switches',
+      title: 'Smart Switch - 2 Gang',
       description: 'Smart switches with voice control, scheduling, and energy monitoring capabilities.',
       features: ['Voice Control', 'Energy Monitoring', 'Remote Access', 'Touch Panel'],
+      price: 2999,
+      link: '/product/smart-switch-2',
     },
     {
       icon: Lightbulb,
