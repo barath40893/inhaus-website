@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import TestimonialsSection from '../components/TestimonialsSection';
+import VoiceAssistantSection from '../components/VoiceAssistantSection';
+import FeaturesGridSection from '../components/FeaturesGridSection';
+import AppShowcaseSection from '../components/AppShowcaseSection';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { ArrowRight, CheckCircle, Zap, Shield, TrendingUp, Code, Server } from 'lucide-react';
