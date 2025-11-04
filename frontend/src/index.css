@@ -286,3 +286,52 @@ html {
   animation: shimmer 3s linear infinite;
   background-size: 300% 300%;
 }
+
+/* Custom animations for smart home graphics */
+@keyframes pulse-glow {
+  0%, 100% { 
+    opacity: 0.6; 
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.4);
+  }
+  50% { 
+    opacity: 1; 
+    box-shadow: 0 0 40px rgba(249, 115, 22, 0.8);
+  }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 0.9; }
+  25%, 75% { opacity: 0.5; }
+}
+
+@keyframes radar-scan {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes energy-wave {
+  0% { transform: translateY(100%) scaleY(0); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(0%) scaleY(1); opacity: 0; }
+}
+
+@keyframes ripple {
+  0% { transform: scale(0); opacity: 1; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes sound-wave {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+
+@keyframes rotate-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes connect-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
