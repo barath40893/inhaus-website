@@ -1,14 +1,9 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import TestimonialsSection from '../components/TestimonialsSection';
-import VoiceAssistantSection from '../components/VoiceAssistantSection';
-import FeaturesGridSection from '../components/FeaturesGridSection';
-import AppShowcaseSection from '../components/AppShowcaseSection';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import { ArrowRight, CheckCircle, Zap, Shield, TrendingUp, Code, Server } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { ArrowRight, CheckCircle, Zap, Shield, Star, Smartphone, Home, Lock, Lightbulb, Clock, TrendingUp, Mic } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
 
 const HomePage = () => {
