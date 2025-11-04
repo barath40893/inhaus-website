@@ -106,55 +106,65 @@ const HomePage = () => {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white">
         <div className="container mx-auto px-4 lg:px-8 relative z-10 pt-20">
-          <div className="max-w-5xl mx-auto text-center">
-            <div className="inline-block mb-6 px-6 py-3 glass rounded-full border border-orange-500/30 animate-fadeInUp">
-              <span className="text-sm font-semibold gradient-text">🚀 The Future of Smart Living</span>
-            </div>
-            
-            <h1 className="text-6xl md:text-8xl font-extrabold text-white mb-8 animate-fadeInUp leading-tight" style={{animationDelay: '0.1s'}}>
-              Transform Your Home with
-              <span className="block mt-4 gradient-text neon-glow pb-2 animate-gradient">
-                Smart Living
-              </span>
-            </h1>
-            
-            <p className="text-xl md:text-2xl text-gray-300 mb-6 animate-fadeInUp" style={{animationDelay: '0.2s'}}>
-              Experience Next-Generation Home Automation
-            </p>
-            
-            <p className="text-lg text-gray-400 mb-12 max-w-3xl mx-auto animate-fadeInUp" style={{animationDelay: '0.3s'}}>
-              Control your lights, temperature, security, and more with cutting-edge AI technology. Welcome to the future of intelligent living.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-6 justify-center animate-fadeInUp" style={{animationDelay: '0.4s'}}>
-              <Link to="/contact">
-                <Button className="group relative bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-10 py-7 text-lg rounded-2xl transition-all duration-500 shadow-2xl hover:shadow-orange-500/50 animate-pulse-glow overflow-hidden">
-                  <span className="relative z-10 flex items-center">
-                    Get Started <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform duration-300" />
+          <div className="max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              {/* Left Content */}
+              <div className="text-left">
+                <div className="inline-block mb-4 px-4 py-2 bg-gradient-to-r from-orange-100 to-red-100 rounded-full">
+                  <span className="text-sm font-semibold gradient-text">The Future of Smart Living</span>
+                </div>
+                
+                <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+                  Transform Your Home with
+                  <span className="block mt-2 gradient-text">
+                    InHaus Smart
                   </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                </Button>
-              </Link>
-              <Link to="/products">
-                <Button variant="outline" className="glass border-2 border-orange-500/50 text-white hover:bg-orange-500/10 px-10 py-7 text-lg rounded-2xl transition-all duration-500 backdrop-blur-xl hover:scale-105">
-                  Explore Products
-                </Button>
-              </Link>
-            </div>
-            
-            {/* Floating cards */}
-            <div className="grid grid-cols-3 gap-6 mt-20 max-w-3xl mx-auto">
-              <div className="glass p-6 rounded-2xl animate-fadeInUp hover:scale-105 transition-transform duration-500" style={{animationDelay: '0.5s'}}>
-                <div className="text-4xl font-bold gradient-text mb-2">50K+</div>
-                <div className="text-sm text-gray-300">Devices Installed</div>
+                </h1>
+                
+                <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                  Experience seamless home automation with voice control, energy monitoring, and complete security—all from your smartphone.
+                </p>
+                
+                <div className="flex flex-col sm:flex-row gap-4 mb-12">
+                  <Link to="/contact">
+                    <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                      Get Started <ArrowRight className="ml-2" size={20} />
+                    </Button>
+                  </Link>
+                  <Link to="/products">
+                    <Button variant="outline" className="border-2 border-orange-500 text-orange-600 hover:bg-orange-50 px-8 py-6 text-lg rounded-xl transition-all duration-300">
+                      View Products
+                    </Button>
+                  </Link>
+                </div>
+                
+                {/* Trust indicators */}
+                <div className="flex items-center gap-6 text-sm text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="text-green-500" size={20} />
+                    <span>Free Installation</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="text-green-500" size={20} />
+                    <span>2-Year Warranty</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="text-green-500" size={20} />
+                    <span>24/7 Support</span>
+                  </div>
+                </div>
               </div>
-              <div className="glass p-6 rounded-2xl animate-fadeInUp hover:scale-105 transition-transform duration-500" style={{animationDelay: '0.6s'}}>
-                <div className="text-4xl font-bold gradient-text mb-2">99.9%</div>
-                <div className="text-sm text-gray-300">Uptime</div>
-              </div>
-              <div className="glass p-6 rounded-2xl animate-fadeInUp hover:scale-105 transition-transform duration-500" style={{animationDelay: '0.7s'}}>
-                <div className="text-4xl font-bold gradient-text mb-2">4.8★</div>
-                <div className="text-sm text-gray-300">Rating</div>
+              
+              {/* Right Image */}
+              <div className="relative">
+                <div className="relative z-10">
+                  <img
+                    src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80"
+                    alt="Smart Home"
+                    className="w-full rounded-3xl shadow-2xl"
+                  />
+                </div>
+                <div className="absolute -bottom-6 -right-6 w-full h-full bg-gradient-to-br from-orange-200 to-red-200 rounded-3xl -z-10"></div>
               </div>
             </div>
           </div>
