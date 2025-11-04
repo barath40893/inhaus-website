@@ -311,58 +311,18 @@ const HomePage = () => {
                 </div>
               </div>
               
-              {/* Right Animated Graphic */}
+              {/* Right Video */}
               <div className="relative">
-                <div className="relative z-10 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl shadow-2xl overflow-hidden aspect-[4/3]">
-                  {/* Animated Smart Home */}
-                  <div className="absolute inset-0 flex items-center justify-center p-12">
-                    {/* House structure */}
-                    <div className="relative w-full h-full">
-                      {/* Animated windows with glowing lights */}
-                      <div className="absolute inset-0 grid grid-cols-3 gap-4 p-8">
-                        {[...Array(6)].map((_, i) => (
-                          <div key={i} className="relative bg-gradient-to-br from-orange-400/20 to-amber-500/20 rounded-lg backdrop-blur-sm border border-orange-400/30"
-                               style={{ animation: `pulse-glow ${2 + i * 0.3}s ease-in-out infinite` }}>
-                            <div className="absolute inset-2 bg-gradient-to-br from-orange-500 to-amber-400 rounded opacity-70"
-                                 style={{ animation: `flicker ${3 + i * 0.5}s ease-in-out infinite` }}></div>
-                          </div>
-                        ))}
-                      </div>
-                      
-                      {/* Floating IoT icons */}
-                      <div className="absolute top-4 right-4 w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center animate-float">
-                        <Smartphone className="text-white" size={28} />
-                      </div>
-                      <div className="absolute bottom-4 left-4 w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center" 
-                           style={{ animation: 'float 4s ease-in-out infinite' }}>
-                        <Shield className="text-white" size={28} />
-                      </div>
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center"
-                           style={{ animation: 'float 5s ease-in-out infinite' }}>
-                        <Home className="text-white" size={32} />
-                      </div>
-                      
-                      {/* Connection lines */}
-                      <svg className="absolute inset-0 w-full h-full" style={{ animation: 'pulse 3s ease-in-out infinite' }}>
-                        <line x1="50%" y1="50%" x2="85%" y2="20%" stroke="url(#gradient1)" strokeWidth="2" strokeDasharray="5,5" opacity="0.6">
-                          <animate attributeName="stroke-dashoffset" from="0" to="10" dur="1s" repeatCount="indefinite"/>
-                        </line>
-                        <line x1="50%" y1="50%" x2="15%" y2="80%" stroke="url(#gradient2)" strokeWidth="2" strokeDasharray="5,5" opacity="0.6">
-                          <animate attributeName="stroke-dashoffset" from="0" to="10" dur="1.2s" repeatCount="indefinite"/>
-                        </line>
-                        <defs>
-                          <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#f97316" />
-                            <stop offset="100%" stopColor="#ef4444" />
-                          </linearGradient>
-                          <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#3b82f6" />
-                            <stop offset="100%" stopColor="#06b6d4" />
-                          </linearGradient>
-                        </defs>
-                      </svg>
-                    </div>
-                  </div>
+                <div className="relative z-10">
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full rounded-3xl shadow-2xl object-cover"
+                  >
+                    <source src="https://videos.pexels.com/video-files/8293700/8293700-sd_640_360_25fps.mp4" type="video/mp4" />
+                  </video>
                 </div>
                 <div className="absolute -bottom-6 -right-6 w-full h-full bg-gradient-to-br from-orange-200 to-red-200 rounded-3xl -z-10"></div>
               </div>
