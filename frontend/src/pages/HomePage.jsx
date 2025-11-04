@@ -25,45 +25,177 @@ const HomePage = () => {
       icon: Zap,
       title: 'Comfort & Convenience',
       description: 'Control all your devices from anywhere. Experience true convenience at your fingertips.',
-      image: 'https://images.unsplash.com/photo-1752955471067-294a5de5bf48?w=800&q=80',
-      video: 'https://videos.pexels.com/video-files/6774317/6774317-uhd_2560_1440_25fps.mp4',
+      animationType: 'devices',
     },
     {
       icon: Shield,
       title: 'Secure & Safe',
       description: 'Enterprise-grade security with real-time monitoring and instant alerts.',
-      image: 'https://images.unsplash.com/photo-1708807472445-d33589e6b090?w=800&q=80',
-      video: 'https://videos.pexels.com/video-files/8293700/8293700-uhd_2560_1440_25fps.mp4',
+      animationType: 'security',
     },
     {
       icon: TrendingUp,
       title: 'Energy Efficient',
       description: 'Save up to 30% on electricity bills with smart energy tracking.',
-      image: 'https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?w=800&q=80',
-      video: 'https://videos.pexels.com/video-files/7513157/7513157-uhd_2560_1440_25fps.mp4',
+      animationType: 'energy',
     },
     {
       icon: Smartphone,
       title: 'Easy Control',
       description: 'Intuitive mobile app for seamless control of your entire home.',
-      image: 'https://images.unsplash.com/photo-1608377205619-03a0b4c4e270?w=800&q=80',
-      video: 'https://videos.pexels.com/video-files/7579978/7579978-uhd_2560_1440_25fps.mp4',
+      animationType: 'phone',
     },
     {
       icon: Mic,
       title: 'Voice Commands',
       description: 'Works with Alexa, Google Home, and Siri for hands-free control.',
-      image: 'https://images.unsplash.com/photo-1519558260268-cde7e03a0152?w=800&q=80',
-      video: 'https://videos.pexels.com/video-files/8292946/8292946-uhd_2560_1440_25fps.mp4',
+      animationType: 'voice',
     },
     {
       icon: Clock,
       title: 'Smart Automation',
       description: 'Set schedules and automations for a truly intelligent home.',
-      image: 'https://images.unsplash.com/photo-1591174425156-fd472f354be4?w=800&q=80',
-      video: 'https://videos.pexels.com/video-files/6774684/6774684-uhd_2560_1440_25fps.mp4',
+      animationType: 'automation',
     },
   ];
+
+  const renderAnimatedGraphic = (type) => {
+    switch(type) {
+      case 'devices':
+        return (
+          <div className="w-full h-96 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl flex items-center justify-center overflow-hidden relative">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="absolute w-20 h-20 bg-gradient-to-br from-orange-500/30 to-red-500/30 rounded-full backdrop-blur-sm border border-orange-400/50"
+                   style={{ 
+                     left: `${20 + i * 20}%`,
+                     top: `${30 + (i % 2) * 30}%`,
+                     animation: `float ${3 + i * 0.5}s ease-in-out infinite`
+                   }}>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Lightbulb className="text-orange-400" size={32} />
+                </div>
+              </div>
+            ))}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-24 h-24 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center animate-pulse">
+                <Smartphone className="text-white" size={40} />
+              </div>
+            </div>
+          </div>
+        );
+      
+      case 'security':
+        return (
+          <div className="w-full h-96 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 rounded-2xl flex items-center justify-center overflow-hidden relative">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-64 h-64 border-4 border-blue-500/30 rounded-full" style={{ animation: 'radar-scan 4s linear infinite' }}>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent"></div>
+              </div>
+            </div>
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="absolute w-4 h-4 bg-red-500 rounded-full" 
+                   style={{ 
+                     left: `${30 + i * 25}%`,
+                     top: `${40 + i * 10}%`,
+                     animation: `pulse ${1.5 + i * 0.3}s ease-in-out infinite`
+                   }}>
+                <div className="absolute inset-0 bg-red-500 rounded-full animate-ping"></div>
+              </div>
+            ))}
+            <Shield className="text-blue-400 absolute z-10" size={80} style={{ animation: 'pulse-glow 2s ease-in-out infinite' }} />
+          </div>
+        );
+      
+      case 'energy':
+        return (
+          <div className="w-full h-96 bg-gradient-to-br from-slate-900 via-green-900 to-slate-900 rounded-2xl flex items-center justify-center overflow-hidden relative">
+            <div className="absolute bottom-0 left-0 right-0 h-full flex items-end justify-around p-8 gap-2">
+              {[...Array(12)].map((_, i) => (
+                <div key={i} className="w-full h-full relative">
+                  <div className="absolute bottom-0 w-full bg-gradient-to-t from-green-500 to-emerald-400 rounded-t-lg"
+                       style={{ 
+                         height: `${30 + (i % 3) * 20}%`,
+                         animation: `energy-wave ${2 + (i % 3) * 0.5}s ease-in-out infinite`,
+                         animationDelay: `${i * 0.1}s`
+                       }}></div>
+                </div>
+              ))}
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-6xl font-bold text-green-400 animate-pulse">30%</div>
+            </div>
+            <TrendingUp className="text-green-400 absolute top-8 right-8" size={48} style={{ animation: 'float 3s ease-in-out infinite' }} />
+          </div>
+        );
+      
+      case 'phone':
+        return (
+          <div className="w-full h-96 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 rounded-2xl flex items-center justify-center overflow-hidden relative">
+            <div className="w-48 h-80 bg-gradient-to-br from-slate-800 to-slate-700 rounded-3xl border-4 border-slate-600 relative overflow-hidden">
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-slate-900 rounded-full"></div>
+              <div className="absolute inset-6 top-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl p-4">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="h-12 mb-3 bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-lg backdrop-blur-sm border border-purple-400/30"
+                       style={{ animation: `pulse ${2 + i * 0.2}s ease-in-out infinite`, animationDelay: `${i * 0.2}s` }}></div>
+                ))}
+              </div>
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="absolute w-32 h-32 border-2 border-purple-500/50 rounded-full"
+                       style={{ animation: `ripple ${2}s ease-out infinite`, animationDelay: `${i * 0.7}s` }}></div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      
+      case 'voice':
+        return (
+          <div className="w-full h-96 bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 rounded-2xl flex items-center justify-center overflow-hidden relative">
+            <div className="absolute inset-0 flex items-center justify-center gap-2">
+              {[...Array(20)].map((_, i) => (
+                <div key={i} className="w-2 bg-gradient-to-t from-indigo-500 to-purple-500 rounded-full"
+                     style={{ 
+                       height: `${20 + (i % 5) * 15}%`,
+                       animation: `sound-wave ${0.8 + (i % 3) * 0.2}s ease-in-out infinite`,
+                       animationDelay: `${i * 0.05}s`
+                     }}></div>
+              ))}
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-32 h-32 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center" style={{ animation: 'pulse-glow 2s ease-in-out infinite' }}>
+                <Mic className="text-white" size={56} />
+              </div>
+            </div>
+          </div>
+        );
+      
+      case 'automation':
+        return (
+          <div className="w-full h-96 bg-gradient-to-br from-slate-900 via-amber-900 to-slate-900 rounded-2xl flex items-center justify-center overflow-hidden relative">
+            <div className="relative w-64 h-64 rounded-full border-8 border-amber-500/30 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full" style={{ animation: 'rotate-slow 20s linear infinite' }}>
+                {[...Array(12)].map((_, i) => (
+                  <div key={i} className="absolute w-2 h-8 bg-amber-500/50 rounded-full"
+                       style={{
+                         left: '50%',
+                         top: '10%',
+                         transformOrigin: '50% 500%',
+                         transform: `rotate(${i * 30}deg) translateX(-50%)`
+                       }}></div>
+                ))}
+              </div>
+              <Clock className="text-amber-400 z-10" size={80} style={{ animation: 'pulse-glow 2s ease-in-out infinite' }} />
+              <div className="absolute w-1 h-24 bg-gradient-to-t from-orange-500 to-red-500 rounded-full origin-bottom" 
+                   style={{ animation: 'rotate-slow 4s linear infinite', bottom: '50%', left: '50%', marginLeft: '-2px' }}></div>
+            </div>
+          </div>
+        );
+      
+      default:
+        return null;
+    }
+  };
 
   const testimonials = [
     {
