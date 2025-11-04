@@ -37,7 +37,7 @@ const HomePage = () => {
       icon: TrendingUp,
       title: 'Energy Efficient',
       description: 'Save up to 30% on electricity bills with smart energy tracking.',
-      image: 'https://images.unsplash.com/photo-1747224317348-887f7ed01d34?w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?w=800&q=80',
     },
     {
       icon: Smartphone,
