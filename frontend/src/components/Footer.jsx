@@ -122,8 +122,8 @@ const Footer = () => {
               <a href="mailto:support@inhaus.co.in" className="text-gray-400 hover:text-blue-400 text-sm flex items-center gap-2 transition-colors duration-300">
                 <Mail size={16} /> support@inhaus.co.in
               </a>
-              <a href="tel:7416925607" className="text-gray-400 hover:text-blue-400 text-sm flex items-center gap-2 transition-colors duration-300">
-                <Phone size={16} /> 7416925607
+              <a href="tel:+917416925607" className="text-gray-400 hover:text-blue-400 text-sm flex items-center gap-2 transition-colors duration-300">
+                <Phone size={16} /> +91 7416925607
               </a>
             </div>
           </div>
