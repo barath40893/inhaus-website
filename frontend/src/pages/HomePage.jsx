@@ -177,8 +177,8 @@ const HomePage = () => {
               <div className="relative">
                 <div className="relative z-10">
                   <img
-                    src="https://images.unsplash.com/photo-1751945965597-71171ec7a458?w=800&q=80"
-                    alt="Modern Smart Home Living Room"
+                    src="https://images.unsplash.com/photo-1736410223296-4537159eefe4?w=800&q=80"
+                    alt="Complete Smart Home Ecosystem with Smartphone Control"
                     className="w-full rounded-3xl shadow-2xl object-cover"
                   />
                 </div>
