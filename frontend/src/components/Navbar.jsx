@@ -26,7 +26,7 @@ const Navbar = () => {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-black/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
+        isScrolled ? 'bg-black/95 backdrop-blur-md shadow-lg' : 'bg-black/80 backdrop-blur-sm'
       }`}
     >
       <div className="container mx-auto px-4 lg:px-8">
@@ -36,7 +36,7 @@ const Navbar = () => {
             <img
               src="/inhaus/fulllogo_transparent_nobuffer.png"
               alt="InHaus"
-              className="h-12 w-auto transition-transform duration-300 group-hover:scale-105"
+              className="h-14 w-auto transition-transform duration-300 group-hover:scale-105 brightness-110"
             />
           </Link>
 
