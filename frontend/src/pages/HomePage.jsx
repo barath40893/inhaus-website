@@ -415,6 +415,7 @@ const HomePage = () => {
             <div className="relative">
               <div className="relative z-10">
                 <video
+                  ref={el => videoRefs.current[7] = el}
                   autoPlay
                   loop
                   muted
