@@ -15,31 +15,37 @@ const HomePage = () => {
       icon: Zap,
       title: 'Comfort & Convenience',
       description: 'Control all your devices from anywhere. Experience true convenience at your fingertips.',
+      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
     },
     {
       icon: Shield,
       title: 'Secure & Safe',
       description: 'Enterprise-grade security with real-time monitoring and instant alerts.',
+      image: 'https://images.unsplash.com/photo-1558002038-1055907df827?w=800&q=80',
     },
     {
       icon: TrendingUp,
       title: 'Energy Efficient',
       description: 'Save up to 30% on electricity bills with smart energy tracking.',
+      image: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&q=80',
     },
     {
       icon: Smartphone,
       title: 'Easy Control',
       description: 'Intuitive mobile app for seamless control of your entire home.',
+      image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=80',
     },
     {
       icon: Mic,
       title: 'Voice Commands',
       description: 'Works with Alexa, Google Home, and Siri for hands-free control.',
+      image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80',
     },
     {
       icon: Clock,
       title: 'Smart Automation',
       description: 'Set schedules and automations for a truly intelligent home.',
+      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
     },
   ];
 
