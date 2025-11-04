@@ -224,6 +224,177 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* How It Works */}
+      <section className="py-32 bg-gradient-to-br from-slate-50 via-white to-orange-50 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-orange-200 to-red-200 rounded-full blur-3xl opacity-20"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-br from-red-200 to-orange-200 rounded-full blur-3xl opacity-20"></div>
+        
+        <div className="container mx-auto px-4 lg:px-8 relative z-10">
+          <div className="text-center mb-20">
+            <div className="inline-block mb-4 px-6 py-2 glass rounded-full border border-orange-500/30">
+              <span className="text-sm font-semibold gradient-text">Simple Process</span>
+            </div>
+            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">How It Works</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">Get started with your smart home in three simple steps</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+            {/* Step 1 */}
+            <div className="relative group">
+              <div className="premium-card gradient-border p-10 rounded-3xl h-full relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500 to-red-500 rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
+                <div className="relative z-10">
+                  <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-4xl font-bold text-white mb-6 shadow-xl group-hover:scale-110 transition-transform duration-500">
+                    1
+                  </div>
+                  <h3 className="text-3xl font-bold text-gray-900 mb-4 group-hover:gradient-text transition-all duration-300">Choose Your Devices</h3>
+                  <p className="text-gray-600 leading-relaxed">Select from our range of smart lights, switches, sensors, and appliances that fit your needs.</p>
+                </div>
+              </div>
+              <div className="hidden md:block absolute top-1/2 -right-6 transform -translate-y-1/2 text-orange-500 z-20">
+                <ArrowRight size={40} className="animate-pulse" />
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="relative group">
+              <div className="premium-card gradient-border p-10 rounded-3xl h-full relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-red-500 to-orange-500 rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
+                <div className="relative z-10">
+                  <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-orange-500 rounded-2xl flex items-center justify-center text-4xl font-bold text-white mb-6 shadow-xl group-hover:scale-110 transition-transform duration-500">
+                    2
+                  </div>
+                  <h3 className="text-3xl font-bold text-gray-900 mb-4 group-hover:gradient-text transition-all duration-300">Easy Installation</h3>
+                  <p className="text-gray-600 leading-relaxed">Simple DIY setup or professional installation. Connect devices to your Wi-Fi in minutes.</p>
+                </div>
+              </div>
+              <div className="hidden md:block absolute top-1/2 -right-6 transform -translate-y-1/2 text-red-500 z-20">
+                <ArrowRight size={40} className="animate-pulse" />
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="relative group">
+              <div className="premium-card gradient-border p-10 rounded-3xl h-full relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-600 to-red-600 rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
+                <div className="relative z-10">
+                  <div className="w-20 h-20 bg-gradient-to-br from-orange-600 to-red-600 rounded-2xl flex items-center justify-center text-4xl font-bold text-white mb-6 shadow-xl group-hover:scale-110 transition-transform duration-500">
+                    3
+                  </div>
+                  <h3 className="text-3xl font-bold text-gray-900 mb-4 group-hover:gradient-text transition-all duration-300">Control Everything</h3>
+                  <p className="text-gray-600 leading-relaxed">Use your smartphone or voice commands to control your entire home from anywhere.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Packages Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Solutions for Every Home
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Choose the perfect package for your home automation
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto mt-12">
+            {/* Starter Package */}
+            <div className="bg-white rounded-2xl shadow-xl border-2 border-gray-200 overflow-hidden hover:border-orange-500 transition-all duration-300 hover:-translate-y-2">
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Starter</h3>
+                <p className="text-gray-600 mb-4">Package</p>
+                <div className="mb-6">
+                  <span className="text-4xl font-bold text-gray-900">₹18,999</span>
+                </div>
+                <div className="mb-6">
+                  <p className="font-semibold text-gray-900 mb-2">2 Rooms + Hall + Kitchen</p>
+                  <p className="text-sm text-gray-600 mb-4">Details</p>
+                  <ul className="text-sm text-gray-600 space-y-2">
+                    <li>• 1 Light, 1 Fan in each room</li>
+                    <li>• 3 Lights and 1 Fan in hall</li>
+                    <li>• 2 Lights and 1 Exhaust in kitchen</li>
+                    <li>• Voice control integration</li>
+                    <li>• Mobile app control</li>
+                  </ul>
+                </div>
+                <Link to="/contact">
+                  <Button className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-6 rounded-xl">
+                    Order Today
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Classic Package */}
+            <div className="bg-white rounded-2xl shadow-xl border-2 border-orange-500 overflow-hidden relative transform -translate-y-4">
+              <div className="absolute top-0 right-0 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-1 rounded-bl-xl text-sm font-semibold">
+                POPULAR
+              </div>
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Classic</h3>
+                <p className="text-gray-600 mb-4">Package</p>
+                <div className="mb-6">
+                  <span className="text-4xl font-bold text-gray-900">₹29,999</span>
+                </div>
+                <div className="mb-6">
+                  <p className="font-semibold text-gray-900 mb-2">3 Rooms + Hall + Kitchen</p>
+                  <p className="text-sm text-gray-600 mb-4">Details</p>
+                  <ul className="text-sm text-gray-600 space-y-2">
+                    <li>• 1 Light, 1 Fan, 1 AC/Geyser per room</li>
+                    <li>• 3 Lights, 1 Fan, 1 AC in hall</li>
+                    <li>• 2 Lights and 1 Exhaust in kitchen</li>
+                    <li>• Voice control integration</li>
+                    <li>• Energy monitoring</li>
+                    <li>• Automated scheduling</li>
+                  </ul>
+                </div>
+                <Link to="/contact">
+                  <Button className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-6 rounded-xl">
+                    Order Today
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Premium Package */}
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-xl overflow-hidden hover:-translate-y-2 transition-all duration-300">
+              <div className="p-8 text-white">
+                <h3 className="text-2xl font-bold mb-2">Premium</h3>
+                <p className="text-gray-300 mb-4">Package</p>
+                <div className="mb-6">
+                  <span className="text-4xl font-bold">₹74,999</span>
+                </div>
+                <div className="mb-6">
+                  <p className="font-semibold mb-2">3 Rooms + Hall + Kitchen + Bathrooms</p>
+                  <p className="text-sm text-gray-300 mb-4">Details</p>
+                  <ul className="text-sm text-gray-300 space-y-2">
+                    <li>• 3 Lights, 1 Fan, 1 IR Blaster per room</li>
+                    <li>• Complete remote control integration</li>
+                    <li>• 5 Lights, 1 Fan, 1 IR Blaster in hall</li>
+                    <li>• 2 Lights, 1 Exhaust in kitchen</li>
+                    <li>• 4 Heavy duty appliances</li>
+                    <li>• 1 Motion sensor per bathroom</li>
+                    <li>• 1 Curtain control system</li>
+                    <li>• Complete home automation</li>
+                  </ul>
+                </div>
+                <Link to="/contact">
+                  <Button className="w-full bg-white text-gray-900 hover:bg-gray-100 py-6 rounded-xl">
+                    Order Today
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Stats Section */}
       <section className="py-20 bg-gradient-to-r from-orange-500 to-red-500">
         <div className="container mx-auto px-4 lg:px-8">
