@@ -71,7 +71,7 @@ const ContactPage = () => {
               Get in <span className="bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">Touch</span>
             </h1>
             <p className="text-xl text-gray-400">
-              Let's discuss how we can help bring your IoT vision to life
+              We'd love to hear from you and help you create your perfect smart home
             </p>
           </div>
         </div>
