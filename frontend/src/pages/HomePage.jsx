@@ -25,37 +25,37 @@ const HomePage = () => {
       icon: Zap,
       title: 'Comfort & Convenience',
       description: 'Control all your devices from anywhere. Experience true convenience at your fingertips.',
-      animationType: 'devices',
+      video: 'https://videos.pexels.com/video-files/6774317/6774317-sd_640_360_25fps.mp4',
     },
     {
       icon: Shield,
       title: 'Secure & Safe',
       description: 'Enterprise-grade security with real-time monitoring and instant alerts.',
-      animationType: 'security',
+      video: 'https://videos.pexels.com/video-files/5532782/5532782-sd_640_360_30fps.mp4',
     },
     {
       icon: TrendingUp,
       title: 'Energy Efficient',
       description: 'Save up to 30% on electricity bills with smart energy tracking.',
-      animationType: 'energy',
+      video: 'https://videos.pexels.com/video-files/7513157/7513157-sd_640_360_25fps.mp4',
     },
     {
       icon: Smartphone,
       title: 'Easy Control',
       description: 'Intuitive mobile app for seamless control of your entire home.',
-      animationType: 'phone',
+      video: 'https://videos.pexels.com/video-files/7579978/7579978-sd_640_360_25fps.mp4',
     },
     {
       icon: Mic,
       title: 'Voice Commands',
       description: 'Works with Alexa, Google Home, and Siri for hands-free control.',
-      animationType: 'voice',
+      video: 'https://videos.pexels.com/video-files/8292946/8292946-sd_640_360_25fps.mp4',
     },
     {
       icon: Clock,
       title: 'Smart Automation',
       description: 'Set schedules and automations for a truly intelligent home.',
-      animationType: 'automation',
+      video: 'https://videos.pexels.com/video-files/6774684/6774684-sd_640_360_25fps.mp4',
     },
   ];
 
