@@ -25,7 +25,7 @@ const HomePage = () => {
       icon: Zap,
       title: 'Comfort & Convenience',
       description: 'Control all your devices from anywhere. Experience true convenience at your fingertips.',
-      image: 'https://images.unsplash.com/photo-1712746438791-ccf70478e0d0?w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1758876021591-4a48ab8968b6?w=800&q=80',
     },
     {
       icon: Shield,
