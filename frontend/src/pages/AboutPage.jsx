@@ -52,13 +52,13 @@ const AboutPage = () => {
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">Our Story</h2>
             <div className="space-y-6 text-lg text-gray-400">
               <p>
-                InHaus was founded with a simple yet powerful vision: to make IoT technology accessible to everyone. We recognized that while the potential of smart devices was enormous, the complexity of development and deployment was a significant barrier for many brands.
+                InHaus was founded with a simple yet powerful vision: to make smart home technology accessible and affordable for everyone. We believe that everyone deserves to experience the comfort, convenience, and security that comes with a truly intelligent home.
               </p>
               <p>
-                Today, we've evolved into a leading white-label IoT platform provider, helping brands across the globe launch their smart products without the need for extensive R&D investments or technical expertise. Our platform powers millions of devices, bringing intelligence and connectivity to homes, offices, and hospitality spaces worldwide.
+                Today, we're proud to serve thousands of homes across the country, transforming ordinary houses into extraordinary smart homes. Our products are designed with you in mind—easy to install, simple to use, and built to last. Whether you're looking to save on energy bills, enhance your home security, or simply enjoy the convenience of voice-controlled lighting, we have the perfect solution.
               </p>
               <p>
-                What sets us apart is our commitment to excellence and innovation. We don't just provide technology; we partner with our clients to understand their unique needs and deliver solutions that exceed expectations. Our enterprise-grade platform is built on reliability, scalability, and security – the foundations of any successful IoT ecosystem.
+                What sets us apart is our commitment to quality and customer satisfaction. We don't just sell products; we create experiences. Our devices work seamlessly together, our app is intuitive and reliable, and our customer support team is always here to help. With InHaus, you're not just buying smart devices—you're investing in a smarter way of living.
               </p>
             </div>
           </div>
