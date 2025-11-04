@@ -42,9 +42,9 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-20">
           <Link to="/" className="flex items-center space-x-2 group">
             <img
-              src="/inhaus/fulllogo.png"
+              src="/inhaus/grayscale_logo.png"
               alt="InHaus"
-              className="h-16 w-auto transition-transform duration-300 group-hover:scale-105"
+              className="h-14 w-auto transition-transform duration-300 group-hover:scale-105"
             />
           </Link>
 
