@@ -383,11 +383,14 @@ const HomePage = () => {
               </ul>
             </div>
             <div className="relative">
-              <img
-                src="https://images.unsplash.com/photo-1761305135267-892b33c19c61"
-                alt="Mobile App"
-                className="w-full max-w-md mx-auto rounded-2xl shadow-2xl"
-              />
+              <div className="relative z-10">
+                <img
+                  src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=80"
+                  alt="Smart Home Mobile App"
+                  className="w-full max-w-md mx-auto rounded-2xl shadow-2xl"
+                />
+              </div>
+              <div className="absolute -bottom-6 -right-6 w-64 h-64 bg-gradient-to-br from-orange-300 to-red-300 rounded-full blur-3xl opacity-30 -z-10"></div>
             </div>
           </div>
         </div>
