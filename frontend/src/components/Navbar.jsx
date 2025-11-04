@@ -44,7 +44,7 @@ const Navbar = () => {
             <img
               src="/inhaus/grayscale_logo.png"
               alt="InHaus"
-              className="h-14 w-auto transition-transform duration-300 group-hover:scale-105"
+              className="h-20 w-auto transition-transform duration-300 group-hover:scale-105"
             />
           </Link>
 
