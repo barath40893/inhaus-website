@@ -384,6 +384,12 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* New Premium Sections */}
+      <FeaturesGridSection />
+      <VoiceAssistantSection />
+      <AppShowcaseSection />
+      <TestimonialsSection />
+
       <Footer />
     </div>
   );
