@@ -25,37 +25,37 @@ const HomePage = () => {
       icon: Zap,
       title: 'Comfort & Convenience',
       description: 'Control all your devices from anywhere. Experience true convenience at your fingertips.',
-      video: 'https://videos.pexels.com/video-files/7579978/7579978-sd_640_360_25fps.mp4',
+      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
     },
     {
       icon: Shield,
       title: 'Secure & Safe',
       description: 'Enterprise-grade security with real-time monitoring and instant alerts.',
-      video: 'https://videos.pexels.com/video-files/8293612/8293612-sd_640_360_25fps.mp4',
+      image: 'https://images.unsplash.com/photo-1633194883650-df448a10d554?w=800&q=80',
     },
     {
       icon: TrendingUp,
       title: 'Energy Efficient',
       description: 'Save up to 30% on electricity bills with smart energy tracking.',
-      video: 'https://videos.pexels.com/video-files/8853090/8853090-sd_640_360_25fps.mp4',
+      image: 'https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?w=800&q=80',
     },
     {
       icon: Smartphone,
       title: 'Easy Control',
       description: 'Intuitive mobile app for seamless control of your entire home.',
-      video: 'https://videos.pexels.com/video-files/6774317/6774317-sd_640_360_25fps.mp4',
+      image: 'https://images.unsplash.com/photo-1608377205619-03a0b4c4e270?w=800&q=80',
     },
     {
       icon: Mic,
       title: 'Voice Commands',
       description: 'Works with Alexa, Google Home, and Siri for hands-free control.',
-      video: 'https://videos.pexels.com/video-files/8292946/8292946-sd_640_360_25fps.mp4',
+      image: 'https://images.unsplash.com/photo-1519558260268-cde7e03a0152?w=800&q=80',
     },
     {
       icon: Clock,
       title: 'Smart Automation',
       description: 'Set schedules and automations for a truly intelligent home.',
-      video: 'https://videos.pexels.com/video-files/5532782/5532782-sd_640_360_30fps.mp4',
+      image: 'https://images.unsplash.com/photo-1591174425156-fd472f354be4?w=800&q=80',
     },
   ];
 
