@@ -55,7 +55,7 @@ const HomePage = () => {
       icon: Clock,
       title: 'Smart Automation',
       description: 'Set schedules and automations for a truly intelligent home.',
-      image: 'https://images.unsplash.com/photo-1679356505858-bf4129177392?w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80',
     },
   ];
 
