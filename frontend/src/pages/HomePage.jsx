@@ -44,9 +44,9 @@ const HomePage = () => {
   ];
 
   const stats = [
-    { label: 'Smart Brands', value: '5+' },
-    { label: 'Devices Sold', value: '10L+' },
-    { label: 'Users', value: '5L+' },
+    { label: 'Happy Homes', value: '5000+' },
+    { label: 'Devices Installed', value: '50K+' },
+    { label: 'Active Users', value: '15K+' },
     { label: 'Smart Products', value: '30+' },
   ];
 
