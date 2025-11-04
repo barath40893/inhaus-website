@@ -28,17 +28,17 @@ const AboutPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-white">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-br from-blue-900/20 via-black to-purple-900/20">
+      <section className="pt-32 pb-20 bg-gradient-to-br from-orange-50 via-white to-red-50">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-              About <span className="bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">InHaus</span>
+            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+              About <span className="bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text">InHaus</span>
             </h1>
-            <p className="text-xl text-gray-400">
+            <p className="text-xl text-gray-600">
               Building the future of smart living, one device at a time
             </p>
           </div>
@@ -46,11 +46,11 @@ const AboutPage = () => {
       </section>
 
       {/* Story Section */}
-      <section className="py-20 bg-black">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">Our Story</h2>
-            <div className="space-y-6 text-lg text-gray-400">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">Our Story</h2>
+            <div className="space-y-6 text-lg text-gray-600">
               <p>
                 InHaus was founded with a simple yet powerful vision: to make smart home technology accessible and affordable for everyone. We believe that everyone deserves to experience the comfort, convenience, and security that comes with a truly intelligent home.
               </p>
@@ -66,24 +66,24 @@ const AboutPage = () => {
       </section>
 
       {/* Values Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-900 to-black">
+      <section className="py-20 bg-gradient-to-br from-orange-50 to-red-50">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Our Values</h2>
-            <p className="text-xl text-gray-400">The principles that guide everything we do</p>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Our Values</h2>
+            <p className="text-xl text-gray-600">The principles that guide everything we do</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {values.map((value, index) => (
               <div
                 key={index}
-                className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 p-8 rounded-2xl border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300"
+                className="bg-white p-8 rounded-2xl border-2 border-orange-200 hover:border-orange-400 transition-all duration-300 hover:shadow-xl"
               >
                 <div className="mb-4">
-                  <value.icon size={40} className="text-blue-400" />
+                  <value.icon size={40} className="text-orange-500" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-3">{value.title}</h3>
-                <p className="text-gray-400">{value.description}</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">{value.title}</h3>
+                <p className="text-gray-600">{value.description}</p>
               </div>
             ))}
           </div>
@@ -91,39 +91,39 @@ const AboutPage = () => {
       </section>
 
       {/* Team Section */}
-      <section className="py-20 bg-black">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">Our Team</h2>
-            <p className="text-xl text-gray-400 mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">Our Team</h2>
+            <p className="text-xl text-gray-600 mb-12">
               We're a passionate team of engineers, designers, and smart home enthusiasts dedicated to making your life easier and more comfortable. With years of experience in home automation and customer service, we're here to help you every step of the way.
             </p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto mt-12">
             <div className="text-center">
-              <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text mb-2">
+              <div className="text-5xl font-bold bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text mb-2">
                 5000+
               </div>
-              <div className="text-lg text-gray-400">Happy Customers</div>
+              <div className="text-lg text-gray-600">Happy Customers</div>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text mb-2">
+              <div className="text-5xl font-bold bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text mb-2">
                 8+
               </div>
-              <div className="text-lg text-gray-400">Years in Business</div>
+              <div className="text-lg text-gray-600">Years in Business</div>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text mb-2">
+              <div className="text-5xl font-bold bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text mb-2">
                 24/7
               </div>
-              <div className="text-lg text-gray-400">Customer Support</div>
+              <div className="text-lg text-gray-600">Customer Support</div>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text mb-2">
+              <div className="text-5xl font-bold bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text mb-2">
                 4.8★
               </div>
-              <div className="text-lg text-gray-400">Customer Rating</div>
+              <div className="text-lg text-gray-600">Customer Rating</div>
             </div>
           </div>
         </div>

@@ -60,17 +60,17 @@ const ContactPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-white">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-br from-blue-900/20 via-black to-purple-900/20">
+      <section className="pt-32 pb-20 bg-gradient-to-br from-orange-50 via-white to-red-50">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-              Get in <span className="bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">Touch</span>
+            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+              Get in <span className="bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text">Touch</span>
             </h1>
-            <p className="text-xl text-gray-400">
+            <p className="text-xl text-gray-600">
               We'd love to hear from you and help you create your perfect smart home
             </p>
           </div>
@@ -78,46 +78,46 @@ const ContactPage = () => {
       </section>
 
       {/* Contact Form Section */}
-      <section className="py-20 bg-black">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
             {/* Contact Information */}
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">Contact Information</h2>
-              <p className="text-lg text-gray-400 mb-8">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">Contact Information</h2>
+              <p className="text-lg text-gray-600 mb-8">
                 Have questions about our smart home products? Ready to transform your home? We're here to help! Reach out to us and let's get started.
               </p>
 
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl">
-                    <Mail className="text-blue-400" size={24} />
+                  <div className="p-3 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl">
+                    <Mail className="text-orange-600" size={24} />
                   </div>
                   <div>
-                    <h3 className="text-white font-semibold mb-1">Email</h3>
-                    <p className="text-gray-400">info@inhaus.com</p>
-                    <p className="text-gray-400">support@inhaus.com</p>
+                    <h3 className="text-gray-900 font-semibold mb-1">Email</h3>
+                    <p className="text-gray-600">info@inhaus.com</p>
+                    <p className="text-gray-600">support@inhaus.com</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl">
-                    <Phone className="text-blue-400" size={24} />
+                  <div className="p-3 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl">
+                    <Phone className="text-orange-600" size={24} />
                   </div>
                   <div>
-                    <h3 className="text-white font-semibold mb-1">Phone</h3>
-                    <p className="text-gray-400">+1 (555) 123-4567</p>
-                    <p className="text-gray-400">+1 (555) 987-6543</p>
+                    <h3 className="text-gray-900 font-semibold mb-1">Phone</h3>
+                    <p className="text-gray-600">+1 (555) 123-4567</p>
+                    <p className="text-gray-600">+1 (555) 987-6543</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl">
-                    <MapPin className="text-blue-400" size={24} />
+                  <div className="p-3 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl">
+                    <MapPin className="text-orange-600" size={24} />
                   </div>
                   <div>
-                    <h3 className="text-white font-semibold mb-1">Office</h3>
-                    <p className="text-gray-400">
+                    <h3 className="text-gray-900 font-semibold mb-1">Office</h3>
+                    <p className="text-gray-600">
                       123 Innovation Drive<br />
                       Tech Valley, CA 94025<br />
                       United States
@@ -127,8 +127,8 @@ const ContactPage = () => {
               </div>
 
               <div className="mt-12">
-                <h3 className="text-xl font-bold text-white mb-4">Business Hours</h3>
-                <div className="space-y-2 text-gray-400">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Business Hours</h3>
+                <div className="space-y-2 text-gray-600">
                   <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
                   <p>Saturday: 10:00 AM - 4:00 PM</p>
                   <p>Sunday: Closed</p>
@@ -137,11 +137,11 @@ const ContactPage = () => {
             </div>
 
             {/* Contact Form */}
-            <div className="bg-gradient-to-br from-gray-900 to-black p-8 rounded-2xl border border-gray-800">
-              <h2 className="text-3xl font-bold text-white mb-6">Send us a Message</h2>
+            <div className="bg-gradient-to-br from-orange-50 to-red-50 p-8 rounded-2xl border-2 border-orange-200">
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">Send us a Message</h2>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-400 mb-2">
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                     Full Name *
                   </label>
                   <Input
@@ -151,13 +151,13 @@ const ContactPage = () => {
                     required
                     value={formData.name}
                     onChange={handleChange}
-                    className="bg-gray-800 border-gray-700 text-white"
+                    className="bg-white border-gray-300 text-gray-900"
                     placeholder="John Doe"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-400 mb-2">
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                     Email Address *
                   </label>
                   <Input
@@ -167,13 +167,13 @@ const ContactPage = () => {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="bg-gray-800 border-gray-700 text-white"
+                    className="bg-white border-gray-300 text-gray-900"
                     placeholder="john@example.com"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-400 mb-2">
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
                     Phone Number
                   </label>
                   <Input
@@ -182,13 +182,13 @@ const ContactPage = () => {
                     type="tel"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="bg-gray-800 border-gray-700 text-white"
+                    className="bg-white border-gray-300 text-gray-900"
                     placeholder="+1 (555) 123-4567"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="company" className="block text-sm font-medium text-gray-400 mb-2">
+                  <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
                     Company Name
                   </label>
                   <Input
@@ -197,13 +197,13 @@ const ContactPage = () => {
                     type="text"
                     value={formData.company}
                     onChange={handleChange}
-                    className="bg-gray-800 border-gray-700 text-white"
+                    className="bg-white border-gray-300 text-gray-900"
                     placeholder="Your Company"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-400 mb-2">
+                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
                     Message *
                   </label>
                   <Textarea
@@ -213,7 +213,7 @@ const ContactPage = () => {
                     value={formData.message}
                     onChange={handleChange}
                     rows={5}
-                    className="bg-gray-800 border-gray-700 text-white"
+                    className="bg-white border-gray-300 text-gray-900"
                     placeholder="Tell us about your project..."
                   />
                 </div>
@@ -221,7 +221,7 @@ const ContactPage = () => {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-6"
+                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-6"
                 >
                   {isSubmitting ? 'Sending...' : 'Send Message'}
                   <Send className="ml-2" size={18} />
