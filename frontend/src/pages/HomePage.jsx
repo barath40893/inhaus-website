@@ -12,32 +12,32 @@ const HomePage = () => {
 
   const features = [
     {
-      title: 'Faster Release, Lower Cost',
-      description: 'Speed up your product launches without any R&D expenses as we take care of all the backend work for you.',
+      title: 'Easy to Use',
+      description: 'Control your entire home with a simple, intuitive app. No technical knowledge required—just tap and go.',
       icon: Zap,
       image: 'https://images.unsplash.com/photo-1681164315430-6159b2361615',
     },
     {
-      title: 'Enterprise Grade Solution',
-      description: 'Elevate your business with our top-tier IoT platform, offering white labeling, active directory integration, and private cloud deployments for heightened security and control.',
+      title: 'Secure & Private',
+      description: 'Your data stays safe with enterprise-grade encryption and privacy protection. Your home, your control.',
       icon: Shield,
       image: 'https://images.unsplash.com/photo-1646724333918-374d81688c2d',
     },
     {
-      title: 'Market in No Time',
-      description: 'Stay ahead of competitors by swiftly bringing your IoT solutions to market with our platform.',
+      title: 'Save Energy & Money',
+      description: 'Reduce your electricity bills by up to 30% with intelligent automation and energy monitoring.',
       icon: TrendingUp,
       image: 'https://images.unsplash.com/photo-1730382624709-81e52dd294d4',
     },
     {
-      title: 'No Coding Needed',
-      description: 'Avoid the hassle of hiring technical experts. Our intuitive platform requires no coding skills.',
+      title: 'Works with Everything',
+      description: 'Compatible with Alexa, Google Home, and Apple HomeKit. Control with your voice or smartphone.',
       icon: Code,
       image: 'https://images.unsplash.com/photo-1757165792338-b4e8a88ae1c7',
     },
     {
-      title: 'Scalable and Reliable',
-      description: 'Count on our platform\'s scalability and reliability to support your project\'s growth seamlessly.',
+      title: 'Reliable & Always On',
+      description: 'Count on 99.9% uptime and instant response times. Your smart home works when you need it.',
       icon: Server,
       image: 'https://images.pexels.com/photos/34583511/pexels-photo-34583511.jpeg',
     },
