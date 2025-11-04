@@ -66,7 +66,7 @@ const Footer = () => {
                 <li key={link.path}>
                   <Link
                     to={link.path}
-                    className="text-gray-400 hover:text-blue-400 text-sm transition-colors duration-300"
+                    className="text-gray-400 hover:text-orange-400 text-sm transition-colors duration-300"
                   >
                     {link.name}
                   </Link>
