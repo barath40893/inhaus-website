@@ -95,8 +95,7 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <h3 className="text-gray-900 font-semibold mb-1">Email</h3>
-                    <p className="text-gray-600">info@inhaus.com</p>
-                    <p className="text-gray-600">support@inhaus.com</p>
+                    <p className="text-gray-600">support@inhaus.co.in</p>
                   </div>
                 </div>
 
@@ -106,8 +105,7 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <h3 className="text-gray-900 font-semibold mb-1">Phone</h3>
-                    <p className="text-gray-600">+1 (555) 123-4567</p>
-                    <p className="text-gray-600">+1 (555) 987-6543</p>
+                    <p className="text-gray-600">7416925607</p>
                   </div>
                 </div>
 
@@ -116,11 +114,12 @@ const ContactPage = () => {
                     <MapPin className="text-orange-600" size={24} />
                   </div>
                   <div>
-                    <h3 className="text-gray-900 font-semibold mb-1">Office</h3>
+                    <h3 className="text-gray-900 font-semibold mb-1">InHaus Experience Center</h3>
                     <p className="text-gray-600">
-                      123 Innovation Drive<br />
-                      Tech Valley, CA 94025<br />
-                      United States
+                      Shop no - 207, 1st Floor<br />
+                      Kokapet Terminal, Radha Spaces<br />
+                      Gandipet, Hyderabad - 500075<br />
+                      Telangana, India
                     </p>
                   </div>
                 </div>
