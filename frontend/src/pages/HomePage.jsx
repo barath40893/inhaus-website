@@ -284,6 +284,7 @@ const HomePage = () => {
               >
                 <div className="lg:w-1/2">
                   <video
+                    ref={el => videoRefs.current[index + 1] = el}
                     autoPlay
                     loop
                     muted
