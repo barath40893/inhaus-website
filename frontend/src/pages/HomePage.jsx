@@ -150,44 +150,66 @@ const HomePage = () => {
       </section>
 
       {/* How It Works */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">How It Works</h2>
-            <p className="text-xl text-gray-600">Get started with your smart home in three simple steps</p>
+      <section className="py-32 bg-gradient-to-br from-slate-50 via-white to-orange-50 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-orange-200 to-red-200 rounded-full blur-3xl opacity-20"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-br from-red-200 to-orange-200 rounded-full blur-3xl opacity-20"></div>
+        
+        <div className="container mx-auto px-4 lg:px-8 relative z-10">
+          <div className="text-center mb-20">
+            <div className="inline-block mb-4 px-6 py-2 glass rounded-full border border-orange-500/30">
+              <span className="text-sm font-semibold gradient-text">Simple Process</span>
+            </div>
+            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">How It Works</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">Get started with your smart home in three simple steps</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto">
             {/* Step 1 */}
             <div className="relative group">
-              <div className="bg-gradient-to-br from-orange-50 to-red-50 p-8 rounded-2xl border-2 border-orange-200 hover:border-orange-400 transition-all duration-300 h-full hover:shadow-xl">
-                <div className="text-6xl font-bold text-orange-500 mb-4">1</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">Choose Your Devices</h3>
-                <p className="text-gray-600">Select from our range of smart lights, switches, sensors, and appliances that fit your needs.</p>
+              <div className="premium-card gradient-border p-10 rounded-3xl h-full relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500 to-red-500 rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
+                <div className="relative z-10">
+                  <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-4xl font-bold text-white mb-6 shadow-xl group-hover:scale-110 transition-transform duration-500">
+                    1
+                  </div>
+                  <h3 className="text-3xl font-bold text-gray-900 mb-4 group-hover:gradient-text transition-all duration-300">Choose Your Devices</h3>
+                  <p className="text-gray-600 leading-relaxed">Select from our range of smart lights, switches, sensors, and appliances that fit your needs.</p>
+                </div>
               </div>
-              <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-orange-500">
-                <ArrowRight size={32} />
+              <div className="hidden md:block absolute top-1/2 -right-6 transform -translate-y-1/2 text-orange-500 z-20">
+                <ArrowRight size={40} className="animate-pulse" />
               </div>
             </div>
 
             {/* Step 2 */}
             <div className="relative group">
-              <div className="bg-gradient-to-br from-red-50 to-orange-50 p-8 rounded-2xl border-2 border-red-200 hover:border-red-400 transition-all duration-300 h-full hover:shadow-xl">
-                <div className="text-6xl font-bold text-red-500 mb-4">2</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">Easy Installation</h3>
-                <p className="text-gray-600">Simple DIY setup or professional installation. Connect devices to your Wi-Fi in minutes.</p>
+              <div className="premium-card gradient-border p-10 rounded-3xl h-full relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-red-500 to-orange-500 rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
+                <div className="relative z-10">
+                  <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-orange-500 rounded-2xl flex items-center justify-center text-4xl font-bold text-white mb-6 shadow-xl group-hover:scale-110 transition-transform duration-500">
+                    2
+                  </div>
+                  <h3 className="text-3xl font-bold text-gray-900 mb-4 group-hover:gradient-text transition-all duration-300">Easy Installation</h3>
+                  <p className="text-gray-600 leading-relaxed">Simple DIY setup or professional installation. Connect devices to your Wi-Fi in minutes.</p>
+                </div>
               </div>
-              <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-red-500">
-                <ArrowRight size={32} />
+              <div className="hidden md:block absolute top-1/2 -right-6 transform -translate-y-1/2 text-red-500 z-20">
+                <ArrowRight size={40} className="animate-pulse" />
               </div>
             </div>
 
             {/* Step 3 */}
             <div className="relative group">
-              <div className="bg-gradient-to-br from-orange-50 to-yellow-50 p-8 rounded-2xl border-2 border-orange-200 hover:border-orange-400 transition-all duration-300 h-full hover:shadow-xl">
-                <div className="text-6xl font-bold text-orange-600 mb-4">3</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">Control Everything</h3>
-                <p className="text-gray-600">Use your smartphone or voice commands to control your entire home from anywhere.</p>
+              <div className="premium-card gradient-border p-10 rounded-3xl h-full relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-600 to-red-600 rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
+                <div className="relative z-10">
+                  <div className="w-20 h-20 bg-gradient-to-br from-orange-600 to-red-600 rounded-2xl flex items-center justify-center text-4xl font-bold text-white mb-6 shadow-xl group-hover:scale-110 transition-transform duration-500">
+                    3
+                  </div>
+                  <h3 className="text-3xl font-bold text-gray-900 mb-4 group-hover:gradient-text transition-all duration-300">Control Everything</h3>
+                  <p className="text-gray-600 leading-relaxed">Use your smartphone or voice commands to control your entire home from anywhere.</p>
+                </div>
               </div>
             </div>
           </div>
