@@ -29,7 +29,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white">
+    <footer className="bg-gray-900 text-white">
       <div className="container mx-auto px-4 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
@@ -43,16 +43,16 @@ const Footer = () => {
               Transform your home with intelligent automation. Experience comfort, security, and convenience like never before.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors duration-300">
+              <a href="#" className="text-gray-400 hover:text-orange-400 transition-colors duration-300">
                 <Facebook size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors duration-300">
+              <a href="#" className="text-gray-400 hover:text-orange-400 transition-colors duration-300">
                 <Twitter size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors duration-300">
+              <a href="#" className="text-gray-400 hover:text-orange-400 transition-colors duration-300">
                 <Linkedin size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors duration-300">
+              <a href="#" className="text-gray-400 hover:text-orange-400 transition-colors duration-300">
                 <Instagram size={20} />
               </a>
             </div>
