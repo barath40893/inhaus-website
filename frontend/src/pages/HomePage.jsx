@@ -120,7 +120,7 @@ const HomePage = () => {
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">How It Works</h2>
-            <p className="text-xl text-gray-400">Choose from our wide range of smart home products or upgrade your existing ones.</p>
+            <p className="text-xl text-gray-400">Get started with your smart home in three simple steps</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -128,8 +128,8 @@ const HomePage = () => {
             <div className="relative group">
               <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 p-8 rounded-2xl border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 h-full">
                 <div className="text-6xl font-bold text-blue-500 mb-4">1</div>
-                <h3 className="text-2xl font-bold text-white mb-3">Pick or Upgrade</h3>
-                <p className="text-gray-400">Choose from our wide range of smart home products or upgrade your existing ones.</p>
+                <h3 className="text-2xl font-bold text-white mb-3">Choose Your Devices</h3>
+                <p className="text-gray-400">Select from our range of smart lights, switches, sensors, and appliances that fit your needs.</p>
               </div>
               <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-blue-500">
                 <ArrowRight size={32} />
@@ -140,8 +140,8 @@ const HomePage = () => {
             <div className="relative group">
               <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-8 rounded-2xl border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 h-full">
                 <div className="text-6xl font-bold text-purple-500 mb-4">2</div>
-                <h3 className="text-2xl font-bold text-white mb-3">Customize Your App</h3>
-                <p className="text-gray-400">Personalize your application to match your brand or preferences.</p>
+                <h3 className="text-2xl font-bold text-white mb-3">Easy Installation</h3>
+                <p className="text-gray-400">Simple DIY setup or professional installation. Connect devices to your Wi-Fi in minutes.</p>
               </div>
               <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-purple-500">
                 <ArrowRight size={32} />
@@ -152,8 +152,8 @@ const HomePage = () => {
             <div className="relative group">
               <div className="bg-gradient-to-br from-pink-500/10 to-blue-500/10 p-8 rounded-2xl border border-pink-500/20 hover:border-pink-500/40 transition-all duration-300 h-full">
                 <div className="text-6xl font-bold text-pink-500 mb-4">3</div>
-                <h3 className="text-2xl font-bold text-white mb-3">Launch Your Product</h3>
-                <p className="text-gray-400">Get ready to unveil your smart product to the world hassle-free.</p>
+                <h3 className="text-2xl font-bold text-white mb-3">Control Everything</h3>
+                <p className="text-gray-400">Use your smartphone or voice commands to control your entire home from anywhere.</p>
               </div>
             </div>
           </div>
