@@ -40,8 +40,8 @@ const Navbar = () => {
           : 'bg-gradient-to-r from-white/90 via-white/95 to-white/90 backdrop-blur-xl'
       }`}
     >
-      <div className=\"container mx-auto px-4 lg:px-8\">
-        <div className=\"flex items-center justify-between h-24\">
+      <div className="container mx-auto px-4 lg:px-8">
+        <div className="flex items-center justify-between h-24">
           <Link to="/" className="flex items-center space-x-2 group">
             <img
               src="/inhaus/grayscale_logo.png"
