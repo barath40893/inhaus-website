@@ -311,14 +311,14 @@ const HomePage = () => {
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="container mx-auto px-4 lg:px-8 text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Unlock Your Smart Future Today
+            Ready to Make Your Home Smart?
           </h2>
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Join the smart revolution today. Reach out to us and let's build your smarter future together.
+            Join thousands of happy homeowners. Get started with InHaus today and experience the future of living.
           </p>
           <Link to="/contact">
             <Button className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-6 text-lg rounded-full transition-all duration-300 shadow-lg">
-              Contact Us <ArrowRight className="ml-2" />
+              Get Started Now <ArrowRight className="ml-2" />
             </Button>
           </Link>
         </div>
