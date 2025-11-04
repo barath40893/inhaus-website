@@ -103,27 +103,27 @@ const AboutPage = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto mt-12">
             <div className="text-center">
               <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text mb-2">
-                50+
+                5000+
               </div>
-              <div className="text-lg text-gray-400">Team Members</div>
+              <div className="text-lg text-gray-400">Happy Customers</div>
             </div>
             <div className="text-center">
               <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text mb-2">
-                10+
+                8+
               </div>
-              <div className="text-lg text-gray-400">Years Experience</div>
+              <div className="text-lg text-gray-400">Years in Business</div>
             </div>
             <div className="text-center">
               <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text mb-2">
-                20+
+                24/7
               </div>
-              <div className="text-lg text-gray-400">Countries Served</div>
+              <div className="text-lg text-gray-400">Customer Support</div>
             </div>
             <div className="text-center">
               <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text mb-2">
-                99.9%
+                4.8★
               </div>
-              <div className="text-lg text-gray-400">Uptime</div>
+              <div className="text-lg text-gray-400">Customer Rating</div>
             </div>
           </div>
         </div>
