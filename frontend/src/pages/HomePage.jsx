@@ -86,26 +86,26 @@ const HomePage = () => {
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1679356505858-bf4129177392')] bg-cover bg-center opacity-10"></div>
         <div className="container mx-auto px-4 lg:px-8 relative z-10 pt-20">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 animate-fade-in">
+            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 animate-fade-in">
               Transform Your Home with
-              <span className="block mt-2 bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
+              <span className="block mt-2 bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text">
                 Smart Living
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-8">
+            <p className="text-xl md:text-2xl text-gray-700 mb-8">
               The Future of Home Automation is Here
             </p>
-            <p className="text-lg text-gray-400 mb-12 max-w-3xl mx-auto">
+            <p className="text-lg text-gray-600 mb-12 max-w-3xl mx-auto">
               Experience the ultimate convenience with InHaus smart home solutions. Control your lights, temperature, security, and more—all from your smartphone. Make your home smarter, safer, and more comfortable.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/contact">
-                <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-blue-500/50">
+                <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-orange-500/50">
                   Get Started <ArrowRight className="ml-2" />
                 </Button>
               </Link>
               <Link to="/products">
-                <Button variant="outline" className="border-2 border-blue-500 text-blue-400 hover:bg-blue-500/10 px-8 py-6 text-lg rounded-full transition-all duration-300">
+                <Button variant="outline" className="border-2 border-orange-500 text-orange-600 hover:bg-orange-50 px-8 py-6 text-lg rounded-full transition-all duration-300">
                   Explore Products
                 </Button>
               </Link>
