@@ -181,9 +181,9 @@ const HomePage = () => {
                     loop
                     muted
                     playsInline
-                    className="w-full rounded-3xl shadow-2xl object-cover"
+                    className="w-full rounded-3xl shadow-2xl object-cover aspect-video"
                   >
-                    <source src="https://videos.pexels.com/video-files/8293700/8293700-sd_640_360_25fps.mp4" type="video/mp4" />
+                    <source src="https://videos.pexels.com/video-files/6985269/6985269-sd_640_360_25fps.mp4" type="video/mp4" />
                   </video>
                 </div>
                 <div className="absolute -bottom-6 -right-6 w-full h-full bg-gradient-to-br from-orange-200 to-red-200 rounded-3xl -z-10"></div>
