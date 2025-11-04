@@ -116,7 +116,7 @@ const Footer = () => {
         <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
-              Copyright © {new Date().getFullYear()} All Rights Reserved By InHaus Innovation Pvt. Ltd.
+              Copyright © {new Date().getFullYear()} All Rights Reserved By INHAUS SMART HOME PVT. LTD.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="mailto:support@inhaus.co.in" className="text-gray-400 hover:text-blue-400 text-sm flex items-center gap-2 transition-colors duration-300">
