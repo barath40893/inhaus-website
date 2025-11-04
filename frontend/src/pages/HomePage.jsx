@@ -540,57 +540,15 @@ const HomePage = () => {
             </div>
             <div className="relative">
               <div className="relative z-10 w-full max-w-md mx-auto">
-                <div className="aspect-square bg-gradient-to-br from-slate-900 via-orange-900 to-slate-900 rounded-2xl shadow-2xl flex items-center justify-center overflow-hidden relative">
-                  {/* Central hub */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-32 h-32 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center relative" style={{ animation: 'pulse-glow 2s ease-in-out infinite' }}>
-                      <Home className="text-white" size={56} />
-                      {/* Pulse rings */}
-                      {[...Array(3)].map((_, i) => (
-                        <div key={i} className="absolute inset-0 border-2 border-orange-400 rounded-full"
-                             style={{ animation: `ripple 3s ease-out infinite`, animationDelay: `${i}s` }}></div>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Orbiting devices */}
-                  {[
-                    { icon: Lightbulb, color: 'from-yellow-500 to-amber-500', angle: 0 },
-                    { icon: Lock, color: 'from-blue-500 to-cyan-500', angle: 90 },
-                    { icon: Smartphone, color: 'from-purple-500 to-pink-500', angle: 180 },
-                    { icon: Zap, color: 'from-green-500 to-emerald-500', angle: 270 },
-                  ].map((device, i) => (
-                    <div key={i} className="absolute inset-0" style={{ animation: `rotate-slow ${20 + i * 5}s linear infinite` }}>
-                      <div className={`absolute w-16 h-16 bg-gradient-to-br ${device.color} rounded-full flex items-center justify-center shadow-lg`}
-                           style={{ 
-                             top: '50%',
-                             left: '50%',
-                             transform: `translate(-50%, -50%) translate(0, -140px) rotate(-${device.angle}deg)`,
-                             animation: `connect-pulse 2s ease-in-out infinite`
-                           }}>
-                        <device.icon className="text-white" size={28} />
-                      </div>
-                    </div>
-                  ))}
-                  
-                  {/* Connection lines */}
-                  <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ animation: 'pulse 3s ease-in-out infinite' }}>
-                    {[...Array(4)].map((_, i) => (
-                      <line key={i} x1="50%" y1="50%" 
-                            x2={`${50 + Math.cos(i * Math.PI / 2) * 40}%`} 
-                            y2={`${50 + Math.sin(i * Math.PI / 2) * 40}%`}
-                            stroke="url(#connectGradient)" strokeWidth="2" strokeDasharray="5,5" opacity="0.6">
-                        <animate attributeName="stroke-dashoffset" from="0" to="10" dur="1s" repeatCount="indefinite"/>
-                      </line>
-                    ))}
-                    <defs>
-                      <linearGradient id="connectGradient">
-                        <stop offset="0%" stopColor="#f97316" />
-                        <stop offset="100%" stopColor="#ef4444" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                </div>
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full rounded-2xl shadow-2xl"
+                >
+                  <source src="https://videos.pexels.com/video-files/7579556/7579556-sd_640_360_25fps.mp4" type="video/mp4" />
+                </video>
               </div>
               <div className="absolute -bottom-6 -right-6 w-64 h-64 bg-gradient-to-br from-orange-300 to-red-300 rounded-full blur-3xl opacity-30 -z-10"></div>
             </div>
