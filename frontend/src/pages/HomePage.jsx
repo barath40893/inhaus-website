@@ -272,11 +272,17 @@ const HomePage = () => {
                 className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12`}
               >
                 <div className="lg:w-1/2">
-                  <img
-                    src={feature.image}
-                    alt={feature.title}
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    poster={feature.image}
                     className="w-full h-96 object-cover rounded-2xl shadow-2xl"
-                  />
+                  >
+                    <source src={feature.video} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
                 </div>
                 <div className="lg:w-1/2">
                   <div className="flex items-center gap-4 mb-4">
