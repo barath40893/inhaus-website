@@ -35,9 +35,9 @@ const Footer = () => {
           {/* Company Info */}
           <div>
             <img
-              src="/inhaus/fulllogo_transparent_nobuffer.png"
+              src="/inhaus/grayscale_logo.png"
               alt="InHaus"
-              className="h-12 w-auto mb-4 brightness-110"
+              className="h-12 w-auto mb-4"
             />
             <p className="text-gray-400 text-sm mb-4">
               Transform your home with intelligent automation. Experience comfort, security, and convenience like never before.
