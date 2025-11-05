@@ -76,6 +76,75 @@ class ContactSubmissionCreate(BaseModel):
     company: Optional[str] = None
     message: str
 
+class AdminLogin(BaseModel):
+    username: str
+    password: str
+
+class ContactUpdate(BaseModel):
+    status: str
+
+# Email sending function
+async def send_email_notification(contact_data: dict):
+    """Send email notification when a new contact form is submitted"""
+    try:
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = f'New Contact Form Submission from {contact_data["name"]}'
+        msg['From'] = SMTP_USER
+        msg['To'] = NOTIFICATION_EMAIL
+        
+        html_content = f"""
+        <html>
+          <body style="font-family: Arial, sans-serif; padding: 20px;">
+            <h2 style="color: #f97316;">New Contact Form Submission</h2>
+            <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+              <p><strong>Name:</strong> {contact_data['name']}</p>
+              <p><strong>Email:</strong> {contact_data['email']}</p>
+              <p><strong>Phone:</strong> {contact_data.get('phone', 'Not provided')}</p>
+              <p><strong>Message:</strong></p>
+              <p style="background-color: white; padding: 10px; border-left: 3px solid #f97316;">
+                {contact_data['message']}
+              </p>
+              <p><strong>Submitted:</strong> {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</p>
+            </div>
+            <p style="color: #666; font-size: 12px;">
+              This is an automated notification from InHaus Smart Home contact form.
+            </p>
+          </body>
+        </html>
+        """
+        
+        msg.attach(MIMEText(html_content, 'html'))
+        
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SMTP_USER, SMTP_PASSWORD)
+            server.send_message(msg)
+        
+        logger.info(f"Email notification sent for contact from {contact_data['name']}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send email notification: {str(e)}")
+        return False
+
+# JWT token creation
+def create_access_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(hours=24)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, JWT_SECRET, algorithm="HS256")
+    return encoded_jwt
+
+# Verify JWT token
+async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
