@@ -234,6 +234,33 @@ async def get_contact_submission(contact_id: str):
         logger.error(f"Error fetching contact submission: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
+@api_router.post("/admin/login")
+async def admin_login(credentials: AdminLogin):
+    """Admin login endpoint"""
+    if credentials.username == ADMIN_USERNAME and credentials.password == ADMIN_PASSWORD:
+        access_token = create_access_token({"sub": credentials.username})
+        return {"access_token": access_token, "token_type": "bearer"}
+    raise HTTPException(status_code=401, detail="Invalid credentials")
+
+@api_router.patch("/contact/{contact_id}/status")
+async def update_contact_status(contact_id: str, update: ContactUpdate, payload: dict = Depends(verify_token)):
+    """Update contact submission status (admin only)"""
+    try:
+        result = await db.contact_submissions.update_one(
+            {"id": contact_id},
+            {"$set": {"status": update.status}}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Contact submission not found")
+        
+        return {"message": "Status updated successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating contact status: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
 # Include the router in the main app
 app.include_router(api_router)
 
