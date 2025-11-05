@@ -1,16 +1,16 @@
 {
   "short_name": "InHaus",
-  "name": "InHaus - Smart Home Solutions",
+  "name": "InHaus - Smart Home",
   "description": "Transform your home with InHaus smart home automation",
   "icons": [
     {
-      "src": "/inhaus/icononly_transparent.png",
+      "src": "/favicon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/inhaus/icononly_transparent.png",
+      "src": "/favicon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
