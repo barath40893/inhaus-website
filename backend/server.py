@@ -190,6 +190,9 @@ async def create_contact_submission(input: ContactSubmissionCreate):
         if not result.inserted_id:
             raise HTTPException(status_code=500, detail="Failed to save contact submission")
         
+        # Send email notification (non-blocking)
+        await send_email_notification(contact_dict)
+        
         return contact_obj
     except Exception as e:
         logger.error(f"Error creating contact submission: {str(e)}")
