@@ -136,11 +136,11 @@ const ProductDetailPage = () => {
           <div className="grid md:grid-cols-2 gap-12 max-w-7xl mx-auto">
             {/* Product Images */}
             <div>
-              <div className="mb-4 rounded-2xl overflow-hidden border-2 border-gray-200 premium-card">
+              <div className="mb-4 rounded-2xl overflow-hidden border-2 border-gray-200 premium-card bg-white">
                 <img
                   src={product.images[selectedImage]}
                   alt={product.name}
-                  className="w-full h-96 object-cover"
+                  className="w-full h-96 object-contain p-4"
                 />
               </div>
               <div className="grid grid-cols-3 gap-4">
@@ -148,13 +148,13 @@ const ProductDetailPage = () => {
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`rounded-xl overflow-hidden border-2 transition-all duration-300 ${
+                    className={`rounded-xl overflow-hidden border-2 transition-all duration-300 bg-white ${
                       selectedImage === index
                         ? 'border-orange-500 scale-105'
                         : 'border-gray-200 hover:border-orange-300'
                     }`}
                   >
-                    <img src={image} alt={`View ${index + 1}`} className="w-full h-24 object-cover" />
+                    <img src={image} alt={`View ${index + 1}`} className="w-full h-24 object-contain p-2" />
                   </button>
                 ))}
               </div>
