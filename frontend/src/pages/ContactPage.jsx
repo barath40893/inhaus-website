@@ -44,7 +44,6 @@ const ContactPage = () => {
         name: '',
         email: '',
         phone: '',
-        company: '',
         message: '',
       });
     } catch (error) {
