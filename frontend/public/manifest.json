@@ -4,13 +4,13 @@
   "description": "Transform your home with InHaus smart home automation",
   "icons": [
     {
-      "src": "/inhaus/fulllogo_transparent.png",
+      "src": "/inhaus/icononly_transparent_nobuffer.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/inhaus/fulllogo_transparent.png",
+      "src": "/inhaus/icononly_transparent_nobuffer.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
