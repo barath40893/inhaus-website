@@ -17,6 +17,14 @@ const ProductsPage = () => {
       link: '/product/smart-switch-2',
     },
     {
+      icon: Home,
+      title: 'Full Glass Touch Switch',
+      description: 'Stylish full glass touch switch with smart features.',
+      features: ['4-Gang', 'Scene Recall', 'Energy Monitoring', 'Voice Control'],
+      price: 6499,
+      link: '/product/glass-touch-switch',
+    },
+    {
       icon: Lightbulb,
       title: 'RGB Smart Bulb',
       description: 'Intelligent lighting systems with customizable colors, brightness, and automation.',
