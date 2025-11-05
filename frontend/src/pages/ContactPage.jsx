@@ -18,7 +18,6 @@ const ContactPage = () => {
     name: '',
     email: '',
     phone: '',
-    company: '',
     message: '',
   });
 
