@@ -10,9 +10,9 @@ const ProductsPage = () => {
   const productCategories = [
     {
       icon: Home,
-      title: 'Smart Switch - 2 Gang',
-      description: 'Smart switches with voice control, scheduling, and energy monitoring capabilities.',
-      features: ['Voice Control', 'Energy Monitoring', 'Remote Access', 'Touch Panel'],
+      title: 'NEXA 3 Switch Smart Switch WiFi Switch',
+      description: 'Retrofit your existing switches for smart control and automation.',
+      features: ['Voice Control', 'Energy Monitoring', 'Remote Access', 'WiFi Connectivity'],
       price: 2999,
       link: '/product/smart-switch-2',
     },
