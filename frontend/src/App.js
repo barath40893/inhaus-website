@@ -13,6 +13,8 @@ import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import CheckoutPage from './pages/CheckoutPage';
+import AdminLoginPage from './pages/AdminLoginPage';
+import AdminContactsPage from './pages/AdminContactsPage';
 import { Toaster } from './components/ui/toaster';
 import WhatsAppButton from './components/WhatsAppButton';
 
@@ -33,6 +35,8 @@ function App() {
             <Route path="/smart-hospitality" element={<SmartHospitalityPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/terms" element={<TermsPage />} />
+            <Route path="/admin/login" element={<AdminLoginPage />} />
+            <Route path="/admin/contacts" element={<AdminContactsPage />} />
           </Routes>
           <Toaster />
           <WhatsAppButton />
