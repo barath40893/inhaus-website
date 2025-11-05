@@ -26,11 +26,9 @@ const ProductsPage = () => {
     },
     {
       icon: Lightbulb,
-      title: 'RGB Smart Bulb',
-      description: 'Intelligent lighting systems with customizable colors, brightness, and automation.',
-      features: ['RGB Colors', 'Dimming', 'Scenes', 'Automation'],
-      price: 1499,
-      link: '/product/smart-bulb',
+      title: 'Lighting Systems',
+      description: 'Intelligent lighting systems with customizable colors, brightness, and automation. Transform your space with smart LED solutions that adapt to your lifestyle.',
+      features: ['RGB Colors', 'Dimming Control', 'Scene Presets', 'Smart Automation'],
     },
     {
       icon: Lock,
