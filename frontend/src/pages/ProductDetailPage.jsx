@@ -19,26 +19,26 @@ const ProductDetailPage = () => {
   const products = {
     'smart-switch-2': {
       id: 'smart-switch-2',
-      name: 'InHaus Smart Switch - 2 Gang',
+      name: 'NEXA 3 Switch Smart Switch WiFi Switch',
       price: 2999,
       originalPrice: 3999,
       rating: 4.8,
       reviews: 156,
       inStock: true,
       images: [
-        'https://images.unsplash.com/photo-1558002038-1055907df827?w=800',
-        'https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?w=800',
-        'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=800',
+        'https://customer-assets.emergentagent.com/job_inhaus-ecommerce/artifacts/5u7yf0w4_3modular-BAJASW63-fotor-20251105111152.png',
+        'https://customer-assets.emergentagent.com/job_inhaus-ecommerce/artifacts/5u7yf0w4_3modular-BAJASW63-fotor-20251105111152.png',
+        'https://customer-assets.emergentagent.com/job_inhaus-ecommerce/artifacts/5u7yf0w4_3modular-BAJASW63-fotor-20251105111152.png',
       ],
-      description: 'Transform your home with our premium 2-gang smart switch. Control your lights from anywhere using your smartphone or voice commands. Features touch panel design with elegant glass finish.',
+      description: 'Retrofit your existing switches for smart control and automation.',
       features: [
         'Voice Control Compatible (Alexa, Google Home, Siri)',
         'Remote Control via Mobile App',
         'Schedule & Timer Functions',
         'Energy Monitoring',
-        'Touch Panel with LED Indicators',
+        'LED Indicators',
         'Easy DIY Installation',
-        'Premium Tempered Glass Panel',
+        'Premium Build Quality',
         '2-Year Warranty',
       ],
       specifications: {
