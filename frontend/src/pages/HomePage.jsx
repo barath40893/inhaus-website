@@ -170,10 +170,10 @@ const HomePage = () => {
   ];
 
   const stats = [
-    { label: 'Happy Homes', value: '5000+' },
-    { label: 'Devices Installed', value: '50K+' },
-    { label: 'Active Users', value: '15K+' },
-    { label: 'Smart Products', value: '30+' },
+    { label: 'Happy Homes', value: 5000, suffix: '+' },
+    { label: 'Devices Installed', value: 50, suffix: 'K+' },
+    { label: 'Active Users', value: 15, suffix: 'K+' },
+    { label: 'Smart Products', value: 30, suffix: '+' },
   ];
 
   const intelligentLiving = [
