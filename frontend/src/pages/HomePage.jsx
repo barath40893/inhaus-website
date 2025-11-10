@@ -533,23 +533,43 @@ const HomePage = () => {
       {/* Stats Section */}
       <section className="py-20 bg-gradient-to-r from-orange-500 to-red-500">
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-12">
+          <motion.div 
+            className="text-center mb-12"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={fadeInUp}
+          >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
               Trusted by Thousands of Happy Homes
             </h2>
             <p className="text-xl text-white/90">Join the Smart Home Revolution</p>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-5xl md:text-6xl font-bold text-white mb-2">
-                  {stat.value}
-                </div>
-                <div className="text-lg text-white/90">{stat.label}</div>
-              </div>
-            ))}
-          </div>
+          <motion.div 
+            className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={staggerContainer}
+          >
+            {stats.map((stat, index) => {
+              const [count, ref] = useCounter(stat.value);
+              return (
+                <motion.div 
+                  key={index} 
+                  className="text-center"
+                  ref={ref}
+                  variants={scaleIn}
+                >
+                  <div className="text-5xl md:text-6xl font-bold text-white mb-2">
+                    {count}{stat.suffix}
+                  </div>
+                  <div className="text-lg text-white/90">{stat.label}</div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
         </div>
       </section>
 
