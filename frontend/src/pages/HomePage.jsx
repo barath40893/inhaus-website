@@ -260,7 +260,10 @@ const HomePage = () => {
                 </motion.div>
                 
                 {/* Trust indicators */}
-                <div className="flex items-center gap-6 text-sm text-gray-600">
+                <motion.div 
+                  className="flex items-center gap-6 text-sm text-gray-600"
+                  variants={fadeInUp}
+                >
                   <div className="flex items-center gap-2">
                     <CheckCircle className="text-green-500" size={20} />
                     <span>Free Installation</span>
@@ -273,18 +276,27 @@ const HomePage = () => {
                     <CheckCircle className="text-green-500" size={20} />
                     <span>24/7 Support</span>
                   </div>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
               
               {/* Right Image */}
-              <div className="relative">
-                <div className="relative z-10">
+              <motion.div 
+                className="relative"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, ease: 'easeOut', delay: 0.3 }}
+              >
+                <motion.div 
+                  className="relative z-10"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.3 }}
+                >
                   <img
                     src="https://images.unsplash.com/photo-1564078516393-cf04bd966897?w=800&q=80"
                     alt="Premium Luxury Smart Home Interior with Ambient Lighting"
                     className="w-full rounded-3xl shadow-2xl object-cover"
                   />
-                </div>
+                </motion.div>
                 <div className="absolute -bottom-6 -right-6 w-full h-full bg-gradient-to-br from-orange-200 to-red-200 rounded-3xl -z-10"></div>
               </div>
             </div>
