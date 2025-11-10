@@ -17,10 +17,31 @@ import AdminLoginPage from './pages/AdminLoginPage';
 import AdminContactsPage from './pages/AdminContactsPage';
 import { Toaster } from './components/ui/toaster';
 import WhatsAppButton from './components/WhatsAppButton';
+import WelcomeScreen from './components/WelcomeScreen';
 
 function App() {
+  const [showWelcome, setShowWelcome] = React.useState(true);
+  const [isWelcomeComplete, setIsWelcomeComplete] = React.useState(false);
+
+  React.useEffect(() => {
+    // Check if welcome screen has been shown in this session
+    const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
+    if (hasSeenWelcome) {
+      setShowWelcome(false);
+      setIsWelcomeComplete(true);
+    }
+  }, []);
+
+  const handleWelcomeComplete = () => {
+    sessionStorage.setItem('hasSeenWelcome', 'true');
+    setIsWelcomeComplete(true);
+  };
+
   return (
     <div className="App">
+      {showWelcome && !isWelcomeComplete && (
+        <WelcomeScreen onComplete={handleWelcomeComplete} />
+      )}
       <BrowserRouter>
         <CartProvider>
           <Routes>
