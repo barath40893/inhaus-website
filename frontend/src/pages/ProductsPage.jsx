@@ -103,26 +103,39 @@ const ProductsPage = () => {
       {/* Hero Section */}
       <section className="pt-32 pb-20 bg-gradient-to-br from-orange-50 via-white to-red-50">
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
+          <motion.div 
+            className="max-w-4xl mx-auto text-center"
+            initial="hidden"
+            animate="visible"
+            variants={fadeInUp}
+          >
             <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
               Our <span className="bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text">Products</span>
             </h1>
             <p className="text-xl text-gray-600">
               Discover our comprehensive range of smart IoT products designed to transform any space into an intelligent environment
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Products Grid */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+            initial="hidden"
+            animate="visible"
+            variants={staggerContainer}
+          >
             {productCategories.map((product, index) => (
-              <Card
+              <motion.div
                 key={index}
-                className="bg-white border-2 border-orange-200 hover:border-orange-400 transition-all duration-300 group hover:shadow-xl cursor-pointer"
+                variants={scaleIn}
               >
+                <Card
+                  className="bg-white border-2 border-orange-200 hover:border-orange-400 transition-all duration-300 group hover:shadow-xl cursor-pointer h-full"
+                >
                 <CardContent className="p-6">
                   <div className="mb-4 p-4 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl w-fit group-hover:scale-110 transition-transform duration-300">
                     <product.icon size={32} className="text-orange-600" />
