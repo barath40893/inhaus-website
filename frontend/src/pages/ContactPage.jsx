@@ -7,6 +7,7 @@ import { Textarea } from '../components/ui/textarea';
 import { useToast } from '../hooks/use-toast';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -14,6 +15,34 @@ const API = `${BACKEND_URL}/api`;
 const ContactPage = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 40 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.6, ease: 'easeOut' }
+    }
+  };
+
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const scaleIn = {
+    hidden: { opacity: 0, scale: 0.9 },
+    visible: { 
+      opacity: 1, 
+      scale: 1,
+      transition: { duration: 0.5, ease: 'easeOut' }
+    }
+  };
   const [formData, setFormData] = useState({
     name: '',
     email: '',
