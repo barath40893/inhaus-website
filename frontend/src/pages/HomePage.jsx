@@ -481,10 +481,15 @@ const HomePage = () => {
                   </Button>
                 </Link>
               </div>
-            </div>
+            </motion.div>
 
             {/* Classic Package */}
-            <div className="bg-white rounded-2xl shadow-xl border-2 border-orange-500 overflow-hidden relative transform -translate-y-4">
+            <motion.div 
+              className="bg-white rounded-2xl shadow-xl border-2 border-orange-500 overflow-hidden relative"
+              variants={scaleIn}
+              whileHover={{ y: -8, scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+            >
               <div className="absolute top-0 right-0 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-1 rounded-bl-xl text-sm font-semibold">
                 POPULAR
               </div>
