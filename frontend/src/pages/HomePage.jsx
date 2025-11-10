@@ -6,10 +6,96 @@ import { Button } from '../components/ui/button';
 import { ArrowRight, CheckCircle, Zap, Shield, Star, Smartphone, Home, Lock, Lightbulb, Clock, TrendingUp, Mic } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { motion, useInView, useAnimation } from 'framer-motion';
 
 const HomePage = () => {
   const [activeTab, setActiveTab] = useState('home');
   const videoRefs = useRef([]);
+
+  // Animation variants
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 60 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.6, ease: 'easeOut' }
+    }
+  };
+
+  const fadeIn = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { duration: 0.8 }
+    }
+  };
+
+  const slideInLeft = {
+    hidden: { opacity: 0, x: -60 },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: { duration: 0.6, ease: 'easeOut' }
+    }
+  };
+
+  const slideInRight = {
+    hidden: { opacity: 0, x: 60 },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: { duration: 0.6, ease: 'easeOut' }
+    }
+  };
+
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const scaleIn = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: { 
+      opacity: 1, 
+      scale: 1,
+      transition: { duration: 0.5, ease: 'easeOut' }
+    }
+  };
+
+  // Animated counter hook
+  const useCounter = (end, duration = 2000) => {
+    const [count, setCount] = useState(0);
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true });
+
+    useEffect(() => {
+      if (!isInView) return;
+      
+      let startTime;
+      let animationFrame;
+
+      const animate = (currentTime) => {
+        if (!startTime) startTime = currentTime;
+        const progress = Math.min((currentTime - startTime) / duration, 1);
+        
+        setCount(Math.floor(progress * end));
+        
+        if (progress < 1) {
+          animationFrame = requestAnimationFrame(animate);
+        }
+      };
+
+      animationFrame = requestAnimationFrame(animate);
+      return () => cancelAnimationFrame(animationFrame);
+    }, [isInView, end, duration]);
+
+    return [count, ref];
+  };
 
   useEffect(() => {
     // Force play all videos
