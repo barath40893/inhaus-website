@@ -429,18 +429,35 @@ const HomePage = () => {
       {/* Packages Section */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-12">
+          <motion.div 
+            className="text-center mb-12"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={fadeInUp}
+          >
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Solutions for Every Home
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Choose the perfect package for your home automation
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto mt-12">
+          <motion.div 
+            className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto mt-12"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={staggerContainer}
+          >
             {/* Starter Package */}
-            <div className="bg-white rounded-2xl shadow-xl border-2 border-gray-200 overflow-hidden hover:border-orange-500 transition-all duration-300 hover:-translate-y-2">
+            <motion.div 
+              className="bg-white rounded-2xl shadow-xl border-2 border-gray-200 overflow-hidden hover:border-orange-500 transition-all duration-300"
+              variants={scaleIn}
+              whileHover={{ y: -8, scale: 1.02 }}
+              transition={{ duration: 0.3 }}
+            >
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Starter</h3>
                 <p className="text-gray-600 mb-4">Package</p>
