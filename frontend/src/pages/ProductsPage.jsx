@@ -5,8 +5,36 @@ import { Card, CardContent } from '../components/ui/card';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Lightbulb, Lock, Smartphone, Utensils, Fan, QrCode, Building, Home } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const ProductsPage = () => {
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 60 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.6, ease: 'easeOut' }
+    }
+  };
+
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15
+      }
+    }
+  };
+
+  const scaleIn = {
+    hidden: { opacity: 0, scale: 0.9 },
+    visible: { 
+      opacity: 1, 
+      scale: 1,
+      transition: { duration: 0.5, ease: 'easeOut' }
+    }
+  };
   const productCategories = [
     {
       icon: Home,
