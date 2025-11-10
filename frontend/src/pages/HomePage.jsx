@@ -307,33 +307,53 @@ const HomePage = () => {
       {/* Why InHaus */}
       <section className="py-20 bg-gradient-to-br from-gray-50 to-orange-50">
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-16">
+          <motion.div 
+            className="text-center mb-16"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={fadeInUp}
+          >
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Why InHaus?</h2>
-          </div>
+          </motion.div>
 
           <div className="space-y-24">
             {features.map((feature, index) => (
-              <div
+              <motion.div
                 key={index}
                 className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12`}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
+                variants={index % 2 === 0 ? slideInLeft : slideInRight}
               >
-                <div className="lg:w-1/2">
+                <motion.div 
+                  className="lg:w-1/2"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.3 }}
+                >
                   <img
                     src={feature.image}
                     alt={feature.title}
                     className="w-full h-96 object-cover rounded-2xl shadow-2xl"
                   />
-                </div>
+                </motion.div>
                 <div className="lg:w-1/2">
-                  <div className="flex items-center gap-4 mb-4">
+                  <motion.div 
+                    className="flex items-center gap-4 mb-4"
+                    initial={{ scale: 0 }}
+                    whileInView={{ scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                  >
                     <div className="p-4 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl">
                       <feature.icon size={32} className="text-orange-600" />
                     </div>
-                  </div>
+                  </motion.div>
                   <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{feature.title}</h3>
                   <p className="text-lg text-gray-600">{feature.description}</p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
