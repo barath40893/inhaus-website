@@ -213,34 +213,51 @@ const HomePage = () => {
           <div className="max-w-6xl mx-auto">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               {/* Left Content */}
-              <div className="text-left">
-                <div className="inline-block mb-4 px-4 py-2 bg-gradient-to-r from-orange-100 to-red-100 rounded-full">
+              <motion.div 
+                className="text-left"
+                initial="hidden"
+                animate="visible"
+                variants={staggerContainer}
+              >
+                <motion.div 
+                  className="inline-block mb-4 px-4 py-2 bg-gradient-to-r from-orange-100 to-red-100 rounded-full"
+                  variants={fadeIn}
+                >
                   <span className="text-sm font-semibold gradient-text">The Future of Smart Living</span>
-                </div>
+                </motion.div>
                 
-                <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+                <motion.h1 
+                  className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight"
+                  variants={fadeInUp}
+                >
                   Transform Your Home with
                   <span className="block mt-2 gradient-text">
                     InHaus
                   </span>
-                </h1>
+                </motion.h1>
                 
-                <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                <motion.p 
+                  className="text-xl text-gray-600 mb-8 leading-relaxed"
+                  variants={fadeInUp}
+                >
                   Experience seamless home automation with voice control, energy monitoring, and complete security—all from your smartphone.
-                </p>
+                </motion.p>
                 
-                <div className="flex flex-col sm:flex-row gap-4 mb-12">
+                <motion.div 
+                  className="flex flex-col sm:flex-row gap-4 mb-12"
+                  variants={fadeInUp}
+                >
                   <Link to="/contact">
-                    <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                    <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                       Get Started <ArrowRight className="ml-2" size={20} />
                     </Button>
                   </Link>
                   <Link to="/products">
-                    <Button variant="outline" className="border-2 border-orange-500 text-orange-600 hover:bg-orange-50 px-8 py-6 text-lg rounded-xl transition-all duration-300">
+                    <Button variant="outline" className="border-2 border-orange-500 text-orange-600 hover:bg-orange-50 px-8 py-6 text-lg rounded-xl transition-all duration-300 hover:scale-105">
                       View Products
                     </Button>
                   </Link>
-                </div>
+                </motion.div>
                 
                 {/* Trust indicators */}
                 <div className="flex items-center gap-6 text-sm text-gray-600">
