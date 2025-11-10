@@ -517,10 +517,15 @@ const HomePage = () => {
                   </Button>
                 </Link>
               </div>
-            </div>
+            </motion.div>
 
             {/* Premium Package */}
-            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-xl overflow-hidden hover:-translate-y-2 transition-all duration-300">
+            <motion.div 
+              className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-xl overflow-hidden transition-all duration-300"
+              variants={scaleIn}
+              whileHover={{ y: -8, scale: 1.02 }}
+              transition={{ duration: 0.3 }}
+            >
               <div className="p-8 text-white">
                 <h3 className="text-2xl font-bold mb-2">Premium</h3>
                 <p className="text-gray-300 mb-4">Package</p>
