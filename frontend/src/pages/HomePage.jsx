@@ -298,7 +298,7 @@ const HomePage = () => {
                   />
                 </motion.div>
                 <div className="absolute -bottom-6 -right-6 w-full h-full bg-gradient-to-br from-orange-200 to-red-200 rounded-3xl -z-10"></div>
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>
