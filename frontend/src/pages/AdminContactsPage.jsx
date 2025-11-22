@@ -119,7 +119,7 @@ const AdminContactsPage = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('admin_token');
+    localStorage.removeItem('adminToken');
     navigate('/admin/login');
   };
 
