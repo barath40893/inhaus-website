@@ -83,6 +83,229 @@ class AdminLogin(BaseModel):
 class ContactUpdate(BaseModel):
     status: str
 
+# ============= QUOTATION & INVOICE MODELS =============
+
+class ProductMaster(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    model_no: str
+    name: str
+    description: str
+    category: Optional[str] = None
+    image_url: Optional[str] = None
+    list_price: float
+    company_cost: float
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ProductMasterCreate(BaseModel):
+    model_no: str
+    name: str
+    description: str
+    category: Optional[str] = None
+    image_url: Optional[str] = None
+    list_price: float
+    company_cost: float
+
+class ProductMasterUpdate(BaseModel):
+    model_no: Optional[str] = None
+    name: Optional[str] = None
+    description: Optional[str] = None
+    category: Optional[str] = None
+    image_url: Optional[str] = None
+    list_price: Optional[float] = None
+    company_cost: Optional[float] = None
+
+class QuotationItem(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    room_area: str  # e.g., "Hall", "Master Bedroom"
+    product_id: Optional[str] = None  # Reference to product master
+    model_no: str
+    product_name: str
+    description: str
+    image_url: Optional[str] = None
+    quantity: int
+    list_price: float
+    discount: float = 0
+    offered_price: float
+    company_cost: float
+    total_amount: float  # offered_price * quantity
+    total_company_cost: float  # company_cost * quantity
+
+class QuotationItemCreate(BaseModel):
+    room_area: str
+    product_id: Optional[str] = None
+    model_no: str
+    product_name: str
+    description: str
+    image_url: Optional[str] = None
+    quantity: int
+    list_price: float
+    discount: float = 0
+    offered_price: float
+    company_cost: float
+
+class Quotation(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    quote_number: str
+    revision_no: int = 0
+    
+    # Customer information
+    customer_name: str
+    customer_email: EmailStr
+    customer_phone: Optional[str] = None
+    customer_address: Optional[str] = None
+    architect_name: Optional[str] = None
+    site_location: Optional[str] = None
+    
+    # Quotation details
+    items: List[QuotationItem] = []
+    
+    # Pricing
+    subtotal: float = 0
+    overall_discount: float = 0
+    net_quote: float = 0
+    installation_charges: float = 0
+    gst_percentage: float = 18
+    gst_amount: float = 0
+    total: float = 0
+    
+    # Internal tracking
+    total_company_cost: float = 0
+    profit_margin: float = 0
+    
+    # Terms
+    validity_days: int = 15
+    payment_terms: str = "50% advance, 50% before dispatch"
+    terms_conditions: Optional[str] = None
+    
+    # Status tracking
+    status: str = "draft"  # draft, sent, accepted, rejected, converted
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    sent_at: Optional[datetime] = None
+    
+class QuotationCreate(BaseModel):
+    customer_name: str
+    customer_email: EmailStr
+    customer_phone: Optional[str] = None
+    customer_address: Optional[str] = None
+    architect_name: Optional[str] = None
+    site_location: Optional[str] = None
+    items: List[QuotationItemCreate]
+    overall_discount: float = 0
+    installation_charges: float = 0
+    gst_percentage: float = 18
+    validity_days: int = 15
+    payment_terms: str = "50% advance, 50% before dispatch"
+    terms_conditions: Optional[str] = None
+
+class QuotationUpdate(BaseModel):
+    customer_name: Optional[str] = None
+    customer_email: Optional[EmailStr] = None
+    customer_phone: Optional[str] = None
+    customer_address: Optional[str] = None
+    architect_name: Optional[str] = None
+    site_location: Optional[str] = None
+    items: Optional[List[QuotationItemCreate]] = None
+    overall_discount: Optional[float] = None
+    installation_charges: Optional[float] = None
+    gst_percentage: Optional[float] = None
+    validity_days: Optional[int] = None
+    payment_terms: Optional[str] = None
+    terms_conditions: Optional[str] = None
+    status: Optional[str] = None
+
+class Invoice(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    invoice_number: str
+    quotation_id: Optional[str] = None  # Reference to quotation if converted
+    
+    # Customer information
+    customer_name: str
+    customer_email: EmailStr
+    customer_phone: Optional[str] = None
+    customer_address: Optional[str] = None
+    billing_address: Optional[str] = None
+    
+    # Invoice details
+    items: List[QuotationItem] = []
+    
+    # Pricing
+    subtotal: float = 0
+    discount: float = 0
+    net_amount: float = 0
+    installation_charges: float = 0
+    gst_percentage: float = 18
+    gst_amount: float = 0
+    total: float = 0
+    
+    # Payment tracking
+    amount_paid: float = 0
+    amount_due: float = 0
+    payment_status: str = "pending"  # pending, partial, paid
+    
+    # Dates
+    invoice_date: date = Field(default_factory=lambda: datetime.now(timezone.utc).date())
+    due_date: Optional[date] = None
+    
+    # Status
+    status: str = "draft"  # draft, sent, paid, cancelled
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    sent_at: Optional[datetime] = None
+
+class InvoiceCreate(BaseModel):
+    quotation_id: Optional[str] = None
+    customer_name: str
+    customer_email: EmailStr
+    customer_phone: Optional[str] = None
+    customer_address: Optional[str] = None
+    billing_address: Optional[str] = None
+    items: List[QuotationItemCreate]
+    discount: float = 0
+    installation_charges: float = 0
+    gst_percentage: float = 18
+    due_days: int = 30
+
+class InvoiceUpdate(BaseModel):
+    customer_name: Optional[str] = None
+    customer_email: Optional[EmailStr] = None
+    customer_phone: Optional[str] = None
+    customer_address: Optional[str] = None
+    billing_address: Optional[str] = None
+    items: Optional[List[QuotationItemCreate]] = None
+    discount: Optional[float] = None
+    installation_charges: Optional[float] = None
+    gst_percentage: Optional[float] = None
+    amount_paid: Optional[float] = None
+    payment_status: Optional[str] = None
+    status: Optional[str] = None
+
+class Settings(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = "company_settings"
+    company_name: str = "InHaus Smart Automation"
+    company_address: str = ""
+    company_email: str = "inhaussmartautomation@gmail.com"
+    company_phone: str = "+91 9063555552"
+    company_website: str = "www.inhaus.in"
+    company_gstin: Optional[str] = None
+    company_cin: Optional[str] = None
+    bank_name: Optional[str] = None
+    bank_account_no: Optional[str] = None
+    bank_ifsc: Optional[str] = None
+    bank_branch: Optional[str] = None
+    upi_id: Optional[str] = None
+    terms_template: Optional[str] = None
+    warranty_info: Optional[str] = None
+
 # Email sending function
 async def send_email_notification(contact_data: dict):
     """Send email notification when a new contact form is submitted"""
