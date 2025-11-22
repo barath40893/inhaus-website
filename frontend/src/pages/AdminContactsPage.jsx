@@ -21,7 +21,7 @@ const AdminContactsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('admin_token');
+    const token = localStorage.getItem('adminToken');
     if (!token) {
       navigate('/admin/login');
       return;
