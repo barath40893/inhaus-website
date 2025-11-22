@@ -484,6 +484,538 @@ async def update_contact_status(contact_id: str, update: ContactUpdate, payload:
         logger.error(f"Error updating contact status: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
+# ============= PRODUCT MASTER ENDPOINTS =============
+
+@api_router.post("/products", response_model=ProductMaster)
+async def create_product(input: ProductMasterCreate, payload: dict = Depends(verify_token)):
+    """Create a new product in master catalog (admin only)"""
+    try:
+        product_dict = input.model_dump()
+        product_obj = ProductMaster(**product_dict)
+        
+        doc = product_obj.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        doc['updated_at'] = doc['updated_at'].isoformat()
+        
+        await db.products.insert_one(doc)
+        return product_obj
+    except Exception as e:
+        logger.error(f"Error creating product: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.get("/products", response_model=List[ProductMaster])
+async def get_products(payload: dict = Depends(verify_token)):
+    """Get all products from master catalog (admin only)"""
+    try:
+        products = await db.products.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+        
+        for product in products:
+            if isinstance(product['created_at'], str):
+                product['created_at'] = datetime.fromisoformat(product['created_at'])
+            if isinstance(product['updated_at'], str):
+                product['updated_at'] = datetime.fromisoformat(product['updated_at'])
+        
+        return products
+    except Exception as e:
+        logger.error(f"Error fetching products: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.get("/products/{product_id}", response_model=ProductMaster)
+async def get_product(product_id: str, payload: dict = Depends(verify_token)):
+    """Get a specific product by ID (admin only)"""
+    try:
+        product = await db.products.find_one({"id": product_id}, {"_id": 0})
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        if isinstance(product['created_at'], str):
+            product['created_at'] = datetime.fromisoformat(product['created_at'])
+        if isinstance(product['updated_at'], str):
+            product['updated_at'] = datetime.fromisoformat(product['updated_at'])
+        
+        return ProductMaster(**product)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching product: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.patch("/products/{product_id}", response_model=ProductMaster)
+async def update_product(product_id: str, update: ProductMasterUpdate, payload: dict = Depends(verify_token)):
+    """Update a product (admin only)"""
+    try:
+        update_data = {k: v for k, v in update.model_dump().items() if v is not None}
+        if not update_data:
+            raise HTTPException(status_code=400, detail="No fields to update")
+        
+        update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+        
+        result = await db.products.update_one(
+            {"id": product_id},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        product = await db.products.find_one({"id": product_id}, {"_id": 0})
+        if isinstance(product['created_at'], str):
+            product['created_at'] = datetime.fromisoformat(product['created_at'])
+        if isinstance(product['updated_at'], str):
+            product['updated_at'] = datetime.fromisoformat(product['updated_at'])
+        
+        return ProductMaster(**product)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating product: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.delete("/products/{product_id}")
+async def delete_product(product_id: str, payload: dict = Depends(verify_token)):
+    """Delete a product (admin only)"""
+    try:
+        result = await db.products.delete_one({"id": product_id})
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Product not found")
+        return {"message": "Product deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting product: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+# ============= QUOTATION ENDPOINTS =============
+
+def calculate_quotation_totals(items: List[QuotationItem], overall_discount: float, 
+                               installation_charges: float, gst_percentage: float) -> Dict[str, float]:
+    """Helper function to calculate quotation totals"""
+    subtotal = sum(item.total_amount for item in items)
+    net_quote = subtotal - overall_discount
+    total_before_gst = net_quote + installation_charges
+    gst_amount = (total_before_gst * gst_percentage) / 100
+    total = total_before_gst + gst_amount
+    total_company_cost = sum(item.total_company_cost for item in items)
+    profit_margin = total - total_company_cost - gst_amount
+    
+    return {
+        "subtotal": round(subtotal, 2),
+        "net_quote": round(net_quote, 2),
+        "gst_amount": round(gst_amount, 2),
+        "total": round(total, 2),
+        "total_company_cost": round(total_company_cost, 2),
+        "profit_margin": round(profit_margin, 2)
+    }
+
+async def generate_quote_number() -> str:
+    """Generate unique quote number"""
+    count = await db.quotations.count_documents({})
+    return f"QT-{datetime.now().year}-{count + 1:04d}"
+
+@api_router.post("/quotations", response_model=Quotation)
+async def create_quotation(input: QuotationCreate, payload: dict = Depends(verify_token)):
+    """Create a new quotation (admin only)"""
+    try:
+        # Process items and calculate totals
+        items = []
+        for item_data in input.items:
+            item_dict = item_data.model_dump()
+            total_amount = item_dict['offered_price'] * item_dict['quantity']
+            total_company_cost = item_dict['company_cost'] * item_dict['quantity']
+            item_dict['total_amount'] = round(total_amount, 2)
+            item_dict['total_company_cost'] = round(total_company_cost, 2)
+            items.append(QuotationItem(**item_dict))
+        
+        # Calculate totals
+        totals = calculate_quotation_totals(
+            items, 
+            input.overall_discount, 
+            input.installation_charges, 
+            input.gst_percentage
+        )
+        
+        # Generate quote number
+        quote_number = await generate_quote_number()
+        
+        # Create quotation object
+        quotation_data = input.model_dump()
+        quotation_data['items'] = [item.model_dump() for item in items]
+        quotation_data['quote_number'] = quote_number
+        quotation_data.update(totals)
+        
+        quotation_obj = Quotation(**quotation_data)
+        
+        # Save to database
+        doc = quotation_obj.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        doc['updated_at'] = doc['updated_at'].isoformat()
+        if doc.get('sent_at'):
+            doc['sent_at'] = doc['sent_at'].isoformat()
+        
+        await db.quotations.insert_one(doc)
+        return quotation_obj
+    except Exception as e:
+        logger.error(f"Error creating quotation: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/quotations", response_model=List[Quotation])
+async def get_quotations(payload: dict = Depends(verify_token)):
+    """Get all quotations (admin only)"""
+    try:
+        quotations = await db.quotations.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+        
+        for quotation in quotations:
+            if isinstance(quotation['created_at'], str):
+                quotation['created_at'] = datetime.fromisoformat(quotation['created_at'])
+            if isinstance(quotation['updated_at'], str):
+                quotation['updated_at'] = datetime.fromisoformat(quotation['updated_at'])
+            if quotation.get('sent_at') and isinstance(quotation['sent_at'], str):
+                quotation['sent_at'] = datetime.fromisoformat(quotation['sent_at'])
+        
+        return quotations
+    except Exception as e:
+        logger.error(f"Error fetching quotations: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.get("/quotations/{quotation_id}", response_model=Quotation)
+async def get_quotation(quotation_id: str, payload: dict = Depends(verify_token)):
+    """Get a specific quotation by ID (admin only)"""
+    try:
+        quotation = await db.quotations.find_one({"id": quotation_id}, {"_id": 0})
+        if not quotation:
+            raise HTTPException(status_code=404, detail="Quotation not found")
+        
+        if isinstance(quotation['created_at'], str):
+            quotation['created_at'] = datetime.fromisoformat(quotation['created_at'])
+        if isinstance(quotation['updated_at'], str):
+            quotation['updated_at'] = datetime.fromisoformat(quotation['updated_at'])
+        if quotation.get('sent_at') and isinstance(quotation['sent_at'], str):
+            quotation['sent_at'] = datetime.fromisoformat(quotation['sent_at'])
+        
+        return Quotation(**quotation)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching quotation: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.patch("/quotations/{quotation_id}", response_model=Quotation)
+async def update_quotation(quotation_id: str, update: QuotationUpdate, payload: dict = Depends(verify_token)):
+    """Update a quotation (admin only)"""
+    try:
+        update_data = {k: v for k, v in update.model_dump().items() if v is not None}
+        if not update_data:
+            raise HTTPException(status_code=400, detail="No fields to update")
+        
+        # If items are updated, recalculate totals
+        if 'items' in update_data:
+            items = []
+            for item_data in update_data['items']:
+                total_amount = item_data['offered_price'] * item_data['quantity']
+                total_company_cost = item_data['company_cost'] * item_data['quantity']
+                item_data['total_amount'] = round(total_amount, 2)
+                item_data['total_company_cost'] = round(total_company_cost, 2)
+                items.append(QuotationItem(**item_data))
+            
+            # Get existing quotation for discount and charges
+            existing = await db.quotations.find_one({"id": quotation_id}, {"_id": 0})
+            if not existing:
+                raise HTTPException(status_code=404, detail="Quotation not found")
+            
+            overall_discount = update_data.get('overall_discount', existing.get('overall_discount', 0))
+            installation_charges = update_data.get('installation_charges', existing.get('installation_charges', 0))
+            gst_percentage = update_data.get('gst_percentage', existing.get('gst_percentage', 18))
+            
+            totals = calculate_quotation_totals(items, overall_discount, installation_charges, gst_percentage)
+            update_data['items'] = [item.model_dump() for item in items]
+            update_data.update(totals)
+        
+        update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+        
+        result = await db.quotations.update_one(
+            {"id": quotation_id},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Quotation not found")
+        
+        quotation = await db.quotations.find_one({"id": quotation_id}, {"_id": 0})
+        if isinstance(quotation['created_at'], str):
+            quotation['created_at'] = datetime.fromisoformat(quotation['created_at'])
+        if isinstance(quotation['updated_at'], str):
+            quotation['updated_at'] = datetime.fromisoformat(quotation['updated_at'])
+        if quotation.get('sent_at') and isinstance(quotation.get('sent_at')):
+            quotation['sent_at'] = datetime.fromisoformat(quotation['sent_at'])
+        
+        return Quotation(**quotation)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating quotation: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.delete("/quotations/{quotation_id}")
+async def delete_quotation(quotation_id: str, payload: dict = Depends(verify_token)):
+    """Delete a quotation (admin only)"""
+    try:
+        result = await db.quotations.delete_one({"id": quotation_id})
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Quotation not found")
+        return {"message": "Quotation deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting quotation: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+# ============= INVOICE ENDPOINTS =============
+
+async def generate_invoice_number() -> str:
+    """Generate unique invoice number"""
+    count = await db.invoices.count_documents({})
+    return f"INV-{datetime.now().year}-{count + 1:04d}"
+
+def calculate_invoice_totals(items: List[QuotationItem], discount: float, 
+                             installation_charges: float, gst_percentage: float) -> Dict[str, float]:
+    """Helper function to calculate invoice totals"""
+    subtotal = sum(item.total_amount for item in items)
+    net_amount = subtotal - discount
+    total_before_gst = net_amount + installation_charges
+    gst_amount = (total_before_gst * gst_percentage) / 100
+    total = total_before_gst + gst_amount
+    
+    return {
+        "subtotal": round(subtotal, 2),
+        "net_amount": round(net_amount, 2),
+        "gst_amount": round(gst_amount, 2),
+        "total": round(total, 2)
+    }
+
+@api_router.post("/invoices", response_model=Invoice)
+async def create_invoice(input: InvoiceCreate, payload: dict = Depends(verify_token)):
+    """Create a new invoice (admin only)"""
+    try:
+        # Process items and calculate totals
+        items = []
+        for item_data in input.items:
+            item_dict = item_data.model_dump()
+            total_amount = item_dict['offered_price'] * item_dict['quantity']
+            total_company_cost = item_dict['company_cost'] * item_dict['quantity']
+            item_dict['total_amount'] = round(total_amount, 2)
+            item_dict['total_company_cost'] = round(total_company_cost, 2)
+            items.append(QuotationItem(**item_dict))
+        
+        # Calculate totals
+        totals = calculate_invoice_totals(
+            items, 
+            input.discount, 
+            input.installation_charges, 
+            input.gst_percentage
+        )
+        
+        # Generate invoice number
+        invoice_number = await generate_invoice_number()
+        
+        # Calculate due date
+        due_date = (datetime.now(timezone.utc) + timedelta(days=input.due_days)).date()
+        
+        # Create invoice object
+        invoice_data = input.model_dump()
+        invoice_data['items'] = [item.model_dump() for item in items]
+        invoice_data['invoice_number'] = invoice_number
+        invoice_data['due_date'] = due_date
+        invoice_data['amount_due'] = totals['total']
+        invoice_data.update(totals)
+        
+        invoice_obj = Invoice(**invoice_data)
+        
+        # Save to database
+        doc = invoice_obj.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        doc['updated_at'] = doc['updated_at'].isoformat()
+        doc['invoice_date'] = doc['invoice_date'].isoformat()
+        if doc.get('due_date'):
+            doc['due_date'] = doc['due_date'].isoformat()
+        if doc.get('sent_at'):
+            doc['sent_at'] = doc['sent_at'].isoformat()
+        
+        await db.invoices.insert_one(doc)
+        return invoice_obj
+    except Exception as e:
+        logger.error(f"Error creating invoice: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/invoices", response_model=List[Invoice])
+async def get_invoices(payload: dict = Depends(verify_token)):
+    """Get all invoices (admin only)"""
+    try:
+        invoices = await db.invoices.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+        
+        for invoice in invoices:
+            if isinstance(invoice['created_at'], str):
+                invoice['created_at'] = datetime.fromisoformat(invoice['created_at'])
+            if isinstance(invoice['updated_at'], str):
+                invoice['updated_at'] = datetime.fromisoformat(invoice['updated_at'])
+            if isinstance(invoice.get('invoice_date'), str):
+                invoice['invoice_date'] = date.fromisoformat(invoice['invoice_date'])
+            if invoice.get('due_date') and isinstance(invoice['due_date'], str):
+                invoice['due_date'] = date.fromisoformat(invoice['due_date'])
+            if invoice.get('sent_at') and isinstance(invoice['sent_at'], str):
+                invoice['sent_at'] = datetime.fromisoformat(invoice['sent_at'])
+        
+        return invoices
+    except Exception as e:
+        logger.error(f"Error fetching invoices: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.get("/invoices/{invoice_id}", response_model=Invoice)
+async def get_invoice(invoice_id: str, payload: dict = Depends(verify_token)):
+    """Get a specific invoice by ID (admin only)"""
+    try:
+        invoice = await db.invoices.find_one({"id": invoice_id}, {"_id": 0})
+        if not invoice:
+            raise HTTPException(status_code=404, detail="Invoice not found")
+        
+        if isinstance(invoice['created_at'], str):
+            invoice['created_at'] = datetime.fromisoformat(invoice['created_at'])
+        if isinstance(invoice['updated_at'], str):
+            invoice['updated_at'] = datetime.fromisoformat(invoice['updated_at'])
+        if isinstance(invoice.get('invoice_date'), str):
+            invoice['invoice_date'] = date.fromisoformat(invoice['invoice_date'])
+        if invoice.get('due_date') and isinstance(invoice['due_date'], str):
+            invoice['due_date'] = date.fromisoformat(invoice['due_date'])
+        if invoice.get('sent_at') and isinstance(invoice['sent_at'], str):
+            invoice['sent_at'] = datetime.fromisoformat(invoice['sent_at'])
+        
+        return Invoice(**invoice)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching invoice: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.patch("/invoices/{invoice_id}", response_model=Invoice)
+async def update_invoice(invoice_id: str, update: InvoiceUpdate, payload: dict = Depends(verify_token)):
+    """Update an invoice (admin only)"""
+    try:
+        update_data = {k: v for k, v in update.model_dump().items() if v is not None}
+        if not update_data:
+            raise HTTPException(status_code=400, detail="No fields to update")
+        
+        # Get existing invoice
+        existing = await db.invoices.find_one({"id": invoice_id}, {"_id": 0})
+        if not existing:
+            raise HTTPException(status_code=404, detail="Invoice not found")
+        
+        # If items are updated, recalculate totals
+        if 'items' in update_data:
+            items = []
+            for item_data in update_data['items']:
+                total_amount = item_data['offered_price'] * item_data['quantity']
+                total_company_cost = item_data['company_cost'] * item_data['quantity']
+                item_data['total_amount'] = round(total_amount, 2)
+                item_data['total_company_cost'] = round(total_company_cost, 2)
+                items.append(QuotationItem(**item_data))
+            
+            discount = update_data.get('discount', existing.get('discount', 0))
+            installation_charges = update_data.get('installation_charges', existing.get('installation_charges', 0))
+            gst_percentage = update_data.get('gst_percentage', existing.get('gst_percentage', 18))
+            
+            totals = calculate_invoice_totals(items, discount, installation_charges, gst_percentage)
+            update_data['items'] = [item.model_dump() for item in items]
+            update_data.update(totals)
+        
+        # Update amount_due if amount_paid changed
+        if 'amount_paid' in update_data:
+            total = existing.get('total', 0)
+            amount_paid = update_data['amount_paid']
+            update_data['amount_due'] = round(total - amount_paid, 2)
+            
+            # Update payment status
+            if amount_paid >= total:
+                update_data['payment_status'] = 'paid'
+            elif amount_paid > 0:
+                update_data['payment_status'] = 'partial'
+            else:
+                update_data['payment_status'] = 'pending'
+        
+        update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+        
+        result = await db.invoices.update_one(
+            {"id": invoice_id},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Invoice not found")
+        
+        invoice = await db.invoices.find_one({"id": invoice_id}, {"_id": 0})
+        if isinstance(invoice['created_at'], str):
+            invoice['created_at'] = datetime.fromisoformat(invoice['created_at'])
+        if isinstance(invoice['updated_at'], str):
+            invoice['updated_at'] = datetime.fromisoformat(invoice['updated_at'])
+        if isinstance(invoice.get('invoice_date'), str):
+            invoice['invoice_date'] = date.fromisoformat(invoice['invoice_date'])
+        if invoice.get('due_date') and isinstance(invoice['due_date'], str):
+            invoice['due_date'] = date.fromisoformat(invoice['due_date'])
+        if invoice.get('sent_at') and isinstance(invoice.get('sent_at')):
+            invoice['sent_at'] = datetime.fromisoformat(invoice['sent_at'])
+        
+        return Invoice(**invoice)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating invoice: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.delete("/invoices/{invoice_id}")
+async def delete_invoice(invoice_id: str, payload: dict = Depends(verify_token)):
+    """Delete an invoice (admin only)"""
+    try:
+        result = await db.invoices.delete_one({"id": invoice_id})
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Invoice not found")
+        return {"message": "Invoice deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting invoice: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+# ============= SETTINGS ENDPOINTS =============
+
+@api_router.get("/settings", response_model=Settings)
+async def get_settings(payload: dict = Depends(verify_token)):
+    """Get company settings (admin only)"""
+    try:
+        settings = await db.settings.find_one({"id": "company_settings"}, {"_id": 0})
+        if not settings:
+            # Return default settings
+            return Settings()
+        return Settings(**settings)
+    except Exception as e:
+        logger.error(f"Error fetching settings: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.post("/settings", response_model=Settings)
+async def update_settings(settings: Settings, payload: dict = Depends(verify_token)):
+    """Update company settings (admin only)"""
+    try:
+        settings_dict = settings.model_dump()
+        settings_dict['id'] = "company_settings"
+        
+        await db.settings.update_one(
+            {"id": "company_settings"},
+            {"$set": settings_dict},
+            upsert=True
+        )
+        
+        return settings
+    except Exception as e:
+        logger.error(f"Error updating settings: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
 # Include the router in the main app
 app.include_router(api_router)
 
