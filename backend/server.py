@@ -27,6 +27,13 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
+# PDF Generator
+pdf_generator = PDFGenerator()
+
+# Create PDFs directory if it doesn't exist
+PDF_DIR = ROOT_DIR / 'pdfs'
+PDF_DIR.mkdir(exist_ok=True)
+
 # Email configuration
 SMTP_HOST = os.environ.get('SMTP_HOST', 'smtp.gmail.com')
 SMTP_PORT = int(os.environ.get('SMTP_PORT', 587))
