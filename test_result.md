@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the InHaus IoT platform backend API endpoints including root endpoint, contact form submission, get contact submissions, and get specific contact submission with proper validation and error handling"
+user_problem_statement: "Build a comprehensive quotation and invoice generation system for InHaus with product master, PDF generation, email functionality, and admin management interface"
 
 backend:
   - task: "Root Endpoint API"
