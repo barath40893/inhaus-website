@@ -22,14 +22,14 @@ const AdminLoginPage = () => {
 
     try {
       const response = await axios.post(`${API}/admin/login`, formData);
-      localStorage.setItem('admin_token', response.data.access_token);
+      localStorage.setItem('adminToken', response.data.access_token);
       
       toast({
         title: 'Success!',
         description: 'Logged in successfully',
       });
       
-      navigate('/admin/contacts');
+      navigate('/admin/quotations');
     } catch (error) {
       toast({
         title: 'Error',
