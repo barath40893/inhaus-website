@@ -1025,6 +1025,262 @@ async def update_settings(settings: Settings, payload: dict = Depends(verify_tok
         logger.error(f"Error updating settings: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
+# ============= PDF GENERATION ENDPOINTS =============
+
+@api_router.post("/quotations/{quotation_id}/generate-pdf")
+async def generate_quotation_pdf(quotation_id: str, payload: dict = Depends(verify_token)):
+    """Generate PDF for a quotation (admin only)"""
+    try:
+        # Get quotation
+        quotation = await db.quotations.find_one({"id": quotation_id}, {"_id": 0})
+        if not quotation:
+            raise HTTPException(status_code=404, detail="Quotation not found")
+        
+        # Get settings
+        settings = await db.settings.find_one({"id": "company_settings"}, {"_id": 0})
+        if not settings:
+            settings = Settings().model_dump()
+        
+        # Generate PDF
+        pdf_filename = f"quotation_{quotation['quote_number'].replace('/', '_')}.pdf"
+        pdf_path = PDF_DIR / pdf_filename
+        
+        pdf_generator.generate_quotation_pdf(quotation, settings, str(pdf_path))
+        
+        return {
+            "message": "PDF generated successfully",
+            "filename": pdf_filename,
+            "path": str(pdf_path)
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error generating quotation PDF: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/invoices/{invoice_id}/generate-pdf")
+async def generate_invoice_pdf(invoice_id: str, payload: dict = Depends(verify_token)):
+    """Generate PDF for an invoice (admin only)"""
+    try:
+        # Get invoice
+        invoice = await db.invoices.find_one({"id": invoice_id}, {"_id": 0})
+        if not invoice:
+            raise HTTPException(status_code=404, detail="Invoice not found")
+        
+        # Get settings
+        settings = await db.settings.find_one({"id": "company_settings"}, {"_id": 0})
+        if not settings:
+            settings = Settings().model_dump()
+        
+        # Generate PDF
+        pdf_filename = f"invoice_{invoice['invoice_number'].replace('/', '_')}.pdf"
+        pdf_path = PDF_DIR / pdf_filename
+        
+        pdf_generator.generate_invoice_pdf(invoice, settings, str(pdf_path))
+        
+        return {
+            "message": "PDF generated successfully",
+            "filename": pdf_filename,
+            "path": str(pdf_path)
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error generating invoice PDF: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ============= EMAIL SENDING ENDPOINTS =============
+
+async def send_quotation_email(quotation_data: dict, pdf_path: str, settings_data: dict):
+    """Send quotation email with PDF attachment"""
+    try:
+        msg = MIMEMultipart()
+        msg['Subject'] = f'Quotation {quotation_data["quote_number"]} from {settings_data.get("company_name", "InHaus")}'
+        msg['From'] = SMTP_USER
+        msg['To'] = quotation_data['customer_email']
+        
+        # Email body
+        html_content = f"""
+        <html>
+          <body style="font-family: Arial, sans-serif; padding: 20px;">
+            <h2 style="color: #f97316;">Quotation from {settings_data.get('company_name', 'InHaus Smart Automation')}</h2>
+            <p>Dear {quotation_data['customer_name']},</p>
+            <p>Thank you for your interest in our smart home automation solutions.</p>
+            <p>Please find attached our quotation <b>{quotation_data['quote_number']}</b> for your review.</p>
+            
+            <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+              <p><strong>Quotation Summary:</strong></p>
+              <p><strong>Total Amount:</strong> ₹ {quotation_data['total']:,.2f}</p>
+              <p><strong>Valid Until:</strong> {quotation_data['validity_days']} days from quotation date</p>
+              <p><strong>Payment Terms:</strong> {quotation_data['payment_terms']}</p>
+            </div>
+            
+            <p>Should you have any questions or require clarification, please don't hesitate to contact us.</p>
+            
+            <p>Best regards,<br/>
+            {settings_data.get('company_name', 'InHaus Smart Automation')}<br/>
+            {settings_data.get('company_email', '')}<br/>
+            {settings_data.get('company_phone', '')}</p>
+          </body>
+        </html>
+        """
+        
+        msg.attach(MIMEText(html_content, 'html'))
+        
+        # Attach PDF
+        with open(pdf_path, 'rb') as f:
+            pdf_attachment = MIMEApplication(f.read(), _subtype='pdf')
+            pdf_attachment.add_header('Content-Disposition', 'attachment', 
+                                     filename=Path(pdf_path).name)
+            msg.attach(pdf_attachment)
+        
+        # Send email
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SMTP_USER, SMTP_PASSWORD)
+            server.send_message(msg)
+        
+        logger.info(f"Quotation email sent to {quotation_data['customer_email']}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send quotation email: {str(e)}")
+        raise Exception(f"Email sending failed: {str(e)}")
+
+async def send_invoice_email(invoice_data: dict, pdf_path: str, settings_data: dict):
+    """Send invoice email with PDF attachment"""
+    try:
+        msg = MIMEMultipart()
+        msg['Subject'] = f'Invoice {invoice_data["invoice_number"]} from {settings_data.get("company_name", "InHaus")}'
+        msg['From'] = SMTP_USER
+        msg['To'] = invoice_data['customer_email']
+        
+        # Email body
+        html_content = f"""
+        <html>
+          <body style="font-family: Arial, sans-serif; padding: 20px;">
+            <h2 style="color: #f97316;">Invoice from {settings_data.get('company_name', 'InHaus Smart Automation')}</h2>
+            <p>Dear {invoice_data['customer_name']},</p>
+            <p>Thank you for your business.</p>
+            <p>Please find attached invoice <b>{invoice_data['invoice_number']}</b> for your records.</p>
+            
+            <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+              <p><strong>Invoice Summary:</strong></p>
+              <p><strong>Total Amount:</strong> ₹ {invoice_data['total']:,.2f}</p>
+              <p><strong>Amount Paid:</strong> ₹ {invoice_data['amount_paid']:,.2f}</p>
+              <p><strong>Amount Due:</strong> ₹ {invoice_data['amount_due']:,.2f}</p>
+              <p><strong>Payment Status:</strong> {invoice_data['payment_status'].upper()}</p>
+              <p><strong>Due Date:</strong> {invoice_data.get('due_date', 'N/A')}</p>
+            </div>
+            
+            <p>Please process the payment at your earliest convenience.</p>
+            
+            <p>Best regards,<br/>
+            {settings_data.get('company_name', 'InHaus Smart Automation')}<br/>
+            {settings_data.get('company_email', '')}<br/>
+            {settings_data.get('company_phone', '')}</p>
+          </body>
+        </html>
+        """
+        
+        msg.attach(MIMEText(html_content, 'html'))
+        
+        # Attach PDF
+        with open(pdf_path, 'rb') as f:
+            pdf_attachment = MIMEApplication(f.read(), _subtype='pdf')
+            pdf_attachment.add_header('Content-Disposition', 'attachment', 
+                                     filename=Path(pdf_path).name)
+            msg.attach(pdf_attachment)
+        
+        # Send email
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SMTP_USER, SMTP_PASSWORD)
+            server.send_message(msg)
+        
+        logger.info(f"Invoice email sent to {invoice_data['customer_email']}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send invoice email: {str(e)}")
+        raise Exception(f"Email sending failed: {str(e)}")
+
+@api_router.post("/quotations/{quotation_id}/send-email")
+async def send_quotation_email_endpoint(quotation_id: str, payload: dict = Depends(verify_token)):
+    """Generate PDF and send quotation via email (admin only)"""
+    try:
+        # Get quotation
+        quotation = await db.quotations.find_one({"id": quotation_id}, {"_id": 0})
+        if not quotation:
+            raise HTTPException(status_code=404, detail="Quotation not found")
+        
+        # Get settings
+        settings = await db.settings.find_one({"id": "company_settings"}, {"_id": 0})
+        if not settings:
+            settings = Settings().model_dump()
+        
+        # Generate PDF
+        pdf_filename = f"quotation_{quotation['quote_number'].replace('/', '_')}.pdf"
+        pdf_path = PDF_DIR / pdf_filename
+        
+        pdf_generator.generate_quotation_pdf(quotation, settings, str(pdf_path))
+        
+        # Send email
+        await send_quotation_email(quotation, str(pdf_path), settings)
+        
+        # Update quotation status
+        await db.quotations.update_one(
+            {"id": quotation_id},
+            {"$set": {
+                "status": "sent",
+                "sent_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        return {"message": "Quotation sent successfully via email"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error sending quotation email: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/invoices/{invoice_id}/send-email")
+async def send_invoice_email_endpoint(invoice_id: str, payload: dict = Depends(verify_token)):
+    """Generate PDF and send invoice via email (admin only)"""
+    try:
+        # Get invoice
+        invoice = await db.invoices.find_one({"id": invoice_id}, {"_id": 0})
+        if not invoice:
+            raise HTTPException(status_code=404, detail="Invoice not found")
+        
+        # Get settings
+        settings = await db.settings.find_one({"id": "company_settings"}, {"_id": 0})
+        if not settings:
+            settings = Settings().model_dump()
+        
+        # Generate PDF
+        pdf_filename = f"invoice_{invoice['invoice_number'].replace('/', '_')}.pdf"
+        pdf_path = PDF_DIR / pdf_filename
+        
+        pdf_generator.generate_invoice_pdf(invoice, settings, str(pdf_path))
+        
+        # Send email
+        await send_invoice_email(invoice, str(pdf_path), settings)
+        
+        # Update invoice status
+        await db.invoices.update_one(
+            {"id": invoice_id},
+            {"$set": {
+                "status": "sent",
+                "sent_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        return {"message": "Invoice sent successfully via email"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error sending invoice email: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Include the router in the main app
 app.include_router(api_router)
 
