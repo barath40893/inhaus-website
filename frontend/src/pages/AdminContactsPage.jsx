@@ -70,7 +70,7 @@ const AdminContactsPage = () => {
 
   const updateStatus = async (contactId, newStatus) => {
     try {
-      const token = localStorage.getItem('admin_token');
+      const token = localStorage.getItem('adminToken');
       await axios.patch(
         `${API}/contact/${contactId}/status`,
         { status: newStatus },
