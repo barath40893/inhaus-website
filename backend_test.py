@@ -11,7 +11,7 @@ from datetime import datetime
 import uuid
 
 # Get backend URL from frontend .env file
-BACKEND_URL = "https://inhaus-ecommerce.preview.emergentagent.com/api"
+BACKEND_URL = "https://smart-quote-gen-2.preview.emergentagent.com/api"
 
 def test_root_endpoint():
     """Test GET /api/ endpoint"""
