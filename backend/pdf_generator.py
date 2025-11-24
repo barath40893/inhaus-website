@@ -213,14 +213,15 @@ class PDFGenerator:
         # Add top spacing
         elements.append(Spacer(1, 15))
         
-        # Try to add logo with better sizing
+        # Try to add logo with proper aspect ratio preservation
         logo_path = Path('/app/frontend/public/inhaus/fulllogo_transparent_nobuffer.png')
         if logo_path.exists():
-            # Larger, more prominent logo
-            logo = Image(str(logo_path), width=2.5*inch, height=1*inch, kind='proportional')
+            # Use aspect ratio preservation - only specify width
+            # Let height adjust automatically to maintain proportions
+            logo = Image(str(logo_path), width=3*inch)
             logo.hAlign = 'CENTER'
             elements.append(logo)
-            elements.append(Spacer(1, 10))
+            elements.append(Spacer(1, 12))
         
         # Company info in elegant style
         company_info = f"""
