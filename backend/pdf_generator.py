@@ -723,24 +723,25 @@ class PDFGenerator:
         
         # Premium table styling
         style_commands = [
-            # Header styling with dark background
-            ('BACKGROUND', (0, 0), (-1, 0), self.secondary_color),
+            # Header styling with black background
+            ('BACKGROUND', (0, 0), (-1, 0), colors.black),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, 0), 11),
-            ('TOPPADDING', (0, 0), (-1, 0), 14),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 14),
+            ('TOPPADDING', (0, 0), (-1, 0), 16),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 16),
             
-            # Grand total styling with gradient highlight
+            # Grand total styling with light grey highlight
             ('BACKGROUND', (0, -1), (-1, -1), self.highlight_color),
-            ('LINEABOVE', (0, -1), (-1, -1), 3, self.primary_color),
+            ('LINEABOVE', (0, -1), (-1, -1), 2, colors.black),
             ('TOPPADDING', (0, -1), (-1, -1), 16),
             ('BOTTOMPADDING', (0, -1), (-1, -1), 16),
             
-            # Borders
-            ('LINEBELOW', (0, 0), (-1, 0), 1.5, self.primary_color),
-            ('INNERGRID', (0, 1), (-1, -2), 0.5, self.medium_gray),
+            # Borders - clean black lines
+            ('LINEBELOW', (0, 0), (-1, 0), 2, colors.black),
+            ('INNERGRID', (0, 1), (-1, -2), 0.5, self.light_gray),
+            ('BOX', (0, 0), (-1, -1), 1.25, colors.black),
             
             # Alignment
             ('ALIGN', (2, 1), (2, -1), 'RIGHT'),
