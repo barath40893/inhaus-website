@@ -28,31 +28,149 @@ test_product_id = None
 test_quotation_id = None
 uploaded_image_url = None
 
-def test_root_endpoint():
-    """Test GET /api/ endpoint"""
-    print("🔍 Testing Root Endpoint...")
+def admin_login():
+    """Login as admin and get Bearer token"""
+    print("🔐 Admin Login...")
+    global admin_token
+    
     try:
-        response = requests.get(f"{BACKEND_URL}/")
-        print(f"Status Code: {response.status_code}")
+        login_data = {
+            "username": ADMIN_USERNAME,
+            "password": ADMIN_PASSWORD
+        }
+        
+        response = requests.post(f"{BACKEND_URL}/admin/login", json=login_data)
+        print(f"Login Status Code: {response.status_code}")
         
         if response.status_code == 200:
             data = response.json()
-            print(f"Response: {data}")
-            
-            if data.get("message") == "Hello World":
-                print("✅ Root endpoint working correctly")
-                return True
-            else:
-                print(f"❌ Unexpected response: {data}")
-                return False
+            admin_token = data.get("access_token")
+            print("✅ Admin login successful")
+            return True
         else:
-            print(f"❌ Root endpoint failed with status {response.status_code}")
+            print(f"❌ Admin login failed with status {response.status_code}")
             print(f"Response: {response.text}")
             return False
             
     except Exception as e:
-        print(f"❌ Root endpoint test failed with error: {str(e)}")
+        print(f"❌ Admin login failed with error: {str(e)}")
         return False
+
+def create_test_image(filename, format='JPEG', size=(200, 200)):
+    """Create a test image file"""
+    img = PILImage.new('RGB', size, color='red')
+    img_bytes = io.BytesIO()
+    img.save(img_bytes, format=format)
+    img_bytes.seek(0)
+    return img_bytes
+
+def test_product_image_upload():
+    """Test POST /api/products/upload-image endpoint"""
+    print("\n🔍 Testing Product Image Upload...")
+    global uploaded_image_url
+    
+    if not admin_token:
+        print("❌ No admin token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    
+    # Test 1: Valid JPEG upload
+    print("\n📤 Testing valid JPEG upload...")
+    try:
+        test_image = create_test_image("test.jpg", "JPEG")
+        files = {"file": ("test.jpg", test_image, "image/jpeg")}
+        
+        response = requests.post(f"{BACKEND_URL}/products/upload-image", 
+                               headers=headers, files=files)
+        print(f"JPEG Upload Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Response: {json.dumps(data, indent=2)}")
+            
+            if "image_url" in data and data["image_url"].startswith("/uploads/products/"):
+                uploaded_image_url = data["image_url"]
+                print("✅ JPEG upload successful")
+                
+                # Verify file exists
+                filename = data["image_url"].split("/")[-1]
+                if len(filename) > 10:  # UUID should make it long
+                    print("✅ Unique filename generated")
+                else:
+                    print("❌ Filename doesn't appear to be unique")
+                    return False
+            else:
+                print(f"❌ Invalid image_url format: {data.get('image_url')}")
+                return False
+        else:
+            print(f"❌ JPEG upload failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ JPEG upload test failed with error: {str(e)}")
+        return False
+    
+    # Test 2: Valid PNG upload
+    print("\n📤 Testing valid PNG upload...")
+    try:
+        test_image = create_test_image("test.png", "PNG")
+        files = {"file": ("test.png", test_image, "image/png")}
+        
+        response = requests.post(f"{BACKEND_URL}/products/upload-image", 
+                               headers=headers, files=files)
+        print(f"PNG Upload Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            print("✅ PNG upload successful")
+        else:
+            print(f"❌ PNG upload failed with status {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ PNG upload test failed with error: {str(e)}")
+        return False
+    
+    # Test 3: Invalid file type
+    print("\n📤 Testing invalid file type...")
+    try:
+        files = {"file": ("test.txt", io.BytesIO(b"test content"), "text/plain")}
+        
+        response = requests.post(f"{BACKEND_URL}/products/upload-image", 
+                               headers=headers, files=files)
+        print(f"Invalid file Status Code: {response.status_code}")
+        
+        if response.status_code == 400:
+            print("✅ Invalid file type correctly rejected")
+        else:
+            print(f"❌ Expected 400 for invalid file, got {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Invalid file test failed with error: {str(e)}")
+        return False
+    
+    # Test 4: No authentication
+    print("\n📤 Testing upload without authentication...")
+    try:
+        test_image = create_test_image("test.jpg", "JPEG")
+        files = {"file": ("test.jpg", test_image, "image/jpeg")}
+        
+        response = requests.post(f"{BACKEND_URL}/products/upload-image", files=files)
+        print(f"No auth Status Code: {response.status_code}")
+        
+        if response.status_code == 403:
+            print("✅ Authentication required correctly enforced")
+        else:
+            print(f"❌ Expected 403 for no auth, got {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ No auth test failed with error: {str(e)}")
+        return False
+    
+    return True
 
 def test_contact_form_submission():
     """Test POST /api/contact endpoint"""
