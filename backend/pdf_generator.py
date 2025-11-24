@@ -776,11 +776,11 @@ class PDFGenerator:
                 amount_para
             ])
         
-        # Total row styling - clear and professional
+        # Total row styling - InHaus brand
         total_label_style = ParagraphStyle(
             'TotalLabel',
             parent=self.styles['Normal'],
-            fontSize=12,
+            fontSize=11,
             textColor=self.total_text,
             fontName='Helvetica-Bold',
             alignment=TA_RIGHT
@@ -790,7 +790,7 @@ class PDFGenerator:
             'TotalAmount',
             parent=self.styles['Normal'],
             fontSize=12,
-            textColor=self.primary_color,
+            textColor=self.total_text,
             fontName='Helvetica-Bold',
             alignment=TA_RIGHT
         )
@@ -802,10 +802,10 @@ class PDFGenerator:
             '', 
             '',
             '', 
-            Paragraph('<font size=12 color="#000000"><b>Room Total</b></font>', total_label_style), 
-            Paragraph(f'<font size=11 color="#000000"><b>{total_qty}</b></font>', center_style),
+            Paragraph('<font size=11 color="#EA580C"><b>Room Total</b></font>', total_label_style), 
+            Paragraph(f'<font size=10 color="#EA580C"><b>{total_qty}</b></font>', center_style),
             '',
-            Paragraph(f'<font size=13 color="#000000"><b>Rs. {total:,.0f}</b></font>', total_amount_style)
+            Paragraph(f'<font size=12 color="#EA580C"><b>Rs. {total:,.0f}</b></font>', total_amount_style)
         ])
         
         # Optimized column widths for clarity - wider spacing
