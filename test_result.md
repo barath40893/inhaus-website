@@ -227,15 +227,18 @@ backend:
 
   - task: "Product Image Upload"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Created image upload endpoint /api/products/upload-image that accepts JPEG/PNG/WEBP files up to 5MB, validates file type, generates unique filename with UUID, stores in /app/backend/uploads/products directory, and returns image URL path. Mounted /uploads as static files directory."
+        - working: true
+          agent: "testing"
+          comment: "Comprehensive testing completed. Product image upload working perfectly: ✅ JPEG/PNG/WEBP upload successful with unique UUID filenames ✅ File type validation correctly rejects non-image files (400 error) ✅ File size validation correctly rejects files over 5MB (400 error) ✅ Authentication required and enforced (403 without token) ✅ Files saved to /app/backend/uploads/products/ ✅ Returns correct image_url format: /api/uploads/products/{filename} ✅ Static files accessible via /api/uploads/products/ with proper content-type. Fixed static files mounting to use /api prefix for proper Kubernetes ingress routing."
 
   - task: "PDF Table Color Enhancement"
     implemented: true
