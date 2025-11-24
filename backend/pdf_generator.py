@@ -747,7 +747,7 @@ class PDFGenerator:
             fontName='Helvetica'
         )
         
-        # Add items with InHaus brand styling
+        # Add items with modern pastel styling
         for idx, item in enumerate(items, 1):
             # Smart truncation for description
             desc = item['description']
@@ -763,31 +763,31 @@ class PDFGenerator:
             
             # Model number - centered
             model_para = Paragraph(
-                f"<font size=10 color='#1F2937'>{item['model_no']}</font>",
+                f"<font size=10 color='#374151'>{item['model_no']}</font>",
                 center_style
             )
             
             # Serial number - centered
             sno_para = Paragraph(
-                f"<font size=10 color='#1F2937'>{str(idx)}</font>",
+                f"<font size=10 color='#374151'>{str(idx)}</font>",
                 center_style
             )
             
             # Quantity - centered and bold
             qty_para = Paragraph(
-                f"<font size=10 color='#1F2937'><b>{str(item['quantity'])}</b></font>",
+                f"<font size=10 color='#374151'><b>{str(item['quantity'])}</b></font>",
                 center_style
             )
             
             # Prices - right aligned
             price_para = Paragraph(
-                f"<font size=10 color='#1F2937'>Rs. {item['offered_price']:,.0f}</font>",
+                f"<font size=10 color='#374151'>Rs. {item['offered_price']:,.0f}</font>",
                 right_style
             )
             
-            # Total amount - right aligned and bold with brand color
+            # Total amount - right aligned and bold with accent color
             amount_para = Paragraph(
-                f"<font size=10 color='#EA580C'><b>Rs. {item['total_amount']:,.0f}</b></font>",
+                f"<font size=10 color='#1E40AF'><b>Rs. {item['total_amount']:,.0f}</b></font>",
                 right_style
             )
             
