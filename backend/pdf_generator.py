@@ -900,27 +900,30 @@ class PDFGenerator:
         
         # Premium table styling
         style_commands = [
-            # Header styling with black background
-            ('BACKGROUND', (0, 0), (-1, 0), colors.black),
+            # Header styling with InHaus orange
+            ('BACKGROUND', (0, 0), (-1, 0), self.header_bg),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 12),
-            ('TOPPADDING', (0, 0), (-1, 0), 14),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 14),
+            ('FONTSIZE', (0, 0), (-1, 0), 11),
+            ('TOPPADDING', (0, 0), (-1, 0), 16),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 16),
             
-            # All data cells - white background
-            ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+            # Alternating rows
+            ('BACKGROUND', (0, 1), (-1, -2), colors.white),
             
-            # Grand total styling - bold text
+            # Grand total styling - highlighted
+            ('BACKGROUND', (0, -1), (-1, -1), self.total_bg),
             ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
             ('FONTSIZE', (0, -1), (-1, -1), 12),
-            ('TOPPADDING', (0, -1), (-1, -1), 14),
-            ('BOTTOMPADDING', (0, -1), (-1, -1), 14),
+            ('TOPPADDING', (0, -1), (-1, -1), 16),
+            ('BOTTOMPADDING', (0, -1), (-1, -1), 16),
+            ('LINEABOVE', (0, -1), (-1, -1), 2, self.table_border),
             
-            # BOLD BLACK BORDERS - matching items table
-            ('BOX', (0, 0), (-1, -1), 2.5, colors.black),
-            ('INNERGRID', (0, 0), (-1, -1), 2, colors.black),
+            # Elegant borders with brand color
+            ('BOX', (0, 0), (-1, -1), 1.5, self.table_border),
+            ('LINEBELOW', (0, 0), (-1, 0), 2, self.primary_dark),
+            ('INNERGRID', (0, 1), (-1, -1), 0.75, self.border_color),
             
             # Alignment - all centered
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
