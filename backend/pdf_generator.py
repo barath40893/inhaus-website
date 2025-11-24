@@ -892,9 +892,9 @@ class PDFGenerator:
         
         data.append(['', f"GST ({quotation_data['gst_percentage']}%)", f"Rs.  {quotation_data['gst_amount']:,.0f}"])
         
-        # Grand total with emphasis - pure black
-        data.append(['', Paragraph('<font size=14 color="#000000"><b>GRAND TOTAL</b></font>', self.heading_style), 
-                     Paragraph(f"<font size=14 color='#000000'><b>Rs.  {quotation_data['total']:,.0f}</b></font>", self.heading_style)])
+        # Grand total with emphasis - InHaus brand orange
+        data.append(['', Paragraph('<font size=13 color="#EA580C"><b>GRAND TOTAL</b></font>', self.heading_style), 
+                     Paragraph(f"<font size=13 color='#EA580C'><b>Rs.  {quotation_data['total']:,.0f}</b></font>", self.heading_style)])
         
         table = Table(data, colWidths=[0.6*inch, 4.7*inch, 1.5*inch])
         
