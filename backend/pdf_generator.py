@@ -650,13 +650,13 @@ class PDFGenerator:
             Paragraph('<b>Total</b>', header_style)
         ]]
         
-        # Content styling - centered and clear
+        # Content styling - professional and readable
         content_style = ParagraphStyle(
             'Content',
             parent=self.styles['Normal'],
             fontSize=10,
             textColor=self.text_color,
-            alignment=TA_CENTER,
+            alignment=TA_LEFT,
             leading=13,
             spaceBefore=2,
             spaceAfter=2
@@ -665,21 +665,21 @@ class PDFGenerator:
         center_style = ParagraphStyle(
             'CenterContent',
             parent=self.styles['Normal'],
-            fontSize=11,
+            fontSize=10,
             textColor=self.text_color,
             alignment=TA_CENTER,
-            leading=14,
+            leading=13,
             fontName='Helvetica'
         )
         
-        bold_center_style = ParagraphStyle(
-            'BoldCenterContent',
+        right_style = ParagraphStyle(
+            'RightContent',
             parent=self.styles['Normal'],
-            fontSize=11,
+            fontSize=10,
             textColor=self.text_color,
-            alignment=TA_CENTER,
-            leading=14,
-            fontName='Helvetica-Bold'
+            alignment=TA_RIGHT,
+            leading=13,
+            fontName='Helvetica'
         )
         
         # Add items with bold black border styling
