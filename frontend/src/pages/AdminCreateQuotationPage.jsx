@@ -118,7 +118,8 @@ const AdminCreateQuotationPage = () => {
       description: product.description,
       list_price: product.list_price,
       offered_price: product.list_price,
-      company_cost: product.company_cost
+      company_cost: product.company_cost,
+      image_url: product.image_url || null
     });
   };
 
