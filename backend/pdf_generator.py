@@ -438,40 +438,48 @@ class PDFGenerator:
         # Wider columns for better readability
         table = Table(data, colWidths=[0.45*inch, 1*inch, 3.2*inch, 0.55*inch, 1.1*inch, 1.2*inch])
         
-        # Premium table styling with alternating row colors
+        # Ultra-premium table styling with generous spacing
         style_commands = [
-            # Header styling with gradient effect
+            # Header styling - dark elegant background
             ('BACKGROUND', (0, 0), (-1, 0), self.secondary_color),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 10),
-            ('TOPPADDING', (0, 0), (-1, 0), 14),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 14),
+            ('FONTSIZE', (0, 0), (-1, 0), 11),
+            ('TOPPADDING', (0, 0), (-1, 0), 16),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 16),
+            ('LEFTPADDING', (0, 0), (-1, 0), 12),
+            ('RIGHTPADDING', (0, 0), (-1, 0), 12),
             
-            # Total row styling with highlight
+            # Total row styling with warm highlight
             ('BACKGROUND', (0, -1), (-1, -1), self.highlight_color),
-            ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, -1), (-1, -1), 11),
-            ('TEXTCOLOR', (0, -1), (-1, -1), self.secondary_color),
-            ('TOPPADDING', (0, -1), (-1, -1), 12),
-            ('BOTTOMPADDING', (0, -1), (-1, -1), 12),
+            ('TOPPADDING', (0, -1), (-1, -1), 14),
+            ('BOTTOMPADDING', (0, -1), (-1, -1), 14),
+            ('LEFTPADDING', (0, -1), (-1, -1), 12),
+            ('RIGHTPADDING', (0, -1), (-1, -1), 12),
             
-            # Grid and borders with subtle lines
-            ('LINEBELOW', (0, 0), (-1, 0), 2, self.primary_color),
-            ('LINEBELOW', (0, -1), (-1, -1), 1.5, self.accent_color),
-            ('INNERGRID', (0, 1), (-1, -2), 0.25, self.medium_gray),
+            # Premium borders
+            ('LINEBELOW', (0, 0), (-1, 0), 2.5, self.primary_color),
+            ('LINEABOVE', (0, -1), (-1, -1), 1.5, self.medium_gray),
+            ('LINEBELOW', (0, -1), (-1, -1), 2.5, self.accent_color),
+            ('BOX', (0, 0), (-1, -1), 1, self.medium_gray),
             
-            # Alignment
-            ('ALIGN', (3, 1), (3, -1), 'CENTER'),
-            ('ALIGN', (4, 1), (5, -1), 'RIGHT'),
+            # Remove inner vertical lines for clean look
+            ('INNERGRID', (0, 1), (-1, -2), 0, colors.white),
+            ('LINEBELOW', (0, 1), (-1, -2), 0.5, self.light_gray),
+            
+            # Alignment - professional financial formatting
+            ('ALIGN', (0, 1), (0, -1), 'CENTER'),  # S.No centered
+            ('ALIGN', (3, 1), (3, -1), 'CENTER'),  # Qty centered
+            ('ALIGN', (4, 1), (5, -1), 'RIGHT'),   # Price and Amount right-aligned
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             
-            # Padding for content
-            ('LEFTPADDING', (0, 1), (-1, -2), 10),
-            ('RIGHTPADDING', (0, 1), (-1, -2), 10),
-            ('TOPPADDING', (0, 1), (-1, -2), 12),
-            ('BOTTOMPADDING', (0, 1), (-1, -2), 12),
+            # Generous padding for content rows
+            ('LEFTPADDING', (0, 1), (-1, -2), 12),
+            ('RIGHTPADDING', (0, 1), (-1, -2), 12),
+            ('TOPPADDING', (0, 1), (-1, -2), 14),
+            ('BOTTOMPADDING', (0, 1), (-1, -2), 14),
         ]
         
         # Add alternating row colors
