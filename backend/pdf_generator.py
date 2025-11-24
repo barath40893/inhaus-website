@@ -889,20 +889,22 @@ class PDFGenerator:
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 11),
-            ('TOPPADDING', (0, 0), (-1, 0), 16),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 16),
+            ('FONTSIZE', (0, 0), (-1, 0), 12),
+            ('TOPPADDING', (0, 0), (-1, 0), 14),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 14),
             
-            # Grand total styling with light grey highlight
-            ('BACKGROUND', (0, -1), (-1, -1), self.highlight_color),
-            ('LINEABOVE', (0, -1), (-1, -1), 2, colors.black),
-            ('TOPPADDING', (0, -1), (-1, -1), 16),
-            ('BOTTOMPADDING', (0, -1), (-1, -1), 16),
+            # All data cells - white background
+            ('BACKGROUND', (0, 1), (-1, -1), colors.white),
             
-            # Borders - clean black lines
-            ('LINEBELOW', (0, 0), (-1, 0), 2, colors.black),
-            ('INNERGRID', (0, 1), (-1, -2), 0.5, self.light_gray),
-            ('BOX', (0, 0), (-1, -1), 1.25, colors.black),
+            # Grand total styling - bold text
+            ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, -1), (-1, -1), 12),
+            ('TOPPADDING', (0, -1), (-1, -1), 14),
+            ('BOTTOMPADDING', (0, -1), (-1, -1), 14),
+            
+            # BOLD BLACK BORDERS - matching items table
+            ('BOX', (0, 0), (-1, -1), 2.5, colors.black),
+            ('INNERGRID', (0, 0), (-1, -1), 2, colors.black),
             
             # Alignment
             ('ALIGN', (2, 1), (2, -1), 'RIGHT'),
