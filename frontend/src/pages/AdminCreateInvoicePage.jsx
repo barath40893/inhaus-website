@@ -139,6 +139,12 @@ const AdminCreateInvoicePage = () => {
     setSaving(true);
     try {
       const token = localStorage.getItem('adminToken');
+      if (!token) {
+        alert('Session expired. Please login again.');
+        navigate('/admin/login');
+        return;
+      }
+
       const url = id ? `${backendUrl}/api/invoices/${id}` : `${backendUrl}/api/invoices`;
       const method = id ? 'PATCH' : 'POST';
 
@@ -152,15 +158,18 @@ const AdminCreateInvoicePage = () => {
       });
 
       if (response.ok) {
-        alert(id ? 'Invoice updated!' : 'Invoice created!');
+        alert(id ? 'Invoice updated successfully!' : 'Invoice created successfully!');
         navigate('/admin/invoices');
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        navigate('/admin/login');
       } else {
-        const error = await response.json();
+        const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
         alert('Error: ' + (error.detail || 'Failed to save'));
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Failed to save invoice');
+      alert(`Failed to save invoice: ${error.message}`);
     } finally {
       setSaving(false);
     }
