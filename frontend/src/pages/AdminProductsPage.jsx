@@ -10,6 +10,8 @@ const AdminProductsPage = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
   const [formData, setFormData] = useState({
