@@ -748,7 +748,7 @@ class PDFGenerator:
             fontName='Helvetica'
         )
         
-        # Add items with modern pastel styling
+        # Add items with professional blue-grey styling
         for idx, item in enumerate(items, 1):
             # Smart truncation for description
             desc = item['description']
@@ -757,38 +757,38 @@ class PDFGenerator:
             
             # Product details - left aligned with hierarchy
             product_para = Paragraph(
-                f"<font size=10 color='#1F2937'><b>{item['product_name']}</b></font><br/>"
-                f"<font size=9 color='#6B7280'>{desc}</font>", 
+                f"<font size=10 color='#333333'><b>{item['product_name']}</b></font><br/>"
+                f"<font size=9 color='#666666'>{desc}</font>", 
                 content_style
             )
             
             # Model number - centered
             model_para = Paragraph(
-                f"<font size=10 color='#374151'>{item['model_no']}</font>",
+                f"<font size=10 color='#333333'>{item['model_no']}</font>",
                 center_style
             )
             
             # Serial number - centered
             sno_para = Paragraph(
-                f"<font size=10 color='#374151'>{str(idx)}</font>",
+                f"<font size=10 color='#333333'>{str(idx)}</font>",
                 center_style
             )
             
-            # Quantity - centered and bold
+            # Quantity - right aligned
             qty_para = Paragraph(
-                f"<font size=10 color='#374151'><b>{str(item['quantity'])}</b></font>",
-                center_style
+                f"<font size=10 color='#333333'>{str(item['quantity'])}</font>",
+                right_style
             )
             
             # Prices - right aligned
             price_para = Paragraph(
-                f"<font size=10 color='#374151'>Rs. {item['offered_price']:,.0f}</font>",
+                f"<font size=10 color='#333333'>Rs. {item['offered_price']:,.0f}</font>",
                 right_style
             )
             
-            # Total amount - right aligned and bold with accent color
+            # Total amount - right aligned and bold
             amount_para = Paragraph(
-                f"<font size=10 color='#1E40AF'><b>Rs. {item['total_amount']:,.0f}</b></font>",
+                f"<font size=10 color='#333333'><b>Rs. {item['total_amount']:,.0f}</b></font>",
                 right_style
             )
             
