@@ -1278,8 +1278,15 @@ async def send_invoice_email_endpoint(invoice_id: str, payload: dict = Depends(v
         
         pdf_generator.generate_invoice_pdf(invoice, settings, str(pdf_path))
         
-        # Send email
-        await send_invoice_email(invoice, str(pdf_path), settings)
+        # Try to send email, but don't fail if email fails
+        email_sent = False
+        email_error = None
+        try:
+            await send_invoice_email(invoice, str(pdf_path), settings)
+            email_sent = True
+        except Exception as email_ex:
+            email_error = str(email_ex)
+            logger.error(f"Email sending failed but PDF generated: {email_error}")
         
         # Update invoice status
         await db.invoices.update_one(
@@ -1290,7 +1297,16 @@ async def send_invoice_email_endpoint(invoice_id: str, payload: dict = Depends(v
             }}
         )
         
-        return {"message": "Invoice sent successfully via email"}
+        if email_sent:
+            return {"message": "Invoice sent successfully via email", "pdf_generated": True, "email_sent": True}
+        else:
+            return {
+                "message": f"PDF generated successfully but email failed: {email_error}. Please download PDF and send manually.",
+                "pdf_generated": True,
+                "email_sent": False,
+                "pdf_path": str(pdf_path),
+                "error": email_error
+            }
     except HTTPException:
         raise
     except Exception as e:
