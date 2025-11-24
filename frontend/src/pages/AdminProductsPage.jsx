@@ -61,6 +61,12 @@ const AdminProductsPage = () => {
     
     try {
       const token = localStorage.getItem('adminToken');
+      if (!token) {
+        alert('Session expired. Please login again.');
+        navigate('/admin/login');
+        return;
+      }
+
       const url = editingProduct 
         ? `${backendUrl}/api/products/${editingProduct.id}`
         : `${backendUrl}/api/products`;
@@ -81,17 +87,20 @@ const AdminProductsPage = () => {
       });
       
       if (response.ok) {
-        alert(editingProduct ? 'Product updated!' : 'Product created!');
+        alert(editingProduct ? 'Product updated successfully!' : 'Product created successfully!');
         setShowModal(false);
         resetForm();
         fetchProducts();
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        navigate('/admin/login');
       } else {
-        const error = await response.json();
+        const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
         alert('Error: ' + (error.detail || 'Failed to save product'));
       }
     } catch (error) {
       console.error('Error saving product:', error);
-      alert('Failed to save product');
+      alert(`Failed to save product: ${error.message}`);
     }
   };
 
