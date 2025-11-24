@@ -514,6 +514,15 @@ async def upload_product_image(file: UploadFile = File(...), payload: dict = Dep
         if file.content_type not in allowed_types:
             raise HTTPException(status_code=400, detail="Only JPEG, PNG, and WEBP images are allowed")
         
+        # Read file content to check size
+        file_content = await file.read()
+        file_size = len(file_content)
+        
+        # Validate file size (5MB limit)
+        max_size = 5 * 1024 * 1024  # 5MB in bytes
+        if file_size > max_size:
+            raise HTTPException(status_code=400, detail="File size exceeds 5MB limit")
+        
         # Generate unique filename
         file_extension = file.filename.split('.')[-1]
         unique_filename = f"{uuid.uuid4()}.{file_extension}"
@@ -521,7 +530,7 @@ async def upload_product_image(file: UploadFile = File(...), payload: dict = Dep
         
         # Save file
         with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+            buffer.write(file_content)
         
         # Return the URL path with /api prefix to match static files mount
         image_url = f"/api/uploads/products/{unique_filename}"
