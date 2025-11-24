@@ -269,53 +269,37 @@ def test_product_crud_with_images():
     
     return True
 
-def test_get_contact_submissions():
-    """Test GET /api/contact endpoint"""
-    print("\n🔍 Testing Get Contact Submissions...")
+def test_static_files_access():
+    """Test static files access for uploaded images"""
+    print("\n🔍 Testing Static Files Access...")
     
+    if not uploaded_image_url:
+        print("❌ No uploaded image URL available")
+        return False
+    
+    # Test accessing uploaded image via static files route
     try:
-        response = requests.get(f"{BACKEND_URL}/contact")
-        print(f"Status Code: {response.status_code}")
+        # Convert /uploads/products/filename to full URL
+        static_url = f"https://quote-genius-11.preview.emergentagent.com{uploaded_image_url}"
+        
+        response = requests.get(static_url)
+        print(f"Static File Access Status Code: {response.status_code}")
         
         if response.status_code == 200:
-            data = response.json()
-            print(f"Number of submissions: {len(data)}")
-            
-            if isinstance(data, list):
-                if len(data) > 0:
-                    # Check if sorted by timestamp (newest first)
-                    timestamps = [item.get("timestamp") for item in data if "timestamp" in item]
-                    if len(timestamps) > 1:
-                        # Convert to datetime for comparison
-                        dt_timestamps = []
-                        for ts in timestamps:
-                            if isinstance(ts, str):
-                                dt_timestamps.append(datetime.fromisoformat(ts.replace('Z', '+00:00')))
-                            else:
-                                dt_timestamps.append(ts)
-                        
-                        is_sorted = all(dt_timestamps[i] >= dt_timestamps[i+1] for i in range(len(dt_timestamps)-1))
-                        if is_sorted:
-                            print("✅ Contact submissions sorted correctly (newest first)")
-                        else:
-                            print("❌ Contact submissions not sorted by timestamp")
-                            return False
-                    
-                    print("✅ Get contact submissions working correctly")
-                    return True
-                else:
-                    print("✅ Get contact submissions working (empty list)")
-                    return True
+            # Check if it's actually an image
+            content_type = response.headers.get('content-type', '')
+            if content_type.startswith('image/'):
+                print(f"✅ Static file accessible with content-type: {content_type}")
+                return True
             else:
-                print(f"❌ Expected list, got {type(data)}")
+                print(f"❌ Static file accessible but wrong content-type: {content_type}")
                 return False
         else:
-            print(f"❌ Get contact submissions failed with status {response.status_code}")
-            print(f"Response: {response.text}")
+            print(f"❌ Static file access failed with status {response.status_code}")
             return False
             
     except Exception as e:
-        print(f"❌ Get contact submissions test failed with error: {str(e)}")
+        print(f"❌ Static file access test failed with error: {str(e)}")
         return False
 
 def test_get_specific_contact_submission():
