@@ -95,8 +95,44 @@ class PDFGenerator:
             fontName='Helvetica-Bold'
         )
     
+    def _add_watermark(self, canvas, doc):
+        """Add transparent logo watermark to each page"""
+        canvas.saveState()
+        
+        # Try to load and add watermark logo
+        logo_path = Path('/app/frontend/public/inhaus/fulllogo_transparent_nobuffer.png')
+        if logo_path.exists():
+            try:
+                # Set transparency (0.0 = fully transparent, 1.0 = fully opaque)
+                canvas.setFillAlpha(0.08)  # Very subtle watermark
+                canvas.setStrokeAlpha(0.08)
+                
+                # Calculate center position
+                page_width, page_height = A4
+                
+                # Large watermark in center
+                watermark_width = 4 * inch
+                watermark_height = 1.5 * inch
+                
+                x = (page_width - watermark_width) / 2
+                y = (page_height - watermark_height) / 2
+                
+                # Draw the watermark
+                canvas.drawImage(
+                    str(logo_path),
+                    x, y,
+                    width=watermark_width,
+                    height=watermark_height,
+                    preserveAspectRatio=True,
+                    mask='auto'
+                )
+            except Exception as e:
+                logging.error(f"Failed to add watermark: {str(e)}")
+        
+        canvas.restoreState()
+    
     def generate_quotation_pdf(self, quotation_data: dict, settings_data: dict, output_path: str):
-        """Generate a professional quotation PDF"""
+        """Generate a professional quotation PDF with watermark"""
         doc = SimpleDocTemplate(
             output_path,
             pagesize=A4,
@@ -130,9 +166,9 @@ class PDFGenerator:
         
         # Create table for each room with enhanced section heading
         for room, items in items_by_room.items():
-            # Premium section heading with subtle background
+            # Clean section heading in black
             room_heading = Paragraph(
-                f'<font size=14 color="#001219"><b>Scope of Automation - {room}</b></font>',
+                f'<font size=14 color="#000000"><b>Scope of Automation - {room}</b></font>',
                 ParagraphStyle(
                     'RoomHeading',
                     parent=self.heading_style,
@@ -170,7 +206,8 @@ class PDFGenerator:
         # Footer with company details
         story.extend(self._create_footer(settings_data))
         
-        doc.build(story)
+        # Build PDF with watermark on each page
+        doc.build(story, onFirstPage=self._add_watermark, onLaterPages=self._add_watermark)
         return output_path
     
     def generate_invoice_pdf(self, invoice_data: dict, settings_data: dict, output_path: str):
