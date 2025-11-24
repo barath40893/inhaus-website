@@ -389,8 +389,8 @@ class PDFGenerator:
         
         # Premium table styling with alternating row colors
         style_commands = [
-            # Header styling
-            ('BACKGROUND', (0, 0), (-1, 0), self.primary_color),
+            # Header styling with gradient effect
+            ('BACKGROUND', (0, 0), (-1, 0), self.secondary_color),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
@@ -398,17 +398,18 @@ class PDFGenerator:
             ('TOPPADDING', (0, 0), (-1, 0), 14),
             ('BOTTOMPADDING', (0, 0), (-1, 0), 14),
             
-            # Total row styling
-            ('BACKGROUND', (0, -1), (-1, -1), self.light_gray),
+            # Total row styling with highlight
+            ('BACKGROUND', (0, -1), (-1, -1), self.highlight_color),
             ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
             ('FONTSIZE', (0, -1), (-1, -1), 11),
+            ('TEXTCOLOR', (0, -1), (-1, -1), self.secondary_color),
             ('TOPPADDING', (0, -1), (-1, -1), 12),
             ('BOTTOMPADDING', (0, -1), (-1, -1), 12),
             
-            # Grid and borders
-            ('LINEBELOW', (0, 0), (-1, 0), 1.5, self.primary_color),
-            ('LINEBELOW', (0, -1), (-1, -1), 1, self.medium_gray),
-            ('INNERGRID', (0, 1), (-1, -2), 0.5, self.medium_gray),
+            # Grid and borders with subtle lines
+            ('LINEBELOW', (0, 0), (-1, 0), 2, self.primary_color),
+            ('LINEBELOW', (0, -1), (-1, -1), 1.5, self.accent_color),
+            ('INNERGRID', (0, 1), (-1, -2), 0.25, self.medium_gray),
             
             # Alignment
             ('ALIGN', (3, 1), (3, -1), 'CENTER'),
