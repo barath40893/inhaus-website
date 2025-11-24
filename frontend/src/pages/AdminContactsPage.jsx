@@ -71,6 +71,16 @@ const AdminContactsPage = () => {
   const updateStatus = async (contactId, newStatus) => {
     try {
       const token = localStorage.getItem('adminToken');
+      if (!token) {
+        toast({
+          title: 'Session Expired',
+          description: 'Please login again',
+          variant: 'destructive',
+        });
+        navigate('/admin/login');
+        return;
+      }
+
       await axios.patch(
         `${API}/contact/${contactId}/status`,
         { status: newStatus },
@@ -86,11 +96,20 @@ const AdminContactsPage = () => {
         description: 'Status updated successfully',
       });
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to update status',
-        variant: 'destructive',
-      });
+      if (error.response?.status === 401) {
+        toast({
+          title: 'Session Expired',
+          description: 'Please login again',
+          variant: 'destructive',
+        });
+        navigate('/admin/login');
+      } else {
+        toast({
+          title: 'Error',
+          description: error.response?.data?.detail || 'Failed to update status',
+          variant: 'destructive',
+        });
+      }
     }
   };
 
