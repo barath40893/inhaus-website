@@ -4,6 +4,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch, mm
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image, PageBreak
 from reportlab.lib.enums import TA_LEFT, TA_RIGHT, TA_CENTER
+from reportlab.pdfgen import canvas
 from datetime import datetime, timedelta
 from pathlib import Path
 import os
@@ -13,37 +14,62 @@ class PDFGenerator:
         self.styles = getSampleStyleSheet()
         self.page_width, self.page_height = A4
         
-        # Custom styles
+        # Premium color palette
+        self.primary_color = colors.HexColor('#FF6B35')  # Premium orange
+        self.secondary_color = colors.HexColor('#1F2937')  # Dark gray
+        self.light_gray = colors.HexColor('#F3F4F6')  # Light gray for alternating rows
+        self.medium_gray = colors.HexColor('#E5E7EB')  # Medium gray for borders
+        self.text_color = colors.HexColor('#374151')  # Body text color
+        self.light_text = colors.HexColor('#6B7280')  # Light text color
+        
+        # Custom styles with premium fonts and spacing
         self.title_style = ParagraphStyle(
             'CustomTitle',
             parent=self.styles['Heading1'],
-            fontSize=24,
-            textColor=colors.HexColor('#f97316'),
-            spaceAfter=30,
-            alignment=TA_CENTER
+            fontSize=28,
+            textColor=self.primary_color,
+            spaceAfter=20,
+            spaceBefore=10,
+            alignment=TA_CENTER,
+            fontName='Helvetica-Bold',
+            leading=34
         )
         
         self.heading_style = ParagraphStyle(
             'CustomHeading',
             parent=self.styles['Heading2'],
-            fontSize=14,
-            textColor=colors.HexColor('#1f2937'),
-            spaceAfter=12,
-            spaceBefore=12
+            fontSize=16,
+            textColor=self.secondary_color,
+            spaceAfter=15,
+            spaceBefore=20,
+            fontName='Helvetica-Bold',
+            leading=20
         )
         
         self.normal_style = ParagraphStyle(
             'CustomNormal',
             parent=self.styles['Normal'],
             fontSize=10,
-            textColor=colors.HexColor('#374151')
+            textColor=self.text_color,
+            leading=14,
+            fontName='Helvetica'
         )
         
         self.small_style = ParagraphStyle(
             'CustomSmall',
             parent=self.styles['Normal'],
-            fontSize=8,
-            textColor=colors.HexColor('#6b7280')
+            fontSize=9,
+            textColor=self.light_text,
+            leading=12,
+            fontName='Helvetica'
+        )
+        
+        self.bold_style = ParagraphStyle(
+            'CustomBold',
+            parent=self.styles['Normal'],
+            fontSize=10,
+            textColor=self.secondary_color,
+            fontName='Helvetica-Bold'
         )
     
     def generate_quotation_pdf(self, quotation_data: dict, settings_data: dict, output_path: str):
