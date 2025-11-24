@@ -132,7 +132,7 @@ class PDFGenerator:
         canvas.restoreState()
     
     def generate_quotation_pdf(self, quotation_data: dict, settings_data: dict, output_path: str):
-        """Generate a professional quotation PDF with watermark"""
+        """Generate a professional quotation PDF with attractive first page and watermark"""
         doc = SimpleDocTemplate(
             output_path,
             pagesize=A4,
@@ -144,17 +144,11 @@ class PDFGenerator:
         
         story = []
         
-        # Header with logo and company info
-        story.extend(self._create_header(settings_data))
-        story.append(Spacer(1, 20))
+        # ========== FIRST PAGE: COVER PAGE WITH BRANDING ==========
+        story.extend(self._create_cover_page(quotation_data, settings_data))
+        story.append(PageBreak())
         
-        # Title
-        story.append(Paragraph("QUOTATION", self.title_style))
-        story.append(Spacer(1, 10))
-        
-        # Quote details and customer info
-        story.extend(self._create_quote_info(quotation_data, settings_data))
-        story.append(Spacer(1, 20))
+        # ========== SECOND PAGE ONWARDS: PRODUCT DETAILS ==========
         
         # Group items by room/area
         items_by_room = {}
