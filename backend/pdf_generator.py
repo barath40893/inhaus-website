@@ -339,43 +339,78 @@ class PDFGenerator:
         return elements
     
     def _create_items_table(self, items: list):
-        """Create items table for a specific room"""
+        """Create premium items table with alternating row colors"""
         elements = []
         
-        # Table header
+        # Table header with premium styling
         data = [['S.No', 'Model No', 'Product Details', 'Qty', 'Price', 'Amount']]
         
         # Add items
         for idx, item in enumerate(items, 1):
+            # Truncate description if too long
+            desc = item['description']
+            if len(desc) > 150:
+                desc = desc[:150] + '...'
+            
             data.append([
                 str(idx),
-                item['model_no'],
-                Paragraph(f"<b>{item['product_name']}</b><br/>{item['description'][:100]}...", self.small_style),
+                Paragraph(f"<font size=9><b>{item['model_no']}</b></font>", self.small_style),
+                Paragraph(f"<font size=9><b>{item['product_name']}</b></font><br/><font size=8 color='#6B7280'>{desc}</font>", self.small_style),
                 str(item['quantity']),
-                f"₹ {item['offered_price']:,.2f}",
-                f"₹ {item['total_amount']:,.2f}"
+                f"₹ {item['offered_price']:,.0f}",
+                f"₹ {item['total_amount']:,.0f}"
             ])
         
-        # Total row
+        # Total row with emphasis
         total = sum(item['total_amount'] for item in items)
-        data.append(['', '', Paragraph('<b>Total</b>', self.normal_style), 
-                     str(sum(item['quantity'] for item in items)), '', f"₹ {total:,.2f}"])
+        data.append(['', '', Paragraph('<b>Room Total</b>', self.bold_style), 
+                     str(sum(item['quantity'] for item in items)), '', f"₹ {total:,.0f}"])
         
-        table = Table(data, colWidths=[0.5*inch, 1*inch, 3*inch, 0.5*inch, 1*inch, 1.2*inch])
-        table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f97316')),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        table = Table(data, colWidths=[0.5*inch, 0.9*inch, 3.2*inch, 0.5*inch, 1*inch, 1.1*inch])
+        
+        # Premium table styling with alternating row colors
+        style_commands = [
+            # Header styling
+            ('BACKGROUND', (0, 0), (-1, 0), self.primary_color),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, 0), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor('#f3f4f6')),
+            ('TOPPADDING', (0, 0), (-1, 0), 14),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 14),
+            
+            # Total row styling
+            ('BACKGROUND', (0, -1), (-1, -1), self.light_gray),
             ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
-            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+            ('FONTSIZE', (0, -1), (-1, -1), 11),
+            ('TOPPADDING', (0, -1), (-1, -1), 12),
+            ('BOTTOMPADDING', (0, -1), (-1, -1), 12),
+            
+            # Grid and borders
+            ('LINEBELOW', (0, 0), (-1, 0), 1.5, self.primary_color),
+            ('LINEBELOW', (0, -1), (-1, -1), 1, self.medium_gray),
+            ('INNERGRID', (0, 1), (-1, -2), 0.5, self.medium_gray),
+            
+            # Alignment
             ('ALIGN', (3, 1), (3, -1), 'CENTER'),
             ('ALIGN', (4, 1), (5, -1), 'RIGHT'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ]))
+            
+            # Padding for content
+            ('LEFTPADDING', (0, 1), (-1, -2), 10),
+            ('RIGHTPADDING', (0, 1), (-1, -2), 10),
+            ('TOPPADDING', (0, 1), (-1, -2), 12),
+            ('BOTTOMPADDING', (0, 1), (-1, -2), 12),
+        ]
+        
+        # Add alternating row colors
+        for i in range(1, len(data) - 1):
+            if i % 2 == 0:
+                style_commands.append(('BACKGROUND', (0, i), (-1, i), colors.white))
+            else:
+                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.light_gray))
+        
+        table.setStyle(TableStyle(style_commands))
         
         elements.append(table)
         return elements
