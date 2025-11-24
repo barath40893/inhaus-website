@@ -279,7 +279,8 @@ class PDFGenerator:
         # Footer with company details and bank info
         story.extend(self._create_footer(settings_data, include_bank=True))
         
-        doc.build(story)
+        # Build PDF with watermark on each page
+        doc.build(story, onFirstPage=self._add_watermark, onLaterPages=self._add_watermark)
         return output_path
     
     def _create_header(self, settings_data: dict):
