@@ -238,7 +238,7 @@ class PDFGenerator:
         elements.extend(self._create_quotation_details_table(quotation_data))
         elements.append(Spacer(1, 40))
         
-        # Customer details
+        # Customer details with same table style
         customer_heading = ParagraphStyle(
             'CustomerHeading',
             parent=self.styles['Normal'],
@@ -253,29 +253,39 @@ class PDFGenerator:
         elements.append(Paragraph("<b>PREPARED FOR:</b>", customer_heading))
         
         customer_info_data = [
-            ['<b>Customer Name:</b>', quotation_data['customer_name']],
-            ['<b>Email:</b>', quotation_data['customer_email']],
+            [Paragraph('<b>Customer Name:</b>', self.normal_style), Paragraph(quotation_data['customer_name'], self.normal_style)],
+            [Paragraph('<b>Email:</b>', self.normal_style), Paragraph(quotation_data['customer_email'], self.normal_style)],
         ]
         
         if quotation_data.get('customer_phone'):
-            customer_info_data.append(['<b>Phone:</b>', quotation_data['customer_phone']])
+            customer_info_data.append([Paragraph('<b>Phone:</b>', self.normal_style), Paragraph(quotation_data['customer_phone'], self.normal_style)])
         
         if quotation_data.get('customer_address'):
-            customer_info_data.append(['<b>Address:</b>', quotation_data['customer_address']])
+            customer_info_data.append([Paragraph('<b>Address:</b>', self.normal_style), Paragraph(quotation_data['customer_address'], self.normal_style)])
         
         if quotation_data.get('site_location'):
-            customer_info_data.append(['<b>Site Location:</b>', quotation_data['site_location']])
+            customer_info_data.append([Paragraph('<b>Site Location:</b>', self.normal_style), Paragraph(quotation_data['site_location'], self.normal_style)])
         
-        customer_info_table = Table(customer_info_data, colWidths=[2.5*inch, 3*inch])
+        customer_info_table = Table(customer_info_data, colWidths=[2.5*inch, 3.5*inch])
         customer_info_table.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
-            ('ALIGN', (1, 0), (1, -1), 'LEFT'),
-            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-            ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
-            ('FONTSIZE', (0, 0), (-1, -1), 11),
-            ('TOPPADDING', (0, 0), (-1, -1), 8),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
-            ('LINEBELOW', (0, 0), (-1, -1), 0.5, colors.HexColor('#CCCCCC')),
+            # Light grey background for labels
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#F5F5F5')),
+            # White background for values
+            ('BACKGROUND', (1, 0), (1, -1), colors.white),
+            # Light grey borders
+            ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#DDDDDD')),
+            ('INNERGRID', (0, 0), (-1, -1), 1, colors.HexColor('#DDDDDD')),
+            # Alignment
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            # Padding
+            ('LEFTPADDING', (0, 0), (-1, -1), 10),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 10),
+            ('TOPPADDING', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
+            # Font
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
         ]))
         
         elements.append(customer_info_table)
