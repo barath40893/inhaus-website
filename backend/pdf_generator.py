@@ -810,58 +810,39 @@ class PDFGenerator:
         # Optimized column widths for clarity - wider spacing
         table = Table(data, colWidths=[0.4*inch, 0.75*inch, 0.95*inch, 2.45*inch, 0.5*inch, 1.05*inch, 1.15*inch])
         
-        # Modern, clean, highly readable table styling
+        # Bold black border table styling - matching reference design
         style_commands = [
-            # ========== HEADER - High Contrast, Professional ==========
-            ('BACKGROUND', (0, 0), (-1, 0), self.header_bg),  # Rich navy blue
-            ('TEXTCOLOR', (0, 0), (-1, 0), self.header_text),  # Pure white
+            # ========== HEADER - Bold Black with White Text ==========
+            ('BACKGROUND', (0, 0), (-1, 0), colors.black),  # Black header background
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),  # White text
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 11),
-            ('TOPPADDING', (0, 0), (-1, 0), 16),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 16),
-            ('LEFTPADDING', (0, 0), (-1, 0), 10),
-            ('RIGHTPADDING', (0, 0), (-1, 0), 10),
+            ('FONTSIZE', (0, 0), (-1, 0), 12),
+            ('TOPPADDING', (0, 0), (-1, 0), 14),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 14),
             
-            # ========== TOTAL ROW - Clean Highlight ==========
-            ('BACKGROUND', (0, -1), (-1, -1), self.total_bg),  # Light grey background
-            ('TOPPADDING', (0, -1), (-1, -1), 16),
-            ('BOTTOMPADDING', (0, -1), (-1, -1), 16),
-            ('LEFTPADDING', (0, -1), (-1, -1), 12),
-            ('RIGHTPADDING', (0, -1), (-1, -1), 12),
-            ('LINEABOVE', (0, -1), (-1, -1), 2, self.table_border),  # Strong separator
+            # ========== BOLD BLACK BORDERS - Key Feature ==========
+            ('BOX', (0, 0), (-1, -1), 2.5, colors.black),  # BOLD outer border
+            ('INNERGRID', (0, 0), (-1, -1), 2, colors.black),  # BOLD inner grid lines
             
-            # ========== BORDERS - Clean Lines ==========
-            ('BOX', (0, 0), (-1, -1), 1.25, self.table_border),  # Clean outer border
-            ('LINEBELOW', (0, 0), (-1, 0), 2, self.secondary_color),  # Dark header underline
-            ('LINEBELOW', (0, 1), (-1, -2), 0.75, self.border_color),  # Row separators
+            # ========== ALL CELLS - WHITE BACKGROUND ==========
+            ('BACKGROUND', (0, 1), (-1, -1), colors.white),  # Pure white for all data cells
             
-            # ========== PERFECT ALIGNMENT ==========
-            ('ALIGN', (0, 1), (0, -1), 'CENTER'),  # S.No
-            ('ALIGN', (1, 1), (1, -1), 'CENTER'),  # Image
-            ('ALIGN', (2, 1), (2, -1), 'CENTER'),  # Model No
-            ('ALIGN', (3, 1), (3, -1), 'LEFT'),    # Product Details
-            ('ALIGN', (4, 1), (4, -1), 'CENTER'),  # Qty
-            ('ALIGN', (5, 1), (5, -1), 'RIGHT'),   # Price
-            ('ALIGN', (6, 1), (6, -1), 'RIGHT'),   # Amount
-            
-            # Vertical alignment
+            # ========== ALIGNMENT - ALL CENTERED ==========
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # Center all columns
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             
-            # ========== GENEROUS PADDING for Readability ==========
-            ('LEFTPADDING', (0, 1), (-1, -2), 12),
-            ('RIGHTPADDING', (0, 1), (-1, -2), 12),
-            ('TOPPADDING', (0, 1), (-1, -2), 16),      # Increased for breathing room
-            ('BOTTOMPADDING', (0, 1), (-1, -2), 16),   # Increased for breathing room
+            # ========== PADDING - Generous Spacing ==========
+            ('LEFTPADDING', (0, 0), (-1, -1), 10),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 10),
+            ('TOPPADDING', (0, 1), (-1, -1), 14),
+            ('BOTTOMPADDING', (0, 1), (-1, -1), 14),
+            
+            # ========== TOTAL ROW - Bold Text ==========
+            ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, -1), (-1, -1), 12),
         ]
-        
-        # Subtle alternating rows for easy scanning
-        for i in range(1, len(data) - 1):
-            if i % 2 == 0:
-                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_alt))  # Subtle grey
-            else:
-                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_light))  # White
         
         table.setStyle(TableStyle(style_commands))
         
