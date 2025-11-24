@@ -876,11 +876,11 @@ class PDFGenerator:
         # Optimized column widths for clarity - wider spacing
         table = Table(data, colWidths=[0.4*inch, 0.75*inch, 0.95*inch, 2.45*inch, 0.5*inch, 1.05*inch, 1.15*inch])
         
-        # InHaus Brand Table Styling - Modern and Professional
+        # Modern Pastel Table Styling with Bold Borders
         style_commands = [
-            # ========== HEADER - Orange Gradient Effect ==========
-            ('BACKGROUND', (0, 0), (-1, 0), self.header_bg),  # Orange header
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),  # White text
+            # ========== HEADER - Light Pastel Background ==========
+            ('BACKGROUND', (0, 0), (-1, 0), self.header_bg),  # Light peach header
+            ('TEXTCOLOR', (0, 0), (-1, 0), self.header_text),  # Dark text on light bg
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
@@ -888,10 +888,10 @@ class PDFGenerator:
             ('TOPPADDING', (0, 0), (-1, 0), 16),
             ('BOTTOMPADDING', (0, 0), (-1, 0), 16),
             
-            # ========== ELEGANT BORDERS - Orange Theme ==========
-            ('BOX', (0, 0), (-1, -1), 1.5, self.table_border),  # Orange outer border
-            ('LINEBELOW', (0, 0), (-1, 0), 2, self.primary_dark),  # Darker orange under header
-            ('INNERGRID', (0, 1), (-1, -1), 0.75, self.border_color),  # Light orange grid
+            # ========== BOLD DARK BORDERS ==========
+            ('BOX', (0, 0), (-1, -1), 2.5, self.table_border),  # BOLD dark outer border
+            ('LINEBELOW', (0, 0), (-1, 0), 2.5, self.table_border),  # BOLD line under header
+            ('INNERGRID', (0, 1), (-1, -1), 1.5, self.border_color),  # Medium gray grid
             
             # ========== ALIGNMENT - Professional Layout ==========
             ('ALIGN', (0, 1), (0, -1), 'CENTER'),  # S.No centered
@@ -909,19 +909,19 @@ class PDFGenerator:
             ('TOPPADDING', (0, 1), (-1, -1), 14),
             ('BOTTOMPADDING', (0, 1), (-1, -1), 14),
             
-            # ========== TOTAL ROW - Highlighted ==========
-            ('BACKGROUND', (0, -1), (-1, -1), self.total_bg),  # Light orange background
-            ('LINEABOVE', (0, -1), (-1, -1), 2, self.table_border),  # Orange line above
+            # ========== TOTAL ROW - Light Blue Highlight ==========
+            ('BACKGROUND', (0, -1), (-1, -1), self.total_bg),  # Light blue background
+            ('LINEABOVE', (0, -1), (-1, -1), 2.5, self.table_border),  # BOLD line above
             ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
             ('FONTSIZE', (0, -1), (-1, -1), 11),
             ('TOPPADDING', (0, -1), (-1, -1), 16),
             ('BOTTOMPADDING', (0, -1), (-1, -1), 16),
         ]
         
-        # Alternating row colors for readability
+        # Alternating row colors - light yellow and white
         for i in range(1, len(data) - 1):
             if i % 2 == 0:
-                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_alt))  # Light orange tint
+                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_alt))  # Light yellow
             else:
                 style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_light))  # White
         
