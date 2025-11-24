@@ -8,6 +8,15 @@ from reportlab.pdfgen import canvas
 from datetime import datetime, timedelta
 from pathlib import Path
 import os
+import logging
+
+# Try to import PIL, but don't fail if it's not available
+try:
+    from PIL import Image as PILImage
+    PIL_AVAILABLE = True
+except ImportError:
+    PIL_AVAILABLE = False
+    logging.warning("PIL/Pillow not available, logo aspect ratio may not be preserved")
 
 class PDFGenerator:
     def __init__(self):
