@@ -33,6 +33,8 @@ class PDFGenerator:
         self.border_color = colors.HexColor('#E9ECEF')  # Subtle border color
         self.text_color = colors.HexColor('#343A40')  # Dark gray for text
         self.light_text = colors.HexColor('#6C757D')  # Medium gray for secondary text
+        self.light_gray = colors.HexColor('#E9ECEF')  # Light gray for borders
+        self.medium_gray = colors.HexColor('#CED4DA')  # Medium gray for grid
         self.success_color = colors.HexColor('#28A745')  # Fresh green
         self.highlight_color = colors.HexColor('#FFF8E1')  # Very soft yellow highlight
         
