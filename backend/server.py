@@ -1027,6 +1027,8 @@ async def update_settings(settings: Settings, payload: dict = Depends(verify_tok
 
 # ============= PDF GENERATION ENDPOINTS =============
 
+from fastapi.responses import FileResponse
+
 @api_router.post("/quotations/{quotation_id}/generate-pdf")
 async def generate_quotation_pdf(quotation_id: str, payload: dict = Depends(verify_token)):
     """Generate PDF for a quotation (admin only)"""
@@ -1056,6 +1058,39 @@ async def generate_quotation_pdf(quotation_id: str, payload: dict = Depends(veri
         raise
     except Exception as e:
         logger.error(f"Error generating quotation PDF: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/quotations/{quotation_id}/download-pdf")
+async def download_quotation_pdf(quotation_id: str, payload: dict = Depends(verify_token)):
+    """Download PDF for a quotation (admin only)"""
+    try:
+        # Get quotation
+        quotation = await db.quotations.find_one({"id": quotation_id}, {"_id": 0})
+        if not quotation:
+            raise HTTPException(status_code=404, detail="Quotation not found")
+        
+        # Get settings
+        settings = await db.settings.find_one({"id": "company_settings"}, {"_id": 0})
+        if not settings:
+            settings = Settings().model_dump()
+        
+        # Generate PDF
+        pdf_filename = f"quotation_{quotation['quote_number'].replace('/', '_')}.pdf"
+        pdf_path = PDF_DIR / pdf_filename
+        
+        # Generate if doesn't exist
+        if not pdf_path.exists():
+            pdf_generator.generate_quotation_pdf(quotation, settings, str(pdf_path))
+        
+        return FileResponse(
+            path=str(pdf_path),
+            media_type='application/pdf',
+            filename=pdf_filename
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error downloading quotation PDF: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.post("/invoices/{invoice_id}/generate-pdf")
