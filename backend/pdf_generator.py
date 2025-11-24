@@ -361,34 +361,82 @@ class PDFGenerator:
         return elements
     
     def _create_items_table(self, items: list):
-        """Create premium items table with alternating row colors"""
+        """Create ultra-premium items table with professional styling"""
         elements = []
         
-        # Table header with premium styling
-        data = [['S.No', 'Model No', 'Product Details', 'Qty', 'Price', 'Amount']]
+        # Table header with bold premium styling
+        header_style = ParagraphStyle(
+            'TableHeader',
+            parent=self.styles['Normal'],
+            fontSize=11,
+            textColor=colors.white,
+            fontName='Helvetica-Bold',
+            alignment=TA_CENTER
+        )
         
-        # Add items
+        data = [[
+            Paragraph('S.No', header_style),
+            Paragraph('Model No', header_style),
+            Paragraph('Product Details', header_style),
+            Paragraph('Qty', header_style),
+            Paragraph('Price', header_style),
+            Paragraph('Amount', header_style)
+        ]]
+        
+        # Add items with enhanced styling
         for idx, item in enumerate(items, 1):
-            # Truncate description if too long
+            # Smart truncation for description
             desc = item['description']
-            if len(desc) > 150:
-                desc = desc[:150] + '...'
+            if len(desc) > 120:
+                desc = desc[:120] + '...'
+            
+            # Product name in larger, bolder font
+            product_para = Paragraph(
+                f"<font size=11 color='#001219'><b>{item['product_name']}</b></font><br/>"
+                f"<font size=9 color='#6C757D' leading=12>{desc}</font>", 
+                self.normal_style
+            )
+            
+            # Model number styled
+            model_para = Paragraph(
+                f"<font size=10 color='#212529'><b>{item['model_no']}</b></font>",
+                self.normal_style
+            )
+            
+            # Prices styled with emphasis
+            price_para = Paragraph(
+                f"<font size=10 color='#212529'><b>Rs. {item['offered_price']:,.0f}</b></font>",
+                self.normal_style
+            )
+            
+            amount_para = Paragraph(
+                f"<font size=10 color='#212529'><b>Rs. {item['total_amount']:,.0f}</b></font>",
+                self.normal_style
+            )
             
             data.append([
-                str(idx),
-                Paragraph(f"<font size=9><b>{item['model_no']}</b></font>", self.small_style),
-                Paragraph(f"<font size=9><b>{item['product_name']}</b></font><br/><font size=8 color='#6B7280'>{desc}</font>", self.small_style),
-                str(item['quantity']),
-                f"Rs.  {item['offered_price']:,.0f}",
-                f"Rs.  {item['total_amount']:,.0f}"
+                Paragraph(f"<font size=10>{str(idx)}</font>", self.normal_style),
+                model_para,
+                product_para,
+                Paragraph(f"<font size=10 color='#212529'><b>{str(item['quantity'])}</b></font>", self.normal_style),
+                price_para,
+                amount_para
             ])
         
-        # Total row with emphasis
+        # Total row with strong emphasis
         total = sum(item['total_amount'] for item in items)
-        data.append(['', '', Paragraph('<b>Room Total</b>', self.bold_style), 
-                     str(sum(item['quantity'] for item in items)), '', f"Rs.  {total:,.0f}"])
+        total_qty = sum(item['quantity'] for item in items)
+        data.append([
+            '', 
+            '', 
+            Paragraph('<font size=12 color="#001219"><b>Room Total</b></font>', self.bold_style), 
+            Paragraph(f'<font size=11 color="#001219"><b>{total_qty}</b></font>', self.bold_style),
+            '',
+            Paragraph(f'<font size=12 color="#E85D04"><b>Rs. {total:,.0f}</b></font>', self.bold_style)
+        ])
         
-        table = Table(data, colWidths=[0.5*inch, 0.9*inch, 3.2*inch, 0.5*inch, 1*inch, 1.1*inch])
+        # Wider columns for better readability
+        table = Table(data, colWidths=[0.45*inch, 1*inch, 3.2*inch, 0.55*inch, 1.1*inch, 1.2*inch])
         
         # Premium table styling with alternating row colors
         style_commands = [
