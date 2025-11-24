@@ -970,9 +970,9 @@ class PDFGenerator:
             ('TEXTCOLOR', (0, 0), (-1, 0), self.header_text),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 11),
-            ('TOPPADDING', (0, 0), (-1, 0), 16),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 16),
+            ('FONTSIZE', (0, 0), (-1, 0), 9),  # Reduced for single line
+            ('TOPPADDING', (0, 0), (-1, 0), 12),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
             
             # Alternating rows
             ('BACKGROUND', (0, 1), (-1, -2), colors.white),
