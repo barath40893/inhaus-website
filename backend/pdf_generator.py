@@ -470,8 +470,8 @@ class PDFGenerator:
         
         # Premium table styling
         style_commands = [
-            # Header styling
-            ('BACKGROUND', (0, 0), (-1, 0), self.primary_color),
+            # Header styling with dark background
+            ('BACKGROUND', (0, 0), (-1, 0), self.secondary_color),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
@@ -479,9 +479,9 @@ class PDFGenerator:
             ('TOPPADDING', (0, 0), (-1, 0), 14),
             ('BOTTOMPADDING', (0, 0), (-1, 0), 14),
             
-            # Grand total styling
-            ('BACKGROUND', (0, -1), (-1, -1), self.light_gray),
-            ('LINEABOVE', (0, -1), (-1, -1), 2, self.primary_color),
+            # Grand total styling with gradient highlight
+            ('BACKGROUND', (0, -1), (-1, -1), self.highlight_color),
+            ('LINEABOVE', (0, -1), (-1, -1), 3, self.primary_color),
             ('TOPPADDING', (0, -1), (-1, -1), 16),
             ('BOTTOMPADDING', (0, -1), (-1, -1), 16),
             
