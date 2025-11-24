@@ -36,6 +36,10 @@ pdf_generator = PDFGenerator()
 PDF_DIR = ROOT_DIR / 'pdfs'
 PDF_DIR.mkdir(exist_ok=True)
 
+# Create uploads directory for product images
+UPLOADS_DIR = ROOT_DIR / 'uploads' / 'products'
+UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+
 # Email configuration
 SMTP_HOST = os.environ.get('SMTP_HOST', 'smtp.gmail.com')
 SMTP_PORT = int(os.environ.get('SMTP_PORT', 587))
