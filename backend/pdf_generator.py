@@ -966,30 +966,30 @@ class PDFGenerator:
         
         # Premium table styling
         style_commands = [
-            # Header styling with light pastel
+            # Header styling - light blue-grey
             ('BACKGROUND', (0, 0), (-1, 0), self.header_bg),
             ('TEXTCOLOR', (0, 0), (-1, 0), self.header_text),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 9),  # Reduced for single line
-            ('TOPPADDING', (0, 0), (-1, 0), 12),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('FONTSIZE', (0, 0), (-1, 0), 9),
+            ('TOPPADDING', (0, 0), (-1, 0), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
             
-            # Alternating rows
-            ('BACKGROUND', (0, 1), (-1, -2), colors.white),
+            # Data rows - alternating light greys
+            ('BACKGROUND', (0, 1), (-1, -2), self.row_light),
             
-            # Grand total styling - light blue highlight
+            # Grand total styling - light blue-grey
             ('BACKGROUND', (0, -1), (-1, -1), self.total_bg),
             ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, -1), (-1, -1), 12),
-            ('TOPPADDING', (0, -1), (-1, -1), 16),
-            ('BOTTOMPADDING', (0, -1), (-1, -1), 16),
-            ('LINEABOVE', (0, -1), (-1, -1), 2.5, self.table_border),
+            ('FONTSIZE', (0, -1), (-1, -1), 11),
+            ('TOPPADDING', (0, -1), (-1, -1), 12),
+            ('BOTTOMPADDING', (0, -1), (-1, -1), 12),
+            ('LINEABOVE', (0, -1), (-1, -1), 2, self.thick_border),
             
-            # BOLD borders
-            ('BOX', (0, 0), (-1, -1), 2.5, self.table_border),
-            ('LINEBELOW', (0, 0), (-1, 0), 2.5, self.table_border),
-            ('INNERGRID', (0, 1), (-1, -1), 1.5, self.border_color),
+            # Subtle borders - matching reference
+            ('BOX', (0, 0), (-1, -1), 1, self.table_border),
+            ('LINEBELOW', (0, 0), (-1, 0), 1, self.border_color),
+            ('INNERGRID', (0, 1), (-1, -1), 1, self.border_color),
             
             # Alignment - all centered
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
