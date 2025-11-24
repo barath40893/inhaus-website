@@ -1223,8 +1223,15 @@ async def send_quotation_email_endpoint(quotation_id: str, payload: dict = Depen
         
         pdf_generator.generate_quotation_pdf(quotation, settings, str(pdf_path))
         
-        # Send email
-        await send_quotation_email(quotation, str(pdf_path), settings)
+        # Try to send email, but don't fail if email fails
+        email_sent = False
+        email_error = None
+        try:
+            await send_quotation_email(quotation, str(pdf_path), settings)
+            email_sent = True
+        except Exception as email_ex:
+            email_error = str(email_ex)
+            logger.error(f"Email sending failed but PDF generated: {email_error}")
         
         # Update quotation status
         await db.quotations.update_one(
@@ -1235,7 +1242,16 @@ async def send_quotation_email_endpoint(quotation_id: str, payload: dict = Depen
             }}
         )
         
-        return {"message": "Quotation sent successfully via email"}
+        if email_sent:
+            return {"message": "Quotation sent successfully via email", "pdf_generated": True, "email_sent": True}
+        else:
+            return {
+                "message": f"PDF generated successfully but email failed: {email_error}. Please download PDF and send manually.",
+                "pdf_generated": True,
+                "email_sent": False,
+                "pdf_path": str(pdf_path),
+                "error": email_error
+            }
     except HTTPException:
         raise
     except Exception as e:
