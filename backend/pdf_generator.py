@@ -23,35 +23,36 @@ class PDFGenerator:
         self.styles = getSampleStyleSheet()
         self.page_width, self.page_height = A4
         
-        # Modern Pastel Color Palette - Light and Professional
-        self.primary_color = colors.HexColor('#FED7AA')  # Light peach/orange
-        self.primary_dark = colors.HexColor('#FDBA74')  # Medium peach
-        self.accent_color = colors.HexColor('#93C5FD')  # Light blue accent
-        self.secondary_color = colors.HexColor('#1F2937')  # Dark text
+        # Professional Blue-Grey Color Palette - Matching Reference
+        self.primary_color = colors.HexColor('#D3DDF0')  # Light blue-grey (header)
+        self.primary_dark = colors.HexColor('#999999')  # Medium grey (thick borders)
+        self.accent_color = colors.HexColor('#E0E8F5')  # Very light blue-grey (subtotal)
+        self.secondary_color = colors.HexColor('#333333')  # Dark grey text
         
-        # Light pastel header colors
-        self.header_bg = colors.HexColor('#FED7AA')  # Light peach for headers
-        self.header_text = colors.HexColor('#1F2937')  # Dark text on light bg
+        # Header colors - light blue-grey
+        self.header_bg = colors.HexColor('#D3DDF0')  # Light blue-grey for headers
+        self.header_text = colors.HexColor('#333333')  # Dark grey text on light bg
         
-        # Row colors
-        self.row_light = colors.white  # Pure white
-        self.row_alt = colors.HexColor('#FEF3C7')  # Light yellow tint
+        # Row colors - alternating light greys
+        self.row_light = colors.HexColor('#F8F8F8')  # Very light grey (even rows)
+        self.row_alt = colors.HexColor('#F0F0F0')  # Slightly darker light grey (odd rows)
         
-        # Bold border colors
-        self.table_border = colors.HexColor('#374151')  # Dark gray - BOLD borders
-        self.border_color = colors.HexColor('#9CA3AF')  # Medium gray for inner borders
+        # Border colors - subtle and professional
+        self.table_border = colors.HexColor('#CCCCCC')  # Light grey outer border (1px)
+        self.border_color = colors.HexColor('#E0E0E0')  # Very light grey inner borders (1px)
+        self.thick_border = colors.HexColor('#999999')  # Medium grey for thick borders (2px)
         
         # Text colors
-        self.text_color = colors.HexColor('#1F2937')  # Dark gray
-        self.light_text = colors.HexColor('#6B7280')  # Medium gray
+        self.text_color = colors.HexColor('#333333')  # Dark grey
+        self.light_text = colors.HexColor('#666666')  # Medium grey
         
         # Other colors
         self.light_gray = colors.HexColor('#F3F4F6')  # Very light gray
         self.medium_gray = colors.HexColor('#D1D5DB')  # Light gray
         self.success_color = colors.HexColor('#86EFAC')  # Light green
-        self.highlight_color = colors.HexColor('#FBCFE8')  # Light pink
-        self.total_bg = colors.HexColor('#DBEAFE')  # Light blue for totals
-        self.total_text = colors.HexColor('#1E40AF')  # Dark blue for total text
+        self.highlight_color = colors.HexColor('#E8E8E8')  # Light grey
+        self.total_bg = colors.HexColor('#E0E8F5')  # Light blue-grey for totals
+        self.total_text = colors.HexColor('#333333')  # Dark grey for total text
         
         # Custom styles with premium fonts and spacing
         self.title_style = ParagraphStyle(
