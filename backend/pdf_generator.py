@@ -519,12 +519,12 @@ class PDFGenerator:
             ('BOTTOMPADDING', (0, 1), (-1, -2), 14),
         ]
         
-        # Add alternating row colors
+        # Add subtle alternating row colors
         for i in range(1, len(data) - 1):
             if i % 2 == 0:
-                style_commands.append(('BACKGROUND', (0, i), (-1, i), colors.white))
+                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_light))
             else:
-                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.light_gray))
+                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_alt))
         
         table.setStyle(TableStyle(style_commands))
         
