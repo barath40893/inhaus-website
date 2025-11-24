@@ -568,11 +568,11 @@ class PDFGenerator:
         
         footer_text = f"""
         <para align=center>
-        <font size=10 color="#FF6B35"><b>Thank you for your business!</b></font><br/>
-        <font size=9 color="#1F2937">
+        <font size=11 color="#E85D04"><b>Thank you for your business!</b></font><br/>
+        <font size=9 color="#001219">
         <b>{settings_data.get('company_name', 'InHaus Smart Automation')}</b><br/>
         </font>
-        <font size=8 color="#6B7280">
+        <font size=8 color="#6C757D">
         {settings_data.get('company_address', '')}<br/>
         Email: {settings_data.get('company_email', '')} | Phone: {settings_data.get('company_phone', '')}<br/>
         Website: {settings_data.get('company_website', '')}
