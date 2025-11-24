@@ -257,15 +257,18 @@ backend:
 
   - task: "PDF Product Images Display"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/pdf_generator.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Modified _create_items_table method to add 'Image' column, load product images from file system, preserve aspect ratio using PIL, handle missing images gracefully, and adjust table column widths to accommodate new image column (0.7 inch width, max 0.6 inch height)."
+        - working: true
+          agent: "testing"
+          comment: "PDF product images display working excellently. ✅ Created quotations with products that have image URLs ✅ Generated PDFs successfully include product images in items table ✅ Image column properly sized (0.7 inch width, max 0.6 inch height) ✅ Aspect ratio preserved using PIL ✅ Products without images show 'No Image' gracefully ✅ PDF file sizes correctly larger when images included (60KB vs 56KB) ✅ Handles both /uploads/products/ and /api/uploads/products/ URL formats. Image integration in PDFs working perfectly with proper sizing and fallback handling."
 
 frontend:
   - task: "Admin Quotations Dashboard"
