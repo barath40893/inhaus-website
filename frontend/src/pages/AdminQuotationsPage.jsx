@@ -51,6 +51,12 @@ const AdminQuotationsPage = () => {
     
     try {
       const token = localStorage.getItem('adminToken');
+      if (!token) {
+        alert('Session expired. Please login again.');
+        navigate('/admin/login');
+        return;
+      }
+
       const response = await fetch(`${backendUrl}/api/quotations/${quotationId}/send-email`, {
         method: 'POST',
         headers: {
@@ -59,15 +65,23 @@ const AdminQuotationsPage = () => {
       });
       
       if (response.ok) {
-        alert('Quotation sent successfully!');
+        const result = await response.json();
+        if (result.email_sent) {
+          alert('Quotation sent successfully via email!');
+        } else {
+          alert(`PDF generated but email failed:\n${result.error}\n\nPlease download and send manually.`);
+        }
         fetchQuotations();
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        navigate('/admin/login');
       } else {
-        const error = await response.json();
+        const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
         alert('Failed to send quotation: ' + (error.detail || 'Unknown error'));
       }
     } catch (error) {
       console.error('Error sending quotation:', error);
-      alert('Failed to send quotation');
+      alert(`Failed to send quotation: ${error.message}`);
     }
   };
 
