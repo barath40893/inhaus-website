@@ -965,9 +965,9 @@ class PDFGenerator:
         
         # Premium table styling
         style_commands = [
-            # Header styling with InHaus orange
+            # Header styling with light pastel
             ('BACKGROUND', (0, 0), (-1, 0), self.header_bg),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('TEXTCOLOR', (0, 0), (-1, 0), self.header_text),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, 0), 11),
@@ -977,18 +977,18 @@ class PDFGenerator:
             # Alternating rows
             ('BACKGROUND', (0, 1), (-1, -2), colors.white),
             
-            # Grand total styling - highlighted
+            # Grand total styling - light blue highlight
             ('BACKGROUND', (0, -1), (-1, -1), self.total_bg),
             ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
             ('FONTSIZE', (0, -1), (-1, -1), 12),
             ('TOPPADDING', (0, -1), (-1, -1), 16),
             ('BOTTOMPADDING', (0, -1), (-1, -1), 16),
-            ('LINEABOVE', (0, -1), (-1, -1), 2, self.table_border),
+            ('LINEABOVE', (0, -1), (-1, -1), 2.5, self.table_border),
             
-            # Elegant borders with brand color
-            ('BOX', (0, 0), (-1, -1), 1.5, self.table_border),
-            ('LINEBELOW', (0, 0), (-1, 0), 2, self.primary_dark),
-            ('INNERGRID', (0, 1), (-1, -1), 0.75, self.border_color),
+            # BOLD borders
+            ('BOX', (0, 0), (-1, -1), 2.5, self.table_border),
+            ('LINEBELOW', (0, 0), (-1, 0), 2.5, self.table_border),
+            ('INNERGRID', (0, 1), (-1, -1), 1.5, self.border_color),
             
             # Alignment - all centered
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
