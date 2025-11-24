@@ -248,10 +248,8 @@ class PDFGenerator:
         logo_path = Path('/app/frontend/public/inhaus/fulllogo_transparent_nobuffer.png')
         if logo_path.exists():
             try:
-                # Import PIL only if needed and available
-                try:
-                    from PIL import Image as PILImage
-                    
+                # Use PIL if available for proper aspect ratio
+                if PIL_AVAILABLE:
                     # Load image and get actual dimensions to preserve aspect ratio
                     pil_img = PILImage.open(str(logo_path))
                     img_width, img_height = pil_img.size
@@ -262,7 +260,7 @@ class PDFGenerator:
                     calculated_height = desired_width * aspect_ratio
                     
                     logo = Image(str(logo_path), width=desired_width, height=calculated_height)
-                except ImportError:
+                else:
                     # Fallback if PIL is not available - use fixed dimensions
                     logo = Image(str(logo_path), width=2.8*inch, height=0.9*inch)
                 
@@ -271,7 +269,6 @@ class PDFGenerator:
                 elements.append(Spacer(1, 12))
             except Exception as e:
                 # If logo loading fails, continue without logo
-                import logging
                 logging.error(f"Failed to load logo: {str(e)}")
                 pass
         
