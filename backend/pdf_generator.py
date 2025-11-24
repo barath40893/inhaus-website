@@ -29,24 +29,27 @@ class PDFGenerator:
         self.title_style = ParagraphStyle(
             'CustomTitle',
             parent=self.styles['Heading1'],
-            fontSize=28,
-            textColor=self.primary_color,
+            fontSize=30,
+            textColor=self.secondary_color,
             spaceAfter=20,
             spaceBefore=10,
             alignment=TA_CENTER,
             fontName='Helvetica-Bold',
-            leading=34
+            leading=36
         )
         
         self.heading_style = ParagraphStyle(
             'CustomHeading',
             parent=self.styles['Heading2'],
             fontSize=16,
-            textColor=self.secondary_color,
+            textColor=self.primary_color,
             spaceAfter=15,
             spaceBefore=20,
             fontName='Helvetica-Bold',
-            leading=20
+            leading=20,
+            borderColor=self.primary_color,
+            borderWidth=0,
+            borderPadding=5
         )
         
         self.normal_style = ParagraphStyle(
