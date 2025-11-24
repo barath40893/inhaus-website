@@ -475,32 +475,32 @@ class PDFGenerator:
         # Wider columns for better readability
         table = Table(data, colWidths=[0.45*inch, 1*inch, 3.2*inch, 0.55*inch, 1.1*inch, 1.2*inch])
         
-        # Ultra-premium table styling with generous spacing
+        # Light, elegant table styling
         style_commands = [
-            # Header styling - dark elegant background
-            ('BACKGROUND', (0, 0), (-1, 0), self.secondary_color),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            # Header styling - light background with dark text
+            ('BACKGROUND', (0, 0), (-1, 0), self.header_bg),
+            ('TEXTCOLOR', (0, 0), (-1, 0), self.secondary_color),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 11),
-            ('TOPPADDING', (0, 0), (-1, 0), 16),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 16),
-            ('LEFTPADDING', (0, 0), (-1, 0), 12),
-            ('RIGHTPADDING', (0, 0), (-1, 0), 12),
+            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('TOPPADDING', (0, 0), (-1, 0), 12),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('LEFTPADDING', (0, 0), (-1, 0), 10),
+            ('RIGHTPADDING', (0, 0), (-1, 0), 10),
             
-            # Total row styling with warm highlight
+            # Total row styling with soft highlight
             ('BACKGROUND', (0, -1), (-1, -1), self.highlight_color),
-            ('TOPPADDING', (0, -1), (-1, -1), 14),
-            ('BOTTOMPADDING', (0, -1), (-1, -1), 14),
-            ('LEFTPADDING', (0, -1), (-1, -1), 12),
-            ('RIGHTPADDING', (0, -1), (-1, -1), 12),
+            ('TOPPADDING', (0, -1), (-1, -1), 12),
+            ('BOTTOMPADDING', (0, -1), (-1, -1), 12),
+            ('LEFTPADDING', (0, -1), (-1, -1), 10),
+            ('RIGHTPADDING', (0, -1), (-1, -1), 10),
             
-            # Premium borders
-            ('LINEBELOW', (0, 0), (-1, 0), 2.5, self.primary_color),
-            ('LINEABOVE', (0, -1), (-1, -1), 1.5, self.medium_gray),
-            ('LINEBELOW', (0, -1), (-1, -1), 2.5, self.accent_color),
-            ('BOX', (0, 0), (-1, -1), 1, self.medium_gray),
+            # Subtle borders
+            ('LINEBELOW', (0, 0), (-1, 0), 2, self.primary_color),
+            ('LINEABOVE', (0, -1), (-1, -1), 1, self.border_color),
+            ('LINEBELOW', (0, -1), (-1, -1), 2, self.primary_color),
+            ('BOX', (0, 0), (-1, -1), 0.75, self.border_color),
             
             # Remove inner vertical lines for clean look
             ('INNERGRID', (0, 1), (-1, -2), 0, colors.white),
