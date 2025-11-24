@@ -234,25 +234,8 @@ class PDFGenerator:
         elif isinstance(quote_date, datetime):
             quote_date = quote_date.date()
         
-        quote_info_data = [
-            ['<b>Quote Number:</b>', quotation_data['quote_number']],
-            ['<b>Date:</b>', str(quote_date)],
-            ['<b>Valid Until:</b>', str(quote_date + timedelta(days=quotation_data['validity_days']))],
-        ]
-        
-        quote_info_table = Table(quote_info_data, colWidths=[2.5*inch, 3*inch])
-        quote_info_table.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
-            ('ALIGN', (1, 0), (1, -1), 'LEFT'),
-            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-            ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
-            ('FONTSIZE', (0, 0), (-1, -1), 11),
-            ('TOPPADDING', (0, 0), (-1, -1), 8),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
-            ('LINEBELOW', (0, 0), (-1, -1), 0.5, colors.HexColor('#CCCCCC')),
-        ]))
-        
-        elements.append(quote_info_table)
+        # Use the new quotation details table design
+        elements.extend(self._create_quotation_details_table(quotation_data))
         elements.append(Spacer(1, 40))
         
         # Customer details
