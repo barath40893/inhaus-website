@@ -1000,8 +1000,10 @@ async def get_settings(payload: dict = Depends(verify_token)):
     try:
         settings = await db.settings.find_one({"id": "company_settings"}, {"_id": 0})
         if not settings:
-            # Return default settings
-            return Settings()
+            # Initialize with default settings
+            default_settings = Settings()
+            await db.settings.insert_one(default_settings.model_dump())
+            return default_settings
         return Settings(**settings)
     except Exception as e:
         logger.error(f"Error fetching settings: {str(e)}")
