@@ -173,29 +173,45 @@ const AdminCreateQuotationPage = () => {
       if (response.ok) {
         alert(id ? 'Quotation updated successfully!' : 'Quotation created successfully!');
         navigate('/admin/quotations');
-      } else if (response.status === 401) {
-        alert('Session expired. Please login again.');
-        localStorage.removeItem('adminToken'); // Clear invalid token
-        navigate('/admin/login');
-      } else if (response.status === 422) {
-        // Validation error - get detailed error message
-        const error = await response.json().catch(() => ({ detail: 'Validation error - please check all fields' }));
-        console.error('Validation error details:', error);
-        
-        // Try to extract meaningful error message
-        let errorMsg = 'Validation error: ';
-        if (error.detail && Array.isArray(error.detail)) {
-          errorMsg += error.detail.map(e => `${e.loc ? e.loc.join('.') : 'field'}: ${e.msg}`).join(', ');
-        } else if (error.detail) {
-          errorMsg += error.detail;
-        } else {
-          errorMsg += 'Please check all fields are filled correctly';
-        }
-        
-        alert(errorMsg);
       } else {
-        const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
-        alert('Error: ' + (error.detail || 'Failed to save'));
+        // Read response body only once to avoid clone errors
+        let errorData = null;
+        try {
+          const responseText = await response.text();
+          errorData = responseText ? JSON.parse(responseText) : {};
+        } catch (e) {
+          console.error('Failed to parse error response:', e);
+          errorData = { detail: 'Unknown error occurred' };
+        }
+
+        if (response.status === 401) {
+          alert('Session expired. Please login again.');
+          localStorage.removeItem('adminToken');
+          navigate('/admin/login');
+        } else if (response.status === 422) {
+          // Validation error
+          console.error('Validation error details:', errorData);
+          
+          let errorMsg = 'Validation error:\n';
+          if (errorData.detail && Array.isArray(errorData.detail)) {
+            errorMsg += errorData.detail.map(e => {
+              const field = e.loc ? e.loc.join('.') : 'unknown field';
+              return `• ${field}: ${e.msg}`;
+            }).join('\n');
+          } else if (errorData.detail) {
+            errorMsg += errorData.detail;
+          } else {
+            errorMsg += 'Please check all fields are filled correctly';
+          }
+          
+          if (errorData.body) {
+            console.error('Request body:', errorData.body);
+          }
+          
+          alert(errorMsg);
+        } else {
+          alert('Error: ' + (errorData.detail || 'Failed to save quotation'));
+        }
       }
     } catch (error) {
       console.error('Error:', error);
