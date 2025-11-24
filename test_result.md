@@ -225,6 +225,42 @@ backend:
           agent: "testing"
           comment: "Email sending for invoices working correctly. POST /api/invoices/{id}/send-email successfully generates PDF and sends email with attachment. Email includes payment summary (total, paid, due amounts), payment status, due dates, and professional formatting. Invoice status automatically updated to 'sent' after successful email delivery. SMTP integration working properly."
 
+  - task: "Product Image Upload"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Created image upload endpoint /api/products/upload-image that accepts JPEG/PNG/WEBP files up to 5MB, validates file type, generates unique filename with UUID, stores in /app/backend/uploads/products directory, and returns image URL path. Mounted /uploads as static files directory."
+
+  - task: "PDF Table Color Enhancement"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/pdf_generator.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Fixed undefined color references (light_gray, medium_gray) in PDF table styling by adding proper color definitions to color palette."
+
+  - task: "PDF Product Images Display"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/pdf_generator.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Modified _create_items_table method to add 'Image' column, load product images from file system, preserve aspect ratio using PIL, handle missing images gracefully, and adjust table column widths to accommodate new image column (0.7 inch width, max 0.6 inch height)."
+
 frontend:
   - task: "Admin Quotations Dashboard"
     implemented: true
