@@ -216,6 +216,12 @@ const AdminProductsPage = () => {
       list_price: product.list_price.toString(),
       company_cost: product.company_cost.toString()
     });
+    // Set image preview if product has an image
+    if (product.image_url) {
+      setImagePreview(`${backendUrl}${product.image_url}`);
+    } else {
+      setImagePreview(null);
+    }
     setShowModal(true);
   };
 
