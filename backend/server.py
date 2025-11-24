@@ -19,6 +19,7 @@ from email.mime.application import MIMEApplication
 from pdf_generator import PDFGenerator
 import jwt
 from passlib.context import CryptContext
+import shutil
 
 
 ROOT_DIR = Path(__file__).parent
