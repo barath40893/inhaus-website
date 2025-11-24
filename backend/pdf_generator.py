@@ -552,8 +552,9 @@ class PDFGenerator:
             
             # Alignment - professional financial formatting
             ('ALIGN', (0, 1), (0, -1), 'CENTER'),  # S.No centered
-            ('ALIGN', (3, 1), (3, -1), 'CENTER'),  # Qty centered
-            ('ALIGN', (4, 1), (5, -1), 'RIGHT'),   # Price and Amount right-aligned
+            ('ALIGN', (1, 1), (1, -1), 'CENTER'),  # Image centered
+            ('ALIGN', (4, 1), (4, -1), 'CENTER'),  # Qty centered
+            ('ALIGN', (5, 1), (6, -1), 'RIGHT'),   # Price and Amount right-aligned
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             
             # Generous padding for content rows
