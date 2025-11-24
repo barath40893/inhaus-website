@@ -242,15 +242,18 @@ backend:
 
   - task: "PDF Table Color Enhancement"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/pdf_generator.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Fixed undefined color references (light_gray, medium_gray) in PDF table styling by adding proper color definitions to color palette."
+        - working: true
+          agent: "testing"
+          comment: "PDF table color enhancements working correctly. Generated multiple PDFs successfully without color-related errors. The light_gray and medium_gray color definitions are properly implemented and used in table styling. PDF generation for both quotations with and without product images working flawlessly."
 
   - task: "PDF Product Images Display"
     implemented: true
