@@ -89,7 +89,7 @@ def test_product_image_upload():
             data = response.json()
             print(f"Response: {json.dumps(data, indent=2)}")
             
-            if "image_url" in data and data["image_url"].startswith("/uploads/products/"):
+            if "image_url" in data and data["image_url"].startswith("/api/uploads/products/"):
                 uploaded_image_url = data["image_url"]
                 print("✅ JPEG upload successful")
                 
