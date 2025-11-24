@@ -523,8 +523,8 @@ async def upload_product_image(file: UploadFile = File(...), payload: dict = Dep
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
         
-        # Return the URL path
-        image_url = f"/uploads/products/{unique_filename}"
+        # Return the URL path with /api prefix to match static files mount
+        image_url = f"/api/uploads/products/{unique_filename}"
         return {"image_url": image_url, "message": "Image uploaded successfully"}
     
     except HTTPException:
