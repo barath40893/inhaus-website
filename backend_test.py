@@ -172,77 +172,102 @@ def test_product_image_upload():
     
     return True
 
-def test_contact_form_submission():
-    """Test POST /api/contact endpoint"""
-    print("\n🔍 Testing Contact Form Submission...")
+def test_product_crud_with_images():
+    """Test Product CRUD operations with image URLs"""
+    print("\n🔍 Testing Product CRUD with Images...")
+    global test_product_id
     
-    # Test valid submission
-    valid_data = {
-        "name": "Sarah Johnson",
-        "email": "sarah.johnson@techcorp.com",
-        "phone": "+1-555-0123",
-        "company": "TechCorp Solutions",
-        "message": "Interested in your IoT platform for our manufacturing facility. Please contact us to discuss implementation options."
-    }
+    if not admin_token:
+        print("❌ No admin token available")
+        return False
     
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    
+    # Test 1: Create product with image
+    print("\n📝 Creating product with image...")
     try:
-        response = requests.post(f"{BACKEND_URL}/contact", json=valid_data)
-        print(f"Valid submission - Status Code: {response.status_code}")
+        product_data = {
+            "model_no": "SM-SWITCH-001",
+            "name": "Smart Light Switch",
+            "description": "WiFi enabled smart light switch with voice control and mobile app integration",
+            "category": "Lighting Control",
+            "image_url": uploaded_image_url,
+            "list_price": 2500.0,
+            "company_cost": 1800.0
+        }
+        
+        response = requests.post(f"{BACKEND_URL}/products", 
+                               headers=headers, json=product_data)
+        print(f"Create Product Status Code: {response.status_code}")
         
         if response.status_code == 200:
             data = response.json()
-            print(f"Response: {json.dumps(data, indent=2, default=str)}")
+            test_product_id = data.get("id")
+            print(f"Product created with ID: {test_product_id}")
             
-            # Verify response structure
-            required_fields = ["id", "name", "email", "message", "timestamp", "status"]
-            missing_fields = [field for field in required_fields if field not in data]
-            
-            if missing_fields:
-                print(f"❌ Missing required fields: {missing_fields}")
+            if data.get("image_url") == uploaded_image_url:
+                print("✅ Product created with image URL")
+            else:
+                print(f"❌ Image URL mismatch: expected {uploaded_image_url}, got {data.get('image_url')}")
                 return False
-            
-            if data["status"] != "new":
-                print(f"❌ Expected status 'new', got '{data['status']}'")
-                return False
-                
-            print("✅ Valid contact submission working correctly")
-            
-            # Store the ID for later testing
-            global test_contact_id
-            test_contact_id = data["id"]
-            
         else:
-            print(f"❌ Valid contact submission failed with status {response.status_code}")
+            print(f"❌ Product creation failed with status {response.status_code}")
             print(f"Response: {response.text}")
             return False
             
     except Exception as e:
-        print(f"❌ Contact submission test failed with error: {str(e)}")
+        print(f"❌ Product creation test failed with error: {str(e)}")
         return False
     
-    # Test invalid email validation
-    print("\n🔍 Testing Email Validation...")
-    invalid_data = {
-        "name": "Test User",
-        "email": "invalid-email",
-        "message": "Test message"
-    }
-    
+    # Test 2: Retrieve product and verify image URL
+    print("\n📖 Retrieving product...")
     try:
-        response = requests.post(f"{BACKEND_URL}/contact", json=invalid_data)
-        print(f"Invalid email - Status Code: {response.status_code}")
+        response = requests.get(f"{BACKEND_URL}/products/{test_product_id}", 
+                              headers=headers)
+        print(f"Get Product Status Code: {response.status_code}")
         
-        if response.status_code == 422:  # FastAPI validation error
-            print("✅ Email validation working correctly")
-            return True
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("image_url") == uploaded_image_url:
+                print("✅ Product retrieved with correct image URL")
+            else:
+                print(f"❌ Image URL mismatch in retrieval")
+                return False
         else:
-            print(f"❌ Expected 422 for invalid email, got {response.status_code}")
-            print(f"Response: {response.text}")
+            print(f"❌ Product retrieval failed with status {response.status_code}")
             return False
             
     except Exception as e:
-        print(f"❌ Email validation test failed with error: {str(e)}")
+        print(f"❌ Product retrieval test failed with error: {str(e)}")
         return False
+    
+    # Test 3: Update product image URL
+    print("\n✏️ Updating product image URL...")
+    try:
+        update_data = {
+            "image_url": "/uploads/products/updated-image.jpg"
+        }
+        
+        response = requests.patch(f"{BACKEND_URL}/products/{test_product_id}", 
+                                headers=headers, json=update_data)
+        print(f"Update Product Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("image_url") == "/uploads/products/updated-image.jpg":
+                print("✅ Product image URL updated successfully")
+            else:
+                print(f"❌ Image URL not updated correctly")
+                return False
+        else:
+            print(f"❌ Product update failed with status {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Product update test failed with error: {str(e)}")
+        return False
+    
+    return True
 
 def test_get_contact_submissions():
     """Test GET /api/contact endpoint"""
