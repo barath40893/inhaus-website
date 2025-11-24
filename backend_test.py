@@ -493,23 +493,27 @@ def test_pdf_with_no_images():
         return False
 
 def run_all_tests():
-    """Run all backend API tests"""
-    print("🚀 Starting InHaus IoT Platform Backend API Tests")
+    """Run all backend API tests for product image upload and PDF enhancements"""
+    print("🚀 Starting InHaus Quotation System Backend Tests")
+    print("Testing Product Image Upload Functionality and PDF Enhancements")
     print(f"Backend URL: {BACKEND_URL}")
-    print("=" * 60)
+    print("=" * 80)
     
     test_results = []
     
-    # Run all tests
-    test_results.append(("Root Endpoint", test_root_endpoint()))
-    test_results.append(("Contact Form Submission", test_contact_form_submission()))
-    test_results.append(("Get Contact Submissions", test_get_contact_submissions()))
-    test_results.append(("Get Specific Contact Submission", test_get_specific_contact_submission()))
+    # Run tests in sequence (some depend on previous tests)
+    test_results.append(("Admin Login", admin_login()))
+    test_results.append(("Product Image Upload", test_product_image_upload()))
+    test_results.append(("Product CRUD with Images", test_product_crud_with_images()))
+    test_results.append(("Static Files Access", test_static_files_access()))
+    test_results.append(("Quotation with Product Images", test_quotation_with_product_images()))
+    test_results.append(("PDF Generation with Images", test_pdf_generation_with_images()))
+    test_results.append(("PDF Generation with No Images", test_pdf_with_no_images()))
     
     # Summary
-    print("\n" + "=" * 60)
+    print("\n" + "=" * 80)
     print("📊 TEST SUMMARY")
-    print("=" * 60)
+    print("=" * 80)
     
     passed = 0
     failed = 0
@@ -526,11 +530,28 @@ def run_all_tests():
     print(f"Passed: {passed}")
     print(f"Failed: {failed}")
     
+    # Detailed results
+    print("\n" + "=" * 80)
+    print("📋 DETAILED RESULTS")
+    print("=" * 80)
+    
+    if passed > 0:
+        print(f"\n✅ SUCCESSFUL TESTS ({passed}):")
+        for test_name, result in test_results:
+            if result:
+                print(f"  • {test_name}")
+    
+    if failed > 0:
+        print(f"\n❌ FAILED TESTS ({failed}):")
+        for test_name, result in test_results:
+            if not result:
+                print(f"  • {test_name}")
+    
     if failed == 0:
-        print("\n🎉 All tests passed!")
+        print("\n🎉 All tests passed! Product image upload and PDF enhancements are working correctly.")
         return True
     else:
-        print(f"\n⚠️  {failed} test(s) failed!")
+        print(f"\n⚠️  {failed} test(s) failed! Please check the implementation.")
         return False
 
 if __name__ == "__main__":
