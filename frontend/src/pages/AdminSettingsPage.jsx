@@ -83,6 +83,12 @@ const AdminSettingsPage = () => {
     
     try {
       const token = localStorage.getItem('adminToken');
+      if (!token) {
+        alert('Session expired. Please login again.');
+        navigate('/admin/login');
+        return;
+      }
+
       const response = await fetch(`${backendUrl}/api/settings`, {
         method: 'POST',
         headers: {
@@ -94,13 +100,16 @@ const AdminSettingsPage = () => {
       
       if (response.ok) {
         alert('Settings saved successfully!');
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        navigate('/admin/login');
       } else {
-        const error = await response.json();
+        const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
         alert('Error: ' + (error.detail || 'Failed to save settings'));
       }
     } catch (error) {
       console.error('Error saving settings:', error);
-      alert('Failed to save settings');
+      alert(`Failed to save settings: ${error.message}`);
     } finally {
       setSaving(false);
     }
