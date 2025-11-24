@@ -71,24 +71,32 @@ const AdminInvoicesPage = () => {
     }
   };
 
-  const generatePDF = async (invoiceId) => {
+  const downloadPDF = async (invoiceId, invoiceNumber) => {
     try {
       const token = localStorage.getItem('adminToken');
-      const response = await fetch(`${backendUrl}/api/invoices/${invoiceId}/generate-pdf`, {
-        method: 'POST',
+      const response = await fetch(`${backendUrl}/api/invoices/${invoiceId}/download-pdf`, {
+        method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
       
       if (response.ok) {
-        alert('PDF generated successfully!');
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `invoice_${invoiceNumber.replace('/', '_')}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
       } else {
-        alert('Failed to generate PDF');
+        alert('Failed to download PDF');
       }
     } catch (error) {
-      console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF');
+      console.error('Error downloading PDF:', error);
+      alert('Failed to download PDF');
     }
   };
 
