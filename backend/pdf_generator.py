@@ -884,9 +884,9 @@ class PDFGenerator:
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 11),
-            ('TOPPADDING', (0, 0), (-1, 0), 16),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 16),
+            ('FONTSIZE', (0, 0), (-1, 0), 9),  # Reduced from 11 to 9 for single line
+            ('TOPPADDING', (0, 0), (-1, 0), 12),  # Reduced padding
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
             
             # ========== BOLD DARK BORDERS ==========
             ('BOX', (0, 0), (-1, -1), 2.5, self.table_border),  # BOLD dark outer border
