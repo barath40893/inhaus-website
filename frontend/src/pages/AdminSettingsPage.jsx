@@ -50,7 +50,23 @@ const AdminSettingsPage = () => {
       
       if (response.ok) {
         const data = await response.json();
-        setSettings(data);
+        // Always update state with fetched data
+        setSettings({
+          company_name: data.company_name || 'InHaus Smart Automation',
+          company_address: data.company_address || '',
+          company_email: data.company_email || '',
+          company_phone: data.company_phone || '',
+          company_website: data.company_website || '',
+          company_gstin: data.company_gstin || '',
+          company_cin: data.company_cin || '',
+          bank_name: data.bank_name || '',
+          bank_account_no: data.bank_account_no || '',
+          bank_ifsc: data.bank_ifsc || '',
+          bank_branch: data.bank_branch || '',
+          upi_id: data.upi_id || '',
+          terms_template: data.terms_template || '',
+          warranty_info: data.warranty_info || ''
+        });
       } else if (response.status === 401) {
         navigate('/admin/login');
       }
