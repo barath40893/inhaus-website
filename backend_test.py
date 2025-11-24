@@ -1,17 +1,32 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for InHaus IoT Platform
-Tests all backend endpoints as specified in the review request.
+Backend API Testing for InHaus Quotation System
+Tests product image upload functionality and PDF enhancements.
 """
 
 import requests
 import json
 import sys
+import os
+import tempfile
 from datetime import datetime
 import uuid
+from pathlib import Path
+import io
+from PIL import Image as PILImage
 
 # Get backend URL from frontend .env file
 BACKEND_URL = "https://quote-genius-11.preview.emergentagent.com/api"
+
+# Admin credentials from environment
+ADMIN_USERNAME = "barath40893@gmail.com"
+ADMIN_PASSWORD = "InHaus@2024"
+
+# Global variables for test data
+admin_token = None
+test_product_id = None
+test_quotation_id = None
+uploaded_image_url = None
 
 def test_root_endpoint():
     """Test GET /api/ endpoint"""
