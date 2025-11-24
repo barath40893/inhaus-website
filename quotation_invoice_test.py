@@ -12,7 +12,7 @@ import uuid
 import os
 
 # Get backend URL from frontend .env file
-BACKEND_URL = "https://smart-quote-gen-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://quote-genius-11.preview.emergentagent.com/api"
 
 # Global variables to store test data
 auth_token = None
