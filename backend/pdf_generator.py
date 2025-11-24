@@ -111,11 +111,27 @@ class PDFGenerator:
                 items_by_room[room] = []
             items_by_room[room].append(item)
         
-        # Create table for each room
+        # Create table for each room with enhanced section heading
         for room, items in items_by_room.items():
-            story.append(Paragraph(f"Scope of Automation - {room}", self.heading_style))
+            # Premium section heading with subtle background
+            room_heading = Paragraph(
+                f'<font size=14 color="#001219"><b>Scope of Automation - {room}</b></font>',
+                ParagraphStyle(
+                    'RoomHeading',
+                    parent=self.heading_style,
+                    fontSize=14,
+                    textColor=self.secondary_color,
+                    spaceBefore=8,
+                    spaceAfter=10,
+                    leftIndent=0,
+                    borderColor=self.primary_color,
+                    borderWidth=0,
+                    borderPadding=0
+                )
+            )
+            story.append(room_heading)
             story.extend(self._create_items_table(items))
-            story.append(Spacer(1, 15))
+            story.append(Spacer(1, 18))
         
         # Summary
         story.append(PageBreak())
