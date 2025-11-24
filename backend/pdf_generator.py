@@ -431,32 +431,36 @@ class PDFGenerator:
             Paragraph('<b>Total</b>', header_style)
         ]]
         
-        # Content styling for data rows
+        # Content styling for maximum readability
         content_style = ParagraphStyle(
             'Content',
             parent=self.styles['Normal'],
-            fontSize=9,
+            fontSize=10,
             textColor=self.text_color,
             alignment=TA_LEFT,
-            leading=11
+            leading=13,
+            spaceBefore=2,
+            spaceAfter=2
         )
         
         center_style = ParagraphStyle(
             'CenterContent',
             parent=self.styles['Normal'],
-            fontSize=9,
+            fontSize=10,
             textColor=self.text_color,
             alignment=TA_CENTER,
-            leading=11
+            leading=13,
+            fontName='Helvetica-Bold'
         )
         
         right_style = ParagraphStyle(
             'RightContent',
             parent=self.styles['Normal'],
-            fontSize=9,
+            fontSize=10,
             textColor=self.text_color,
             alignment=TA_RIGHT,
-            leading=11
+            leading=13,
+            fontName='Helvetica-Bold'
         )
         
         # Add items with enhanced styling
