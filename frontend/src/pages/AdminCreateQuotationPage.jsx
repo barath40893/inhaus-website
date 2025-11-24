@@ -167,7 +167,24 @@ const AdminCreateQuotationPage = () => {
         navigate('/admin/quotations');
       } else if (response.status === 401) {
         alert('Session expired. Please login again.');
+        localStorage.removeItem('adminToken'); // Clear invalid token
         navigate('/admin/login');
+      } else if (response.status === 422) {
+        // Validation error - get detailed error message
+        const error = await response.json().catch(() => ({ detail: 'Validation error - please check all fields' }));
+        console.error('Validation error details:', error);
+        
+        // Try to extract meaningful error message
+        let errorMsg = 'Validation error: ';
+        if (error.detail && Array.isArray(error.detail)) {
+          errorMsg += error.detail.map(e => `${e.loc ? e.loc.join('.') : 'field'}: ${e.msg}`).join(', ');
+        } else if (error.detail) {
+          errorMsg += error.detail;
+        } else {
+          errorMsg += 'Please check all fields are filled correctly';
+        }
+        
+        alert(errorMsg);
       } else {
         const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
         alert('Error: ' + (error.detail || 'Failed to save'));
