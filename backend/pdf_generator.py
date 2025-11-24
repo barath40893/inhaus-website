@@ -23,24 +23,25 @@ class PDFGenerator:
         self.styles = getSampleStyleSheet()
         self.page_width, self.page_height = A4
         
-        # Classic Black & White color palette - Timeless and elegant
-        self.primary_color = colors.black  # Pure black for primary elements
-        self.accent_color = colors.HexColor('#333333')  # Dark grey accent
-        self.secondary_color = colors.black  # Black for headers
-        self.header_bg = colors.black  # Classic black header
-        self.header_text = colors.white  # Pure white text on black header
-        self.row_light = colors.white  # Pure white for light rows
-        self.row_alt = colors.HexColor('#F5F5F5')  # Very light grey for alternating rows
-        self.border_color = colors.HexColor('#DDDDDD')  # Light grey border
-        self.table_border = colors.HexColor('#000000')  # Black table border
-        self.text_color = colors.black  # Pure black text for maximum readability
-        self.light_text = colors.HexColor('#666666')  # Medium grey for descriptions
-        self.light_gray = colors.HexColor('#CCCCCC')  # Light gray for subtle borders
-        self.medium_gray = colors.HexColor('#999999')  # Medium gray for grid
-        self.success_color = colors.black  # Black for success
-        self.highlight_color = colors.HexColor('#F0F0F0')  # Light grey highlight
-        self.total_bg = colors.HexColor('#F5F5F5')  # Light grey background for totals
-        self.total_text = colors.black  # Pure black for total text
+        # InHaus Brand Color Palette - Matching website theme
+        self.primary_color = colors.HexColor('#F97316')  # Orange-500 (brand primary)
+        self.primary_dark = colors.HexColor('#EA580C')  # Orange-600 (darker shade)
+        self.accent_color = colors.HexColor('#EF4444')  # Red-500 (gradient end)
+        self.secondary_color = colors.HexColor('#1F2937')  # Gray-800 (dark text)
+        self.header_bg = colors.HexColor('#F97316')  # Orange header - brand color
+        self.header_text = colors.white  # White text on orange
+        self.row_light = colors.white  # Pure white for rows
+        self.row_alt = colors.HexColor('#FFF7ED')  # Orange-50 (very light orange tint)
+        self.border_color = colors.HexColor('#FDBA74')  # Orange-300 (light border)
+        self.table_border = colors.HexColor('#F97316')  # Orange table border
+        self.text_color = colors.HexColor('#1F2937')  # Gray-800 for text
+        self.light_text = colors.HexColor('#6B7280')  # Gray-500 for descriptions
+        self.light_gray = colors.HexColor('#E5E7EB')  # Gray-200 for subtle elements
+        self.medium_gray = colors.HexColor('#9CA3AF')  # Gray-400
+        self.success_color = colors.HexColor('#10B981')  # Green-500
+        self.highlight_color = colors.HexColor('#FED7AA')  # Orange-200 highlight
+        self.total_bg = colors.HexColor('#FFEDD5')  # Orange-100 for totals
+        self.total_text = colors.HexColor('#EA580C')  # Orange-600 for total text
         
         # Custom styles with premium fonts and spacing
         self.title_style = ParagraphStyle(
