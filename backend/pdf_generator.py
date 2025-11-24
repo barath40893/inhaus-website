@@ -416,44 +416,79 @@ class PDFGenerator:
         return elements
     
     def _create_summary_table(self, quotation_data: dict, items_by_room: dict):
-        """Create summary table for quotation"""
+        """Create premium summary table for quotation"""
         elements = []
         
-        # Room-wise summary
+        # Room-wise summary with elegant styling
         data = [['S.No', 'Scope of Automation', 'Amount']]
         
         for idx, (room, items) in enumerate(items_by_room.items(), 1):
             room_total = sum(item['total_amount'] for item in items)
-            data.append([str(idx), room, f"₹ {room_total:,.2f}"])
+            data.append([str(idx), room, f"₹ {room_total:,.0f}"])
         
-        # Add pricing breakdown
-        data.append(['', Paragraph('<b>Subtotal</b>', self.normal_style), f"₹ {quotation_data['subtotal']:,.2f}"])
+        # Add spacing row
+        data.append(['', '', ''])
+        
+        # Add pricing breakdown with better formatting
+        data.append(['', Paragraph('<b>Subtotal</b>', self.bold_style), f"₹ {quotation_data['subtotal']:,.0f}"])
         
         if quotation_data.get('overall_discount', 0) > 0:
-            data.append(['', 'Discount', f"- ₹ {quotation_data['overall_discount']:,.2f}"])
-            data.append(['', Paragraph('<b>Net Quote</b>', self.normal_style), f"₹ {quotation_data['net_quote']:,.2f}"])
+            data.append(['', Paragraph('<font color="#DC2626">Discount</font>', self.normal_style), 
+                        f"<font color='#DC2626'>- ₹ {quotation_data['overall_discount']:,.0f}</font>"])
+            data.append(['', Paragraph('<b>Net Quote</b>', self.bold_style), f"₹ {quotation_data['net_quote']:,.0f}"])
         
         if quotation_data.get('installation_charges', 0) > 0:
-            data.append(['', 'Installation Charges', f"₹ {quotation_data['installation_charges']:,.2f}"])
+            data.append(['', 'Installation Charges', f"₹ {quotation_data['installation_charges']:,.0f}"])
         
-        data.append(['', f"GST ({quotation_data['gst_percentage']}%)", f"₹ {quotation_data['gst_amount']:,.2f}"])
-        data.append(['', Paragraph('<b>TOTAL</b>', self.heading_style), 
-                     Paragraph(f"<b>₹ {quotation_data['total']:,.2f}</b>", self.heading_style)])
+        data.append(['', f"GST ({quotation_data['gst_percentage']}%)", f"₹ {quotation_data['gst_amount']:,.0f}"])
         
-        table = Table(data, colWidths=[0.8*inch, 4.5*inch, 1.5*inch])
-        table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f97316')),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        # Grand total with emphasis
+        data.append(['', Paragraph('<font size=14><b>GRAND TOTAL</b></font>', self.heading_style), 
+                     Paragraph(f"<font size=14 color='#FF6B35'><b>₹ {quotation_data['total']:,.0f}</b></font>", self.heading_style)])
+        
+        table = Table(data, colWidths=[0.6*inch, 4.7*inch, 1.5*inch])
+        
+        # Premium table styling
+        style_commands = [
+            # Header styling
+            ('BACKGROUND', (0, 0), (-1, 0), self.primary_color),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor('#f97316')),
-            ('TEXTCOLOR', (0, -1), (-1, -1), colors.whitesmoke),
-            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+            ('FONTSIZE', (0, 0), (-1, 0), 11),
+            ('TOPPADDING', (0, 0), (-1, 0), 14),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 14),
+            
+            # Grand total styling
+            ('BACKGROUND', (0, -1), (-1, -1), self.light_gray),
+            ('LINEABOVE', (0, -1), (-1, -1), 2, self.primary_color),
+            ('TOPPADDING', (0, -1), (-1, -1), 16),
+            ('BOTTOMPADDING', (0, -1), (-1, -1), 16),
+            
+            # Borders
+            ('LINEBELOW', (0, 0), (-1, 0), 1.5, self.primary_color),
+            ('INNERGRID', (0, 1), (-1, -2), 0.5, self.medium_gray),
+            
+            # Alignment
             ('ALIGN', (2, 1), (2, -1), 'RIGHT'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ]))
+            
+            # Padding
+            ('LEFTPADDING', (0, 1), (-1, -1), 12),
+            ('RIGHTPADDING', (0, 1), (-1, -1), 12),
+            ('TOPPADDING', (0, 1), (-1, -2), 10),
+            ('BOTTOMPADDING', (0, 1), (-1, -2), 10),
+        ]
+        
+        # Add alternating row colors for room items
+        room_count = len(items_by_room)
+        for i in range(1, room_count + 1):
+            if i % 2 == 0:
+                style_commands.append(('BACKGROUND', (0, i), (-1, i), colors.white))
+            else:
+                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.light_gray))
+        
+        table.setStyle(TableStyle(style_commands))
         
         elements.append(table)
         return elements
