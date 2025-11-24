@@ -14,13 +14,16 @@ class PDFGenerator:
         self.styles = getSampleStyleSheet()
         self.page_width, self.page_height = A4
         
-        # Premium color palette
-        self.primary_color = colors.HexColor('#FF6B35')  # Premium orange
-        self.secondary_color = colors.HexColor('#1F2937')  # Dark gray
-        self.light_gray = colors.HexColor('#F3F4F6')  # Light gray for alternating rows
-        self.medium_gray = colors.HexColor('#E5E7EB')  # Medium gray for borders
-        self.text_color = colors.HexColor('#374151')  # Body text color
-        self.light_text = colors.HexColor('#6B7280')  # Light text color
+        # Premium color palette - Sophisticated and elegant
+        self.primary_color = colors.HexColor('#E85D04')  # Rich burnt orange
+        self.accent_color = colors.HexColor('#F48C06')  # Warm amber accent
+        self.secondary_color = colors.HexColor('#001219')  # Deep navy/black
+        self.light_gray = colors.HexColor('#F8F9FA')  # Very light gray for alternating rows
+        self.medium_gray = colors.HexColor('#DEE2E6')  # Soft gray for borders
+        self.text_color = colors.HexColor('#212529')  # Rich black for text
+        self.light_text = colors.HexColor('#6C757D')  # Medium gray for secondary text
+        self.success_color = colors.HexColor('#2D6A4F')  # Professional green
+        self.highlight_color = colors.HexColor('#FFF3E0')  # Soft peach highlight
         
         # Custom styles with premium fonts and spacing
         self.title_style = ParagraphStyle(
