@@ -557,12 +557,12 @@ class PDFGenerator:
                 amount_para
             ])
         
-        # Total row with impressive styling
-        total_style = ParagraphStyle(
-            'TotalStyle',
+        # Total row styling - clear and professional
+        total_label_style = ParagraphStyle(
+            'TotalLabel',
             parent=self.styles['Normal'],
-            fontSize=11,
-            textColor=self.secondary_color,
+            fontSize=12,
+            textColor=self.total_text,
             fontName='Helvetica-Bold',
             alignment=TA_RIGHT
         )
@@ -583,14 +583,14 @@ class PDFGenerator:
             '', 
             '',
             '', 
-            Paragraph('<font size=11 color="#1A2B3C"><b>Room Total</b></font>', total_style), 
-            Paragraph(f'<font size=10 color="#1A2B3C"><b>{total_qty}</b></font>', center_style),
+            Paragraph('<font size=12 color="#2D3748"><b>Room Total</b></font>', total_label_style), 
+            Paragraph(f'<font size=11 color="#2D3748"><b>{total_qty}</b></font>', center_style),
             '',
-            Paragraph(f'<font size=12 color="#FF6B35"><b>Rs. {total:,.0f}</b></font>', total_amount_style)
+            Paragraph(f'<font size=13 color="#FF6B35"><b>Rs. {total:,.0f}</b></font>', total_amount_style)
         ])
         
-        # Optimized column widths for better layout
-        table = Table(data, colWidths=[0.4*inch, 0.75*inch, 0.9*inch, 2.5*inch, 0.5*inch, 1*inch, 1.15*inch])
+        # Optimized column widths for clarity - wider spacing
+        table = Table(data, colWidths=[0.4*inch, 0.75*inch, 0.95*inch, 2.45*inch, 0.5*inch, 1.05*inch, 1.15*inch])
         
         # Impressive table styling with vibrant colors
         style_commands = [
