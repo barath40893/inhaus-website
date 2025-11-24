@@ -279,7 +279,7 @@ def test_static_files_access():
     
     # Test accessing uploaded image via static files route
     try:
-        # Convert /uploads/products/filename to full URL
+        # Convert /api/uploads/products/filename to full URL
         static_url = f"https://quote-genius-11.preview.emergentagent.com{uploaded_image_url}"
         
         response = requests.get(static_url)
