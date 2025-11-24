@@ -649,13 +649,13 @@ class PDFGenerator:
             Paragraph('<b>Total</b>', header_style)
         ]]
         
-        # Content styling for maximum readability
+        # Content styling - centered and clear
         content_style = ParagraphStyle(
             'Content',
             parent=self.styles['Normal'],
             fontSize=10,
             textColor=self.text_color,
-            alignment=TA_LEFT,
+            alignment=TA_CENTER,
             leading=13,
             spaceBefore=2,
             spaceAfter=2
@@ -664,20 +664,20 @@ class PDFGenerator:
         center_style = ParagraphStyle(
             'CenterContent',
             parent=self.styles['Normal'],
-            fontSize=10,
+            fontSize=11,
             textColor=self.text_color,
             alignment=TA_CENTER,
-            leading=13,
-            fontName='Helvetica-Bold'
+            leading=14,
+            fontName='Helvetica'
         )
         
-        right_style = ParagraphStyle(
-            'RightContent',
+        bold_center_style = ParagraphStyle(
+            'BoldCenterContent',
             parent=self.styles['Normal'],
-            fontSize=10,
+            fontSize=11,
             textColor=self.text_color,
-            alignment=TA_RIGHT,
-            leading=13,
+            alignment=TA_CENTER,
+            leading=14,
             fontName='Helvetica-Bold'
         )
         
