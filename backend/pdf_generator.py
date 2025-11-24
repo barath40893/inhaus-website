@@ -23,16 +23,18 @@ class PDFGenerator:
         self.styles = getSampleStyleSheet()
         self.page_width, self.page_height = A4
         
-        # Premium color palette - Sophisticated and elegant
-        self.primary_color = colors.HexColor('#E85D04')  # Rich burnt orange
-        self.accent_color = colors.HexColor('#F48C06')  # Warm amber accent
-        self.secondary_color = colors.HexColor('#001219')  # Deep navy/black
-        self.light_gray = colors.HexColor('#F8F9FA')  # Very light gray for alternating rows
-        self.medium_gray = colors.HexColor('#DEE2E6')  # Soft gray for borders
-        self.text_color = colors.HexColor('#212529')  # Rich black for text
+        # Premium color palette - Light, elegant, and professional
+        self.primary_color = colors.HexColor('#FF8C42')  # Soft warm orange
+        self.accent_color = colors.HexColor('#FFB366')  # Light amber accent
+        self.secondary_color = colors.HexColor('#2C3E50')  # Soft dark blue-gray
+        self.header_bg = colors.HexColor('#F8F9FA')  # Very light gray for headers
+        self.row_light = colors.HexColor('#FFFFFF')  # White for light rows
+        self.row_alt = colors.HexColor('#F8F9FA')  # Very light gray for alternating rows
+        self.border_color = colors.HexColor('#E9ECEF')  # Subtle border color
+        self.text_color = colors.HexColor('#343A40')  # Dark gray for text
         self.light_text = colors.HexColor('#6C757D')  # Medium gray for secondary text
-        self.success_color = colors.HexColor('#2D6A4F')  # Professional green
-        self.highlight_color = colors.HexColor('#FFF3E0')  # Soft peach highlight
+        self.success_color = colors.HexColor('#28A745')  # Fresh green
+        self.highlight_color = colors.HexColor('#FFF8E1')  # Very soft yellow highlight
         
         # Custom styles with premium fonts and spacing
         self.title_style = ParagraphStyle(
