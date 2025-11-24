@@ -65,19 +65,31 @@ const AdminInvoicesPage = () => {
       });
       
       if (response.ok) {
-        const result = await response.json();
-        if (result.email_sent) {
-          alert('Invoice sent successfully via email!');
-        } else {
-          alert(`PDF generated but email failed:\n${result.error}\n\nPlease download and send manually.`);
+        try {
+          const result = await response.json();
+          if (result.email_sent) {
+            alert('Invoice sent successfully via email!');
+          } else {
+            alert(`PDF generated but email failed:\n${result.error}\n\nPlease download and send manually.`);
+          }
+        } catch (e) {
+          alert('Invoice sent successfully!');
         }
         fetchInvoices();
       } else if (response.status === 401) {
         alert('Session expired. Please login again.');
         navigate('/admin/login');
       } else {
-        const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
-        alert('Failed to send invoice: ' + (error.detail || 'Unknown error'));
+        // Read response only once
+        let errorMessage = 'Failed to send invoice';
+        try {
+          const errorText = await response.text();
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.detail || errorMessage;
+        } catch (e) {
+          errorMessage = `Server error (${response.status})`;
+        }
+        alert(errorMessage);
       }
     } catch (error) {
       console.error('Error sending invoice:', error);
