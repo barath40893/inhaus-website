@@ -227,6 +227,7 @@ const AdminProductsPage = () => {
 
   const resetForm = () => {
     setEditingProduct(null);
+    setImagePreview(null);
     setFormData({
       model_no: '',
       name: '',
