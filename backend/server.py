@@ -1386,12 +1386,28 @@ async def send_invoice_email_endpoint(invoice_id: str, payload: dict = Depends(v
 # Include the router in the main app
 app.include_router(api_router)
 
+# CORS configuration for production
+cors_origins = os.environ.get('CORS_ORIGINS', '*')
+if cors_origins == '*':
+    # In production, use specific origins
+    cors_origins_list = [
+        "https://inhaus.co.in",
+        "https://www.inhaus.co.in",
+        "https://inhaus-connect.emergent.host",
+        "http://localhost:3000",
+        "http://localhost:8001"
+    ]
+else:
+    cors_origins_list = cors_origins.split(',')
+
 app.add_middleware(
     CORSMiddleware,
+    allow_origins=cors_origins_list,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["Content-Disposition"],  # Important for file downloads
+    max_age=3600,
 )
 
 # Configure logging
