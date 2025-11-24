@@ -906,8 +906,8 @@ class PDFGenerator:
             ('BOX', (0, 0), (-1, -1), 2.5, colors.black),
             ('INNERGRID', (0, 0), (-1, -1), 2, colors.black),
             
-            # Alignment
-            ('ALIGN', (2, 1), (2, -1), 'RIGHT'),
+            # Alignment - all centered
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             
             # Padding
