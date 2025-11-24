@@ -182,8 +182,8 @@ class PDFGenerator:
         # Payment information
         story.append(Paragraph("Payment Information", self.heading_style))
         payment_info = [
-            ['Amount Paid:', f"₹ {invoice_data['amount_paid']:,.2f}"],
-            ['Amount Due:', f"₹ {invoice_data['amount_due']:,.2f}"],
+            ['Amount Paid:', f"Rs.  {invoice_data['amount_paid']:,.2f}"],
+            ['Amount Due:', f"Rs.  {invoice_data['amount_due']:,.2f}"],
             ['Payment Status:', invoice_data['payment_status'].upper()],
             ['Due Date:', invoice_data.get('due_date', 'N/A')]
         ]
@@ -373,14 +373,14 @@ class PDFGenerator:
                 Paragraph(f"<font size=9><b>{item['model_no']}</b></font>", self.small_style),
                 Paragraph(f"<font size=9><b>{item['product_name']}</b></font><br/><font size=8 color='#6B7280'>{desc}</font>", self.small_style),
                 str(item['quantity']),
-                f"₹ {item['offered_price']:,.0f}",
-                f"₹ {item['total_amount']:,.0f}"
+                f"Rs.  {item['offered_price']:,.0f}",
+                f"Rs.  {item['total_amount']:,.0f}"
             ])
         
         # Total row with emphasis
         total = sum(item['total_amount'] for item in items)
         data.append(['', '', Paragraph('<b>Room Total</b>', self.bold_style), 
-                     str(sum(item['quantity'] for item in items)), '', f"₹ {total:,.0f}"])
+                     str(sum(item['quantity'] for item in items)), '', f"Rs.  {total:,.0f}"])
         
         table = Table(data, colWidths=[0.5*inch, 0.9*inch, 3.2*inch, 0.5*inch, 1*inch, 1.1*inch])
         
@@ -440,27 +440,27 @@ class PDFGenerator:
         
         for idx, (room, items) in enumerate(items_by_room.items(), 1):
             room_total = sum(item['total_amount'] for item in items)
-            data.append([str(idx), room, f"₹ {room_total:,.0f}"])
+            data.append([str(idx), room, f"Rs.  {room_total:,.0f}"])
         
         # Add spacing row
         data.append(['', '', ''])
         
         # Add pricing breakdown with better formatting
-        data.append(['', Paragraph('<b>Subtotal</b>', self.bold_style), f"₹ {quotation_data['subtotal']:,.0f}"])
+        data.append(['', Paragraph('<b>Subtotal</b>', self.bold_style), f"Rs.  {quotation_data['subtotal']:,.0f}"])
         
         if quotation_data.get('overall_discount', 0) > 0:
             data.append(['', Paragraph('<font color="#DC2626">Discount</font>', self.normal_style), 
-                        f"<font color='#DC2626'>- ₹ {quotation_data['overall_discount']:,.0f}</font>"])
-            data.append(['', Paragraph('<b>Net Quote</b>', self.bold_style), f"₹ {quotation_data['net_quote']:,.0f}"])
+                        f"<font color='#DC2626'>- Rs.  {quotation_data['overall_discount']:,.0f}</font>"])
+            data.append(['', Paragraph('<b>Net Quote</b>', self.bold_style), f"Rs.  {quotation_data['net_quote']:,.0f}"])
         
         if quotation_data.get('installation_charges', 0) > 0:
-            data.append(['', 'Installation Charges', f"₹ {quotation_data['installation_charges']:,.0f}"])
+            data.append(['', 'Installation Charges', f"Rs.  {quotation_data['installation_charges']:,.0f}"])
         
-        data.append(['', f"GST ({quotation_data['gst_percentage']}%)", f"₹ {quotation_data['gst_amount']:,.0f}"])
+        data.append(['', f"GST ({quotation_data['gst_percentage']}%)", f"Rs.  {quotation_data['gst_amount']:,.0f}"])
         
         # Grand total with emphasis
         data.append(['', Paragraph('<font size=14><b>GRAND TOTAL</b></font>', self.heading_style), 
-                     Paragraph(f"<font size=14 color='#FF6B35'><b>₹ {quotation_data['total']:,.0f}</b></font>", self.heading_style)])
+                     Paragraph(f"<font size=14 color='#FF6B35'><b>Rs.  {quotation_data['total']:,.0f}</b></font>", self.heading_style)])
         
         table = Table(data, colWidths=[0.6*inch, 4.7*inch, 1.5*inch])
         
@@ -518,21 +518,21 @@ class PDFGenerator:
         
         for idx, (room, items) in enumerate(items_by_room.items(), 1):
             room_total = sum(item['total_amount'] for item in items)
-            data.append([str(idx), room, f"₹ {room_total:,.2f}"])
+            data.append([str(idx), room, f"Rs.  {room_total:,.2f}"])
         
         # Add pricing breakdown
-        data.append(['', Paragraph('<b>Subtotal</b>', self.normal_style), f"₹ {invoice_data['subtotal']:,.2f}"])
+        data.append(['', Paragraph('<b>Subtotal</b>', self.normal_style), f"Rs.  {invoice_data['subtotal']:,.2f}"])
         
         if invoice_data.get('discount', 0) > 0:
-            data.append(['', 'Discount', f"- ₹ {invoice_data['discount']:,.2f}"])
-            data.append(['', Paragraph('<b>Net Amount</b>', self.normal_style), f"₹ {invoice_data['net_amount']:,.2f}"])
+            data.append(['', 'Discount', f"- Rs.  {invoice_data['discount']:,.2f}"])
+            data.append(['', Paragraph('<b>Net Amount</b>', self.normal_style), f"Rs.  {invoice_data['net_amount']:,.2f}"])
         
         if invoice_data.get('installation_charges', 0) > 0:
-            data.append(['', 'Installation Charges', f"₹ {invoice_data['installation_charges']:,.2f}"])
+            data.append(['', 'Installation Charges', f"Rs.  {invoice_data['installation_charges']:,.2f}"])
         
-        data.append(['', f"GST ({invoice_data['gst_percentage']}%)", f"₹ {invoice_data['gst_amount']:,.2f}"])
+        data.append(['', f"GST ({invoice_data['gst_percentage']}%)", f"Rs.  {invoice_data['gst_amount']:,.2f}"])
         data.append(['', Paragraph('<b>GRAND TOTAL</b>', self.heading_style), 
-                     Paragraph(f"<b>₹ {invoice_data['total']:,.2f}</b>", self.heading_style)])
+                     Paragraph(f"<b>Rs.  {invoice_data['total']:,.2f}</b>", self.heading_style)])
         
         table = Table(data, colWidths=[0.8*inch, 4.5*inch, 1.5*inch])
         table.setStyle(TableStyle([
