@@ -131,6 +131,12 @@ const AdminQuotationsPage = () => {
     
     try {
       const token = localStorage.getItem('adminToken');
+      if (!token) {
+        alert('Session expired. Please login again.');
+        navigate('/admin/login');
+        return;
+      }
+
       const response = await fetch(`${backendUrl}/api/quotations/${quotationId}`, {
         method: 'DELETE',
         headers: {
@@ -141,10 +147,16 @@ const AdminQuotationsPage = () => {
       if (response.ok) {
         alert('Quotation deleted successfully!');
         fetchQuotations();
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        navigate('/admin/login');
+      } else {
+        const errorText = await response.text();
+        alert(`Failed to delete quotation: ${errorText.substring(0, 100)}`);
       }
     } catch (error) {
       console.error('Error deleting quotation:', error);
-      alert('Failed to delete quotation');
+      alert(`Failed to delete quotation: ${error.message}`);
     }
   };
 
