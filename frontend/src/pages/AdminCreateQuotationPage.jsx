@@ -144,6 +144,12 @@ const AdminCreateQuotationPage = () => {
     setSaving(true);
     try {
       const token = localStorage.getItem('adminToken');
+      if (!token) {
+        alert('Session expired. Please login again.');
+        navigate('/admin/login');
+        return;
+      }
+
       const url = id ? `${backendUrl}/api/quotations/${id}` : `${backendUrl}/api/quotations`;
       const method = id ? 'PATCH' : 'POST';
 
@@ -157,15 +163,18 @@ const AdminCreateQuotationPage = () => {
       });
 
       if (response.ok) {
-        alert(id ? 'Quotation updated!' : 'Quotation created!');
+        alert(id ? 'Quotation updated successfully!' : 'Quotation created successfully!');
         navigate('/admin/quotations');
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        navigate('/admin/login');
       } else {
-        const error = await response.json();
+        const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
         alert('Error: ' + (error.detail || 'Failed to save'));
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Failed to save quotation');
+      alert(`Failed to save quotation: ${error.message}`);
     } finally {
       setSaving(false);
     }
