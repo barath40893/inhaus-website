@@ -584,57 +584,65 @@ class PDFGenerator:
         # Optimized column widths for better layout
         table = Table(data, colWidths=[0.4*inch, 0.75*inch, 0.9*inch, 2.5*inch, 0.5*inch, 1*inch, 1.15*inch])
         
-        # Light, elegant table styling
+        # Impressive table styling with vibrant colors
         style_commands = [
-            # Header styling - light background with dark text
-            ('BACKGROUND', (0, 0), (-1, 0), self.header_bg),
-            ('TEXTCOLOR', (0, 0), (-1, 0), self.secondary_color),
+            # ========== HEADER STYLING - Vibrant and Eye-catching ==========
+            ('BACKGROUND', (0, 0), (-1, 0), self.header_bg),  # Bold orange background
+            ('TEXTCOLOR', (0, 0), (-1, 0), self.header_text),  # White text
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, 0), 10),
-            ('TOPPADDING', (0, 0), (-1, 0), 12),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            ('LEFTPADDING', (0, 0), (-1, 0), 10),
-            ('RIGHTPADDING', (0, 0), (-1, 0), 10),
+            ('TOPPADDING', (0, 0), (-1, 0), 14),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 14),
+            ('LEFTPADDING', (0, 0), (-1, 0), 8),
+            ('RIGHTPADDING', (0, 0), (-1, 0), 8),
             
-            # Total row styling with soft highlight
-            ('BACKGROUND', (0, -1), (-1, -1), self.highlight_color),
-            ('TOPPADDING', (0, -1), (-1, -1), 12),
-            ('BOTTOMPADDING', (0, -1), (-1, -1), 12),
+            # ========== TOTAL ROW STYLING - Highlighted and Prominent ==========
+            ('BACKGROUND', (0, -1), (-1, -1), self.total_bg),  # Soft peach background
+            ('TOPPADDING', (0, -1), (-1, -1), 14),
+            ('BOTTOMPADDING', (0, -1), (-1, -1), 14),
             ('LEFTPADDING', (0, -1), (-1, -1), 10),
             ('RIGHTPADDING', (0, -1), (-1, -1), 10),
+            ('LINEABOVE', (0, -1), (-1, -1), 2, self.primary_color),  # Bold line above total
             
-            # Subtle borders
-            ('LINEBELOW', (0, 0), (-1, 0), 2, self.primary_color),
-            ('LINEABOVE', (0, -1), (-1, -1), 1, self.border_color),
-            ('LINEBELOW', (0, -1), (-1, -1), 2, self.primary_color),
-            ('BOX', (0, 0), (-1, -1), 0.75, self.border_color),
+            # ========== BORDERS - Clean and Professional ==========
+            ('BOX', (0, 0), (-1, -1), 1.5, self.table_border),  # Outer border
+            ('LINEBELOW', (0, 0), (-1, 0), 2.5, self.primary_color),  # Strong header underline
+            ('LINEBELOW', (0, 1), (-1, -2), 0.5, self.border_color),  # Subtle row separators
             
-            # Remove inner vertical lines for clean look
-            ('INNERGRID', (0, 1), (-1, -2), 0, colors.white),
-            ('LINEBELOW', (0, 1), (-1, -2), 0.5, self.light_gray),
+            # ========== ALIGNMENT - Perfect for Each Column ==========
+            # S.No - Center aligned
+            ('ALIGN', (0, 1), (0, -1), 'CENTER'),
+            # Image - Center aligned
+            ('ALIGN', (1, 1), (1, -1), 'CENTER'),
+            # Model No - Center aligned
+            ('ALIGN', (2, 1), (2, -1), 'CENTER'),
+            # Product Details - Left aligned (default for paragraphs)
+            ('ALIGN', (3, 1), (3, -1), 'LEFT'),
+            # Qty - Center aligned
+            ('ALIGN', (4, 1), (4, -1), 'CENTER'),
+            # Price - Right aligned
+            ('ALIGN', (5, 1), (5, -1), 'RIGHT'),
+            # Amount - Right aligned
+            ('ALIGN', (6, 1), (6, -1), 'RIGHT'),
             
-            # Alignment - professional financial formatting
-            ('ALIGN', (0, 1), (0, -1), 'CENTER'),  # S.No centered
-            ('ALIGN', (1, 1), (1, -1), 'CENTER'),  # Image centered
-            ('ALIGN', (4, 1), (4, -1), 'CENTER'),  # Qty centered
-            ('ALIGN', (5, 1), (6, -1), 'RIGHT'),   # Price and Amount right-aligned
+            # Vertical alignment for all cells
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             
-            # Generous padding for content rows
-            ('LEFTPADDING', (0, 1), (-1, -2), 12),
-            ('RIGHTPADDING', (0, 1), (-1, -2), 12),
-            ('TOPPADDING', (0, 1), (-1, -2), 14),
-            ('BOTTOMPADDING', (0, 1), (-1, -2), 14),
+            # ========== PADDING - Generous and Consistent ==========
+            ('LEFTPADDING', (0, 1), (-1, -2), 10),
+            ('RIGHTPADDING', (0, 1), (-1, -2), 10),
+            ('TOPPADDING', (0, 1), (-1, -2), 12),
+            ('BOTTOMPADDING', (0, 1), (-1, -2), 12),
         ]
         
-        # Add subtle alternating row colors
+        # Add alternating row colors for better readability
         for i in range(1, len(data) - 1):
             if i % 2 == 0:
-                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_light))
+                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_alt))  # Soft peach
             else:
-                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_alt))
+                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_light))  # Pure white
         
         table.setStyle(TableStyle(style_commands))
         
