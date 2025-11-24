@@ -216,9 +216,17 @@ class PDFGenerator:
         # Try to add logo with proper aspect ratio preservation
         logo_path = Path('/app/frontend/public/inhaus/fulllogo_transparent_nobuffer.png')
         if logo_path.exists():
-            # Use aspect ratio preservation - only specify width
-            # Let height adjust automatically to maintain proportions
-            logo = Image(str(logo_path), width=3*inch)
+            # Load image and get actual dimensions to preserve aspect ratio
+            from PIL import Image as PILImage
+            pil_img = PILImage.open(str(logo_path))
+            img_width, img_height = pil_img.size
+            aspect_ratio = img_height / img_width
+            
+            # Set width and calculate proportional height
+            desired_width = 2.8 * inch
+            calculated_height = desired_width * aspect_ratio
+            
+            logo = Image(str(logo_path), width=desired_width, height=calculated_height)
             logo.hAlign = 'CENTER'
             elements.append(logo)
             elements.append(Spacer(1, 12))
