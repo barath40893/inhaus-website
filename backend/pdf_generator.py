@@ -592,65 +592,58 @@ class PDFGenerator:
         # Optimized column widths for clarity - wider spacing
         table = Table(data, colWidths=[0.4*inch, 0.75*inch, 0.95*inch, 2.45*inch, 0.5*inch, 1.05*inch, 1.15*inch])
         
-        # Impressive table styling with vibrant colors
+        # Modern, clean, highly readable table styling
         style_commands = [
-            # ========== HEADER STYLING - Vibrant and Eye-catching ==========
-            ('BACKGROUND', (0, 0), (-1, 0), self.header_bg),  # Bold orange background
-            ('TEXTCOLOR', (0, 0), (-1, 0), self.header_text),  # White text
+            # ========== HEADER - High Contrast, Professional ==========
+            ('BACKGROUND', (0, 0), (-1, 0), self.header_bg),  # Rich navy blue
+            ('TEXTCOLOR', (0, 0), (-1, 0), self.header_text),  # Pure white
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 10),
-            ('TOPPADDING', (0, 0), (-1, 0), 14),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 14),
-            ('LEFTPADDING', (0, 0), (-1, 0), 8),
-            ('RIGHTPADDING', (0, 0), (-1, 0), 8),
+            ('FONTSIZE', (0, 0), (-1, 0), 11),
+            ('TOPPADDING', (0, 0), (-1, 0), 16),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 16),
+            ('LEFTPADDING', (0, 0), (-1, 0), 10),
+            ('RIGHTPADDING', (0, 0), (-1, 0), 10),
             
-            # ========== TOTAL ROW STYLING - Highlighted and Prominent ==========
-            ('BACKGROUND', (0, -1), (-1, -1), self.total_bg),  # Soft peach background
-            ('TOPPADDING', (0, -1), (-1, -1), 14),
-            ('BOTTOMPADDING', (0, -1), (-1, -1), 14),
-            ('LEFTPADDING', (0, -1), (-1, -1), 10),
-            ('RIGHTPADDING', (0, -1), (-1, -1), 10),
-            ('LINEABOVE', (0, -1), (-1, -1), 2, self.primary_color),  # Bold line above total
+            # ========== TOTAL ROW - Clean Highlight ==========
+            ('BACKGROUND', (0, -1), (-1, -1), self.total_bg),  # Light grey background
+            ('TOPPADDING', (0, -1), (-1, -1), 16),
+            ('BOTTOMPADDING', (0, -1), (-1, -1), 16),
+            ('LEFTPADDING', (0, -1), (-1, -1), 12),
+            ('RIGHTPADDING', (0, -1), (-1, -1), 12),
+            ('LINEABOVE', (0, -1), (-1, -1), 2, self.table_border),  # Strong separator
             
-            # ========== BORDERS - Clean and Professional ==========
-            ('BOX', (0, 0), (-1, -1), 1.5, self.table_border),  # Outer border
-            ('LINEBELOW', (0, 0), (-1, 0), 2.5, self.primary_color),  # Strong header underline
-            ('LINEBELOW', (0, 1), (-1, -2), 0.5, self.border_color),  # Subtle row separators
+            # ========== BORDERS - Clean Lines ==========
+            ('BOX', (0, 0), (-1, -1), 1.25, self.table_border),  # Clean outer border
+            ('LINEBELOW', (0, 0), (-1, 0), 2, self.secondary_color),  # Dark header underline
+            ('LINEBELOW', (0, 1), (-1, -2), 0.75, self.border_color),  # Row separators
             
-            # ========== ALIGNMENT - Perfect for Each Column ==========
-            # S.No - Center aligned
-            ('ALIGN', (0, 1), (0, -1), 'CENTER'),
-            # Image - Center aligned
-            ('ALIGN', (1, 1), (1, -1), 'CENTER'),
-            # Model No - Center aligned
-            ('ALIGN', (2, 1), (2, -1), 'CENTER'),
-            # Product Details - Left aligned (default for paragraphs)
-            ('ALIGN', (3, 1), (3, -1), 'LEFT'),
-            # Qty - Center aligned
-            ('ALIGN', (4, 1), (4, -1), 'CENTER'),
-            # Price - Right aligned
-            ('ALIGN', (5, 1), (5, -1), 'RIGHT'),
-            # Amount - Right aligned
-            ('ALIGN', (6, 1), (6, -1), 'RIGHT'),
+            # ========== PERFECT ALIGNMENT ==========
+            ('ALIGN', (0, 1), (0, -1), 'CENTER'),  # S.No
+            ('ALIGN', (1, 1), (1, -1), 'CENTER'),  # Image
+            ('ALIGN', (2, 1), (2, -1), 'CENTER'),  # Model No
+            ('ALIGN', (3, 1), (3, -1), 'LEFT'),    # Product Details
+            ('ALIGN', (4, 1), (4, -1), 'CENTER'),  # Qty
+            ('ALIGN', (5, 1), (5, -1), 'RIGHT'),   # Price
+            ('ALIGN', (6, 1), (6, -1), 'RIGHT'),   # Amount
             
-            # Vertical alignment for all cells
+            # Vertical alignment
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             
-            # ========== PADDING - Generous and Consistent ==========
-            ('LEFTPADDING', (0, 1), (-1, -2), 10),
-            ('RIGHTPADDING', (0, 1), (-1, -2), 10),
-            ('TOPPADDING', (0, 1), (-1, -2), 12),
-            ('BOTTOMPADDING', (0, 1), (-1, -2), 12),
+            # ========== GENEROUS PADDING for Readability ==========
+            ('LEFTPADDING', (0, 1), (-1, -2), 12),
+            ('RIGHTPADDING', (0, 1), (-1, -2), 12),
+            ('TOPPADDING', (0, 1), (-1, -2), 16),      # Increased for breathing room
+            ('BOTTOMPADDING', (0, 1), (-1, -2), 16),   # Increased for breathing room
         ]
         
-        # Add alternating row colors for better readability
+        # Subtle alternating rows for easy scanning
         for i in range(1, len(data) - 1):
             if i % 2 == 0:
-                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_alt))  # Soft peach
+                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_alt))  # Subtle grey
             else:
-                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_light))  # Pure white
+                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_light))  # White
         
         table.setStyle(TableStyle(style_commands))
         
