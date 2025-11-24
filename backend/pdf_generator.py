@@ -681,48 +681,48 @@ class PDFGenerator:
             fontName='Helvetica-Bold'
         )
         
-        # Add items with classic black & white styling
+        # Add items with bold black border styling
         for idx, item in enumerate(items, 1):
             # Smart truncation for description
             desc = item['description']
-            if len(desc) > 70:
-                desc = desc[:70] + '...'
+            if len(desc) > 60:
+                desc = desc[:60] + '...'
             
-            # Product details with clean black & white hierarchy
+            # Product details - centered with product name bold
             product_para = Paragraph(
-                f"<font size=11 color='#000000'><b>{item['product_name']}</b></font><br/>"
-                f"<font size=9 color='#666666'>{desc}</font>", 
+                f"<b>{item['product_name']}</b><br/>"
+                f"<font size=9>{desc}</font>", 
                 content_style
             )
             
-            # Model number - bold black
+            # Model number - centered
             model_para = Paragraph(
-                f"<font size=10 color='#000000'><b>{item['model_no']}</b></font>",
+                f"{item['model_no']}",
                 center_style
             )
             
-            # Serial number
+            # Serial number - centered
             sno_para = Paragraph(
-                f"<font size=10 color='#000000'><b>{str(idx)}</b></font>",
+                f"{str(idx)}",
                 center_style
             )
             
-            # Quantity - bold black
+            # Quantity - centered
             qty_para = Paragraph(
-                f"<font size=10 color='#000000'><b>{str(item['quantity'])}</b></font>",
+                f"{str(item['quantity'])}",
                 center_style
             )
             
-            # Prices - clean black text
+            # Prices - centered
             price_para = Paragraph(
-                f"<font size=10 color='#000000'><b>Rs. {item['offered_price']:,.0f}</b></font>",
-                right_style
+                f"Rs. {item['offered_price']:,.0f}",
+                center_style
             )
             
-            # Total amount - bold black
+            # Total amount - centered
             amount_para = Paragraph(
-                f"<font size=11 color='#000000'><b>Rs. {item['total_amount']:,.0f}</b></font>",
-                right_style
+                f"Rs. {item['total_amount']:,.0f}",
+                center_style
             )
             
             # Handle product image with rounded corners effect
