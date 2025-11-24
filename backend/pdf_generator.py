@@ -96,23 +96,23 @@ class PDFGenerator:
         )
     
     def _add_watermark(self, canvas, doc):
-        """Add transparent logo watermark to each page"""
+        """Add transparent logo watermark to each page - large and prominent"""
         canvas.saveState()
         
         # Try to load and add watermark logo
         logo_path = Path('/app/frontend/public/inhaus/fulllogo_transparent_nobuffer.png')
         if logo_path.exists():
             try:
-                # Set transparency (0.0 = fully transparent, 1.0 = fully opaque)
-                canvas.setFillAlpha(0.08)  # Very subtle watermark
-                canvas.setStrokeAlpha(0.08)
+                # Set transparency - slightly more visible like reference image
+                canvas.setFillAlpha(0.12)  # More visible watermark (was 0.08)
+                canvas.setStrokeAlpha(0.12)
                 
                 # Calculate center position
                 page_width, page_height = A4
                 
-                # Large watermark in center
-                watermark_width = 4 * inch
-                watermark_height = 1.5 * inch
+                # LARGER watermark like in reference - almost full width
+                watermark_width = 5.5 * inch  # Increased from 4 inches
+                watermark_height = 2 * inch    # Increased from 1.5 inches
                 
                 x = (page_width - watermark_width) / 2
                 y = (page_height - watermark_height) / 2
