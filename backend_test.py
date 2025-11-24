@@ -302,52 +302,194 @@ def test_static_files_access():
         print(f"❌ Static file access test failed with error: {str(e)}")
         return False
 
-def test_get_specific_contact_submission():
-    """Test GET /api/contact/{contact_id} endpoint"""
-    print("\n🔍 Testing Get Specific Contact Submission...")
+def test_quotation_with_product_images():
+    """Test creating quotation with products that have images and generating PDF"""
+    print("\n🔍 Testing Quotation with Product Images...")
+    global test_quotation_id
     
-    # Test with valid ID (if we have one from previous test)
-    if 'test_contact_id' in globals():
-        try:
-            response = requests.get(f"{BACKEND_URL}/contact/{test_contact_id}")
-            print(f"Valid ID - Status Code: {response.status_code}")
-            
-            if response.status_code == 200:
-                data = response.json()
-                print(f"Response: {json.dumps(data, indent=2, default=str)}")
-                
-                if data.get("id") == test_contact_id:
-                    print("✅ Get specific contact submission working correctly")
-                else:
-                    print(f"❌ ID mismatch: expected {test_contact_id}, got {data.get('id')}")
-                    return False
-            else:
-                print(f"❌ Get specific contact submission failed with status {response.status_code}")
-                print(f"Response: {response.text}")
-                return False
-                
-        except Exception as e:
-            print(f"❌ Get specific contact submission test failed with error: {str(e)}")
-            return False
+    if not admin_token or not test_product_id:
+        print("❌ Missing admin token or test product ID")
+        return False
     
-    # Test with non-existent ID
-    print("\n🔍 Testing Non-existent Contact ID...")
-    fake_id = str(uuid.uuid4())
+    headers = {"Authorization": f"Bearer {admin_token}"}
     
+    # Test 1: Create quotation with product that has image
+    print("\n📝 Creating quotation with image-enabled product...")
     try:
-        response = requests.get(f"{BACKEND_URL}/contact/{fake_id}")
-        print(f"Non-existent ID - Status Code: {response.status_code}")
+        quotation_data = {
+            "customer_name": "John Smith",
+            "customer_email": "john.smith@example.com",
+            "customer_phone": "+91-9876543210",
+            "customer_address": "123 Smart Home Lane, Tech City",
+            "site_location": "Residential Villa",
+            "items": [
+                {
+                    "room_area": "Living Room",
+                    "product_id": test_product_id,
+                    "model_no": "SM-SWITCH-001",
+                    "product_name": "Smart Light Switch",
+                    "description": "WiFi enabled smart light switch with voice control",
+                    "image_url": uploaded_image_url,
+                    "quantity": 3,
+                    "list_price": 2500.0,
+                    "discount": 0,
+                    "offered_price": 2200.0,
+                    "company_cost": 1800.0
+                },
+                {
+                    "room_area": "Bedroom",
+                    "model_no": "SM-SENSOR-001",
+                    "product_name": "Motion Sensor",
+                    "description": "PIR motion sensor for automated lighting",
+                    "quantity": 2,
+                    "list_price": 1500.0,
+                    "discount": 0,
+                    "offered_price": 1300.0,
+                    "company_cost": 1000.0
+                }
+            ],
+            "overall_discount": 500.0,
+            "installation_charges": 2000.0,
+            "gst_percentage": 18,
+            "validity_days": 15,
+            "payment_terms": "50% advance, 50% before dispatch"
+        }
         
-        if response.status_code == 404:
-            print("✅ 404 handling for non-existent contact working correctly")
-            return True
+        response = requests.post(f"{BACKEND_URL}/quotations", 
+                               headers=headers, json=quotation_data)
+        print(f"Create Quotation Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            test_quotation_id = data.get("id")
+            print(f"Quotation created with ID: {test_quotation_id}")
+            
+            # Verify the quotation has items with image URLs
+            items = data.get("items", [])
+            image_item = next((item for item in items if item.get("image_url")), None)
+            if image_item:
+                print("✅ Quotation created with product images")
+            else:
+                print("❌ Quotation created but no product images found")
+                return False
         else:
-            print(f"❌ Expected 404 for non-existent ID, got {response.status_code}")
+            print(f"❌ Quotation creation failed with status {response.status_code}")
             print(f"Response: {response.text}")
             return False
             
     except Exception as e:
-        print(f"❌ Non-existent ID test failed with error: {str(e)}")
+        print(f"❌ Quotation creation test failed with error: {str(e)}")
+        return False
+    
+    return True
+
+def test_pdf_generation_with_images():
+    """Test PDF generation with product images"""
+    print("\n🔍 Testing PDF Generation with Product Images...")
+    
+    if not admin_token or not test_quotation_id:
+        print("❌ Missing admin token or test quotation ID")
+        return False
+    
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    
+    # Test 1: Generate PDF for quotation with images
+    print("\n📄 Generating PDF for quotation...")
+    try:
+        response = requests.post(f"{BACKEND_URL}/quotations/{test_quotation_id}/generate-pdf", 
+                               headers=headers)
+        print(f"PDF Generation Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"PDF Generation Response: {json.dumps(data, indent=2)}")
+            
+            if "filename" in data and "path" in data:
+                pdf_filename = data["filename"]
+                pdf_path = data["path"]
+                print(f"✅ PDF generated successfully: {pdf_filename}")
+                
+                # Verify PDF file exists (we can't directly check file system, but response indicates success)
+                if pdf_path and pdf_filename:
+                    print("✅ PDF file path and filename returned")
+                    return True
+                else:
+                    print("❌ PDF path or filename missing")
+                    return False
+            else:
+                print("❌ PDF generation response missing filename or path")
+                return False
+        else:
+            print(f"❌ PDF generation failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ PDF generation test failed with error: {str(e)}")
+        return False
+
+def test_pdf_with_no_images():
+    """Test PDF generation with products that have no images"""
+    print("\n🔍 Testing PDF Generation with No Images...")
+    
+    if not admin_token:
+        print("❌ No admin token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    
+    # Create a quotation with products that have no images
+    print("\n📝 Creating quotation with no-image products...")
+    try:
+        quotation_data = {
+            "customer_name": "Jane Doe",
+            "customer_email": "jane.doe@example.com",
+            "customer_phone": "+91-9876543211",
+            "items": [
+                {
+                    "room_area": "Kitchen",
+                    "model_no": "SM-OUTLET-001",
+                    "product_name": "Smart Power Outlet",
+                    "description": "WiFi enabled smart power outlet",
+                    "quantity": 2,
+                    "list_price": 1800.0,
+                    "discount": 0,
+                    "offered_price": 1600.0,
+                    "company_cost": 1200.0
+                }
+            ],
+            "overall_discount": 0,
+            "installation_charges": 1000.0,
+            "gst_percentage": 18
+        }
+        
+        response = requests.post(f"{BACKEND_URL}/quotations", 
+                               headers=headers, json=quotation_data)
+        print(f"Create No-Image Quotation Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            no_image_quotation_id = data.get("id")
+            print(f"No-image quotation created with ID: {no_image_quotation_id}")
+            
+            # Generate PDF for this quotation
+            response = requests.post(f"{BACKEND_URL}/quotations/{no_image_quotation_id}/generate-pdf", 
+                                   headers=headers)
+            print(f"No-Image PDF Generation Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                print("✅ PDF generated successfully for products with no images")
+                return True
+            else:
+                print(f"❌ PDF generation failed for no-image products: {response.status_code}")
+                print(f"Response: {response.text}")
+                return False
+        else:
+            print(f"❌ No-image quotation creation failed: {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ No-image PDF test failed with error: {str(e)}")
         return False
 
 def run_all_tests():
