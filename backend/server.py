@@ -505,6 +505,34 @@ async def update_contact_status(contact_id: str, update: ContactUpdate, payload:
 
 # ============= PRODUCT MASTER ENDPOINTS =============
 
+@api_router.post("/products/upload-image")
+async def upload_product_image(file: UploadFile = File(...), payload: dict = Depends(verify_token)):
+    """Upload a product image (admin only)"""
+    try:
+        # Validate file type
+        allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+        if file.content_type not in allowed_types:
+            raise HTTPException(status_code=400, detail="Only JPEG, PNG, and WEBP images are allowed")
+        
+        # Generate unique filename
+        file_extension = file.filename.split('.')[-1]
+        unique_filename = f"{uuid.uuid4()}.{file_extension}"
+        file_path = UPLOADS_DIR / unique_filename
+        
+        # Save file
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        # Return the URL path
+        image_url = f"/uploads/products/{unique_filename}"
+        return {"image_url": image_url, "message": "Image uploaded successfully"}
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error uploading image: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
+
 @api_router.post("/products", response_model=ProductMaster)
 async def create_product(input: ProductMasterCreate, payload: dict = Depends(verify_token)):
     """Create a new product in master catalog (admin only)"""
