@@ -400,7 +400,7 @@ class PDFGenerator:
         return elements
     
     def _create_items_table(self, items: list):
-        """Create ultra-premium items table with professional styling"""
+        """Create ultra-premium items table with professional styling and product images"""
         elements = []
         
         # Table header with bold premium styling
@@ -415,6 +415,7 @@ class PDFGenerator:
         
         data = [[
             Paragraph('S.No', header_style),
+            Paragraph('Image', header_style),
             Paragraph('Model No', header_style),
             Paragraph('Product Details', header_style),
             Paragraph('Qty', header_style),
@@ -426,8 +427,8 @@ class PDFGenerator:
         for idx, item in enumerate(items, 1):
             # Smart truncation for description
             desc = item['description']
-            if len(desc) > 120:
-                desc = desc[:120] + '...'
+            if len(desc) > 100:
+                desc = desc[:100] + '...'
             
             # Product name in larger, bolder font
             product_para = Paragraph(
@@ -453,8 +454,48 @@ class PDFGenerator:
                 self.normal_style
             )
             
+            # Handle product image
+            image_cell = ''
+            if item.get('image_url'):
+                try:
+                    # Convert URL path to file system path
+                    image_url = item['image_url']
+                    if image_url.startswith('/uploads/products/'):
+                        image_path = Path('/app/backend/uploads/products') / image_url.split('/')[-1]
+                    else:
+                        # If full path is provided
+                        image_path = Path(image_url)
+                    
+                    if image_path.exists():
+                        # Create image with proper sizing
+                        if PIL_AVAILABLE:
+                            pil_img = PILImage.open(str(image_path))
+                            img_width, img_height = pil_img.size
+                            aspect_ratio = img_height / img_width
+                            
+                            # Set a small width for table cell
+                            desired_width = 0.6 * inch
+                            calculated_height = desired_width * aspect_ratio
+                            
+                            # Limit height to prevent tall images
+                            max_height = 0.6 * inch
+                            if calculated_height > max_height:
+                                calculated_height = max_height
+                                desired_width = calculated_height / aspect_ratio
+                            
+                            image_cell = Image(str(image_path), width=desired_width, height=calculated_height)
+                        else:
+                            # Fallback without PIL
+                            image_cell = Image(str(image_path), width=0.6*inch, height=0.6*inch)
+                except Exception as e:
+                    logging.error(f"Failed to load product image: {str(e)}")
+                    image_cell = Paragraph('<font size=8>No Image</font>', self.small_style)
+            else:
+                image_cell = Paragraph('<font size=8>No Image</font>', self.small_style)
+            
             data.append([
                 Paragraph(f"<font size=10>{str(idx)}</font>", self.normal_style),
+                image_cell,
                 model_para,
                 product_para,
                 Paragraph(f"<font size=10 color='#212529'><b>{str(item['quantity'])}</b></font>", self.normal_style),
@@ -467,6 +508,7 @@ class PDFGenerator:
         total_qty = sum(item['quantity'] for item in items)
         data.append([
             '', 
+            '',
             '', 
             Paragraph('<font size=12 color="#001219"><b>Room Total</b></font>', self.bold_style), 
             Paragraph(f'<font size=11 color="#001219"><b>{total_qty}</b></font>', self.bold_style),
@@ -474,8 +516,8 @@ class PDFGenerator:
             Paragraph(f'<font size=12 color="#E85D04"><b>Rs. {total:,.0f}</b></font>', self.bold_style)
         ])
         
-        # Wider columns for better readability
-        table = Table(data, colWidths=[0.45*inch, 1*inch, 3.2*inch, 0.55*inch, 1.1*inch, 1.2*inch])
+        # Adjusted columns to accommodate image column
+        table = Table(data, colWidths=[0.35*inch, 0.7*inch, 0.85*inch, 2.6*inch, 0.5*inch, 1*inch, 1.1*inch])
         
         # Light, elegant table styling
         style_commands = [
