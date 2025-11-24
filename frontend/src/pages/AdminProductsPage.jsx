@@ -109,6 +109,12 @@ const AdminProductsPage = () => {
     
     try {
       const token = localStorage.getItem('adminToken');
+      if (!token) {
+        alert('Session expired. Please login again.');
+        navigate('/admin/login');
+        return;
+      }
+
       const response = await fetch(`${backendUrl}/api/products/${productId}`, {
         method: 'DELETE',
         headers: {
@@ -117,12 +123,18 @@ const AdminProductsPage = () => {
       });
       
       if (response.ok) {
-        alert('Product deleted!');
+        alert('Product deleted successfully!');
         fetchProducts();
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        navigate('/admin/login');
+      } else {
+        const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
+        alert('Error: ' + (error.detail || 'Failed to delete product'));
       }
     } catch (error) {
       console.error('Error deleting product:', error);
-      alert('Failed to delete product');
+      alert(`Failed to delete product: ${error.message}`);
     }
   };
 
