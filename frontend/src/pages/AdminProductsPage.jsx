@@ -291,6 +291,16 @@ const AdminProductsPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {products.map((product) => (
                 <div key={product.id} className="bg-white rounded-lg shadow p-6">
+                  {product.image_url && (
+                    <div className="mb-4">
+                      <img 
+                        src={`${backendUrl}${product.image_url}`} 
+                        alt={product.name}
+                        className="w-full h-40 object-cover rounded"
+                        onError={(e) => e.target.style.display = 'none'}
+                      />
+                    </div>
+                  )}
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <h3 className="font-bold text-lg">{product.name}</h3>
