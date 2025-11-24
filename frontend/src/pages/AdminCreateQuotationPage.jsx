@@ -170,7 +170,8 @@ const AdminCreateQuotationPage = () => {
         url,
         method,
         itemCount: formData.items.length,
-        hasToken: !!token
+        hasToken: !!token,
+        email: formData.customer_email
       });
 
       const response = await fetch(url, {
