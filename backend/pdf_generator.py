@@ -460,7 +460,7 @@ class PDFGenerator:
                 try:
                     # Convert URL path to file system path
                     image_url = item['image_url']
-                    if image_url.startswith('/uploads/products/'):
+                    if image_url.startswith('/uploads/products/') or image_url.startswith('/api/uploads/products/'):
                         image_path = Path('/app/backend/uploads/products') / image_url.split('/')[-1]
                     else:
                         # If full path is provided
