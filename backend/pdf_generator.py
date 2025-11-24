@@ -404,21 +404,23 @@ class PDFGenerator:
         return elements
     
     def _create_items_table(self, items: list):
-        """Create ultra-premium items table with impressive styling and product images"""
+        """Create clean, modern, highly readable items table with product images"""
         elements = []
         
-        # Premium table header styling with white text on vibrant background
+        # Header styling - Bold, clear, high contrast
         header_style = ParagraphStyle(
             'TableHeader',
             parent=self.styles['Normal'],
-            fontSize=10,
+            fontSize=11,
             textColor=self.header_text,
             fontName='Helvetica-Bold',
             alignment=TA_CENTER,
-            leading=12
+            leading=14,
+            spaceBefore=0,
+            spaceAfter=0
         )
         
-        # Create header row with perfect alignment
+        # Create header row with clear labels
         data = [[
             Paragraph('<b>S.No</b>', header_style),
             Paragraph('<b>Image</b>', header_style),
