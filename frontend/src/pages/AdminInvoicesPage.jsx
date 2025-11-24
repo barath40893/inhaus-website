@@ -295,10 +295,10 @@ const AdminInvoicesPage = () => {
                             Edit
                           </button>
                           <button
-                            onClick={() => generatePDF(invoice.id)}
+                            onClick={() => downloadPDF(invoice.id, invoice.invoice_number)}
                             className="text-green-600 hover:text-green-900"
                           >
-                            PDF
+                            Download
                           </button>
                           <button
                             onClick={() => sendEmail(invoice.id)}
