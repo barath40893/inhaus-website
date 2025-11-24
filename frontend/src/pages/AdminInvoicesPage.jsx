@@ -131,6 +131,12 @@ const AdminInvoicesPage = () => {
     
     try {
       const token = localStorage.getItem('adminToken');
+      if (!token) {
+        alert('Session expired. Please login again.');
+        navigate('/admin/login');
+        return;
+      }
+
       const response = await fetch(`${backendUrl}/api/invoices/${invoiceId}`, {
         method: 'DELETE',
         headers: {
@@ -141,10 +147,16 @@ const AdminInvoicesPage = () => {
       if (response.ok) {
         alert('Invoice deleted successfully!');
         fetchInvoices();
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        navigate('/admin/login');
+      } else {
+        const errorText = await response.text();
+        alert(`Failed to delete invoice: ${errorText.substring(0, 100)}`);
       }
     } catch (error) {
       console.error('Error deleting invoice:', error);
-      alert('Failed to delete invoice');
+      alert(`Failed to delete invoice: ${error.message}`);
     }
   };
 
