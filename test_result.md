@@ -368,11 +368,7 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "Product Image Upload"
-    - "PDF Table Color Enhancement"
-    - "PDF Product Images Display"
-    - "Product Master Management"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
