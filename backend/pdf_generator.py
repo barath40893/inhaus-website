@@ -463,47 +463,47 @@ class PDFGenerator:
             fontName='Helvetica-Bold'
         )
         
-        # Add items with crystal-clear styling
+        # Add items with classic black & white styling
         for idx, item in enumerate(items, 1):
             # Smart truncation for description
             desc = item['description']
             if len(desc) > 70:
                 desc = desc[:70] + '...'
             
-            # Product details with strong visual hierarchy
+            # Product details with clean black & white hierarchy
             product_para = Paragraph(
-                f"<font size=11 color='#1A202C'><b>{item['product_name']}</b></font><br/>"
-                f"<font size=9 color='#4A5568' leading='12'>{desc}</font>", 
+                f"<font size=11 color='#000000'><b>{item['product_name']}</b></font><br/>"
+                f"<font size=9 color='#666666' leading='12'>{desc}</font>", 
                 content_style
             )
             
-            # Model number - clear and bold
+            # Model number - bold black
             model_para = Paragraph(
-                f"<font size=10 color='#1A202C'><b>{item['model_no']}</b></font>",
+                f"<font size=10 color='#000000'><b>{item['model_no']}</b></font>",
                 center_style
             )
             
             # Serial number
             sno_para = Paragraph(
-                f"<font size=10 color='#1A202C'><b>{str(idx)}</b></font>",
+                f"<font size=10 color='#000000'><b>{str(idx)}</b></font>",
                 center_style
             )
             
-            # Quantity - bold and clear
+            # Quantity - bold black
             qty_para = Paragraph(
-                f"<font size=10 color='#1A202C'><b>{str(item['quantity'])}</b></font>",
+                f"<font size=10 color='#000000'><b>{str(item['quantity'])}</b></font>",
                 center_style
             )
             
-            # Prices - professional formatting
+            # Prices - clean black text
             price_para = Paragraph(
-                f"<font size=10 color='#1A202C'><b>Rs. {item['offered_price']:,.0f}</b></font>",
+                f"<font size=10 color='#000000'><b>Rs. {item['offered_price']:,.0f}</b></font>",
                 right_style
             )
             
-            # Total amount - highlighted
+            # Total amount - bold black
             amount_para = Paragraph(
-                f"<font size=11 color='#1A202C'><b>Rs. {item['total_amount']:,.0f}</b></font>",
+                f"<font size=11 color='#000000'><b>Rs. {item['total_amount']:,.0f}</b></font>",
                 right_style
             )
             
