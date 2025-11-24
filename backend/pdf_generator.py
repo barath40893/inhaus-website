@@ -511,7 +511,7 @@ class PDFGenerator:
             # Product details with clean black & white hierarchy
             product_para = Paragraph(
                 f"<font size=11 color='#000000'><b>{item['product_name']}</b></font><br/>"
-                f"<font size=9 color='#666666' leading='12'>{desc}</font>", 
+                f"<font size=9 color='#666666'>{desc}</font>", 
                 content_style
             )
             
