@@ -549,21 +549,40 @@ class PDFGenerator:
                 amount_para
             ])
         
-        # Total row with strong emphasis
+        # Total row with impressive styling
+        total_style = ParagraphStyle(
+            'TotalStyle',
+            parent=self.styles['Normal'],
+            fontSize=11,
+            textColor=self.secondary_color,
+            fontName='Helvetica-Bold',
+            alignment=TA_RIGHT
+        )
+        
+        total_amount_style = ParagraphStyle(
+            'TotalAmount',
+            parent=self.styles['Normal'],
+            fontSize=12,
+            textColor=self.primary_color,
+            fontName='Helvetica-Bold',
+            alignment=TA_RIGHT
+        )
+        
         total = sum(item['total_amount'] for item in items)
         total_qty = sum(item['quantity'] for item in items)
+        
         data.append([
             '', 
             '',
             '', 
-            Paragraph('<font size=12 color="#001219"><b>Room Total</b></font>', self.bold_style), 
-            Paragraph(f'<font size=11 color="#001219"><b>{total_qty}</b></font>', self.bold_style),
+            Paragraph('<font size=11 color="#1A2B3C"><b>Room Total</b></font>', total_style), 
+            Paragraph(f'<font size=10 color="#1A2B3C"><b>{total_qty}</b></font>', center_style),
             '',
-            Paragraph(f'<font size=12 color="#E85D04"><b>Rs. {total:,.0f}</b></font>', self.bold_style)
+            Paragraph(f'<font size=12 color="#FF6B35"><b>Rs. {total:,.0f}</b></font>', total_amount_style)
         ])
         
-        # Adjusted columns to accommodate image column
-        table = Table(data, colWidths=[0.35*inch, 0.7*inch, 0.85*inch, 2.6*inch, 0.5*inch, 1*inch, 1.1*inch])
+        # Optimized column widths for better layout
+        table = Table(data, colWidths=[0.4*inch, 0.75*inch, 0.9*inch, 2.5*inch, 0.5*inch, 1*inch, 1.15*inch])
         
         # Light, elegant table styling
         style_commands = [
