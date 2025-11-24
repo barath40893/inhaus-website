@@ -521,6 +521,68 @@ class PDFGenerator:
         
         return elements
     
+    def _create_quotation_details_table(self, quotation_data: dict):
+        """Create quotation details table matching reference design"""
+        
+        quote_date = quotation_data['created_at']
+        if isinstance(quote_date, str):
+            quote_date = datetime.fromisoformat(quote_date).date()
+        elif isinstance(quote_date, datetime):
+            quote_date = quote_date.date()
+        
+        valid_until = quote_date + timedelta(days=quotation_data['validity_days'])
+        
+        # Create 2x2 grid like reference
+        data = [
+            [
+                Paragraph('<b>Quote No:</b>', self.normal_style),
+                Paragraph(quotation_data['quote_number'], self.normal_style),
+                Paragraph('<b>Date:</b>', self.normal_style),
+                Paragraph(str(quote_date), self.normal_style)
+            ],
+            [
+                Paragraph('<b>Revision No:</b>', self.normal_style),
+                Paragraph(str(quotation_data.get('revision_no', 0)), self.normal_style),
+                Paragraph('<b>Valid Until:</b>', self.normal_style),
+                Paragraph(str(valid_until), self.normal_style)
+            ]
+        ]
+        
+        # Equal column widths
+        col_width = 1.4 * inch
+        table = Table(data, colWidths=[col_width, col_width, col_width, col_width])
+        
+        # Style matching reference image
+        table.setStyle(TableStyle([
+            # Light grey background for labels (columns 0 and 2)
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#F5F5F5')),
+            ('BACKGROUND', (2, 0), (2, -1), colors.HexColor('#F5F5F5')),
+            
+            # White background for values (columns 1 and 3)
+            ('BACKGROUND', (1, 0), (1, -1), colors.white),
+            ('BACKGROUND', (3, 0), (3, -1), colors.white),
+            
+            # Light grey borders
+            ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#DDDDDD')),
+            ('INNERGRID', (0, 0), (-1, -1), 1, colors.HexColor('#DDDDDD')),
+            
+            # Left alignment for all cells
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            
+            # Padding
+            ('LEFTPADDING', (0, 0), (-1, -1), 10),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 10),
+            ('TOPPADDING', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
+            
+            # Font
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ]))
+        
+        return [table]
+    
     def _create_quote_info(self, quotation_data: dict, settings_data: dict):
         """Create quote information section"""
         elements = []
