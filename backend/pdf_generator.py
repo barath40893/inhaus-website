@@ -23,24 +23,24 @@ class PDFGenerator:
         self.styles = getSampleStyleSheet()
         self.page_width, self.page_height = A4
         
-        # Premium color palette - Modern, clean, and highly readable
-        self.primary_color = colors.HexColor('#FF6B35')  # Vibrant coral orange (InHaus brand)
-        self.accent_color = colors.HexColor('#FFB02E')  # Rich golden amber
-        self.secondary_color = colors.HexColor('#1E3A5F')  # Professional navy blue
-        self.header_bg = colors.HexColor('#1E3A5F')  # Rich navy blue header - high contrast
-        self.header_text = colors.white  # Pure white text on dark header
-        self.row_light = colors.HexColor('#FFFFFF')  # Pure white for light rows
-        self.row_alt = colors.HexColor('#F8FAFB')  # Very subtle light blue-grey for alternating
-        self.border_color = colors.HexColor('#E0E4E8')  # Clean border color
-        self.table_border = colors.HexColor('#CBD5E0')  # Professional table border
-        self.text_color = colors.HexColor('#1A202C')  # Very dark grey for maximum readability
-        self.light_text = colors.HexColor('#4A5568')  # Medium grey for descriptions
-        self.light_gray = colors.HexColor('#E0E4E8')  # Light gray for borders
-        self.medium_gray = colors.HexColor('#CBD5E0')  # Medium gray for grid
-        self.success_color = colors.HexColor('#10B981')  # Modern emerald green
-        self.highlight_color = colors.HexColor('#FFF8E1')  # Warm highlight color
-        self.total_bg = colors.HexColor('#F7FAFC')  # Clean light background for totals
-        self.total_text = colors.HexColor('#2D3748')  # Dark text for totals
+        # Classic Black & White color palette - Timeless and elegant
+        self.primary_color = colors.black  # Pure black for primary elements
+        self.accent_color = colors.HexColor('#333333')  # Dark grey accent
+        self.secondary_color = colors.black  # Black for headers
+        self.header_bg = colors.black  # Classic black header
+        self.header_text = colors.white  'Pure white text on black header
+        self.row_light = colors.white  # Pure white for light rows
+        self.row_alt = colors.HexColor('#F5F5F5')  # Very light grey for alternating rows
+        self.border_color = colors.HexColor('#DDDDDD')  # Light grey border
+        self.table_border = colors.HexColor('#000000')  # Black table border
+        self.text_color = colors.black  # Pure black text for maximum readability
+        self.light_text = colors.HexColor('#666666')  # Medium grey for descriptions
+        self.light_gray = colors.HexColor('#CCCCCC')  # Light gray for subtle borders
+        self.medium_gray = colors.HexColor('#999999')  # Medium gray for grid
+        self.success_color = colors.black  # Black for success
+        self.highlight_color = colors.HexColor('#F0F0F0')  # Light grey highlight
+        self.total_bg = colors.HexColor('#F5F5F5')  # Light grey background for totals
+        self.total_text = colors.black  # Pure black for total text
         
         # Custom styles with premium fonts and spacing
         self.title_style = ParagraphStyle(
