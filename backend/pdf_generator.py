@@ -428,35 +428,75 @@ class PDFGenerator:
             Paragraph('<b>Total</b>', header_style)
         ]]
         
+        # Content styling for data rows
+        content_style = ParagraphStyle(
+            'Content',
+            parent=self.styles['Normal'],
+            fontSize=9,
+            textColor=self.text_color,
+            alignment=TA_LEFT,
+            leading=11
+        )
+        
+        center_style = ParagraphStyle(
+            'CenterContent',
+            parent=self.styles['Normal'],
+            fontSize=9,
+            textColor=self.text_color,
+            alignment=TA_CENTER,
+            leading=11
+        )
+        
+        right_style = ParagraphStyle(
+            'RightContent',
+            parent=self.styles['Normal'],
+            fontSize=9,
+            textColor=self.text_color,
+            alignment=TA_RIGHT,
+            leading=11
+        )
+        
         # Add items with enhanced styling
         for idx, item in enumerate(items, 1):
             # Smart truncation for description
             desc = item['description']
-            if len(desc) > 100:
-                desc = desc[:100] + '...'
+            if len(desc) > 80:
+                desc = desc[:80] + '...'
             
-            # Product name in larger, bolder font
+            # Product details with clear hierarchy
             product_para = Paragraph(
-                f"<font size=11 color='#001219'><b>{item['product_name']}</b></font><br/>"
-                f"<font size=9 color='#6C757D'>{desc}</font>", 
-                self.normal_style
+                f"<font size=10 color='#1A2B3C'><b>{item['product_name']}</b></font><br/>"
+                f"<font size=8 color='#666666'>{desc}</font>", 
+                content_style
             )
             
-            # Model number styled
+            # Model number - centered and bold
             model_para = Paragraph(
-                f"<font size=10 color='#212529'><b>{item['model_no']}</b></font>",
-                self.normal_style
+                f"<font size=9 color='#2D2D2D'><b>{item['model_no']}</b></font>",
+                center_style
             )
             
-            # Prices styled with emphasis
+            # Serial number - centered
+            sno_para = Paragraph(
+                f"<font size=9 color='#2D2D2D'>{str(idx)}</font>",
+                center_style
+            )
+            
+            # Quantity - centered and bold
+            qty_para = Paragraph(
+                f"<font size=9 color='#2D2D2D'><b>{str(item['quantity'])}</b></font>",
+                center_style
+            )
+            
+            # Prices - right aligned with currency
             price_para = Paragraph(
-                f"<font size=10 color='#212529'><b>Rs. {item['offered_price']:,.0f}</b></font>",
-                self.normal_style
+                f"<font size=9 color='#2D2D2D'><b>Rs. {item['offered_price']:,.0f}</b></font>",
+                right_style
             )
             
             amount_para = Paragraph(
-                f"<font size=10 color='#212529'><b>Rs. {item['total_amount']:,.0f}</b></font>",
-                self.normal_style
+                f"<font size=10 color='#FF6B35'><b>Rs. {item['total_amount']:,.0f}</b></font>",
+                right_style
             )
             
             # Handle product image
