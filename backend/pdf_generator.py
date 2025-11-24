@@ -867,10 +867,10 @@ class PDFGenerator:
             '', 
             '',
             '', 
-            Paragraph('<font size=11 color="#EA580C"><b>Room Total</b></font>', total_label_style), 
-            Paragraph(f'<font size=10 color="#EA580C"><b>{total_qty}</b></font>', center_style),
+            Paragraph('<font size=11 color="#1E40AF"><b>Room Total</b></font>', total_label_style), 
+            Paragraph(f'<font size=10 color="#1E40AF"><b>{total_qty}</b></font>', center_style),
             '',
-            Paragraph(f'<font size=12 color="#EA580C"><b>Rs. {total:,.0f}</b></font>', total_amount_style)
+            Paragraph(f'<font size=12 color="#1E40AF"><b>Rs. {total:,.0f}</b></font>', total_amount_style)
         ])
         
         # Optimized column widths for clarity - wider spacing
