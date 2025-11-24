@@ -294,10 +294,10 @@ const AdminQuotationsPage = () => {
                             Edit
                           </button>
                           <button
-                            onClick={() => generatePDF(quotation.id, quotation.quote_number)}
+                            onClick={() => downloadPDF(quotation.id, quotation.quote_number)}
                             className="text-green-600 hover:text-green-900"
                           >
-                            PDF
+                            Download
                           </button>
                           <button
                             onClick={() => sendEmail(quotation.id)}
