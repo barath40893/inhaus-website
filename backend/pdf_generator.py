@@ -691,15 +691,15 @@ class PDFGenerator:
         """Create clean, modern, highly readable items table with product images"""
         elements = []
         
-        # Header styling - Bold, clear, high contrast
+        # Premium table header styling with dark text on light background
         header_style = ParagraphStyle(
             'TableHeader',
             parent=self.styles['Normal'],
-            fontSize=11,
+            fontSize=9,  # Reduced to fit in single line
             textColor=self.header_text,
             fontName='Helvetica-Bold',
             alignment=TA_CENTER,
-            leading=14,
+            leading=11,
             spaceBefore=0,
             spaceAfter=0
         )
