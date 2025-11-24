@@ -74,6 +74,12 @@ const AdminQuotationsPage = () => {
   const downloadPDF = async (quotationId, quoteNumber) => {
     try {
       const token = localStorage.getItem('adminToken');
+      if (!token) {
+        alert('Session expired. Please login again.');
+        navigate('/admin/login');
+        return;
+      }
+
       const response = await fetch(`${backendUrl}/api/quotations/${quotationId}/download-pdf`, {
         method: 'GET',
         headers: {
@@ -91,12 +97,18 @@ const AdminQuotationsPage = () => {
         a.click();
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
+        alert('PDF downloaded successfully!');
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        navigate('/admin/login');
       } else {
-        alert('Failed to download PDF');
+        const errorText = await response.text();
+        console.error('Download error:', errorText);
+        alert(`Failed to download PDF: ${response.status} - ${errorText.substring(0, 100)}`);
       }
     } catch (error) {
       console.error('Error downloading PDF:', error);
-      alert('Failed to download PDF');
+      alert(`Failed to download PDF: ${error.message}`);
     }
   };
 
