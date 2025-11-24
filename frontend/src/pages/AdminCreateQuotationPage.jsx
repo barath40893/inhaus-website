@@ -102,7 +102,8 @@ const AdminCreateQuotationPage = () => {
       list_price: 0,
       discount: 0,
       offered_price: 0,
-      company_cost: 0
+      company_cost: 0,
+      image_url: null
     });
   };
 
