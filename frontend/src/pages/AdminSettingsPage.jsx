@@ -12,11 +12,11 @@ const AdminSettingsPage = () => {
 
   const [settings, setSettings] = useState({
     company_name: 'InHaus Smart Automation',
-    company_address: '',
-    company_email: 'inhaussmartautomation@gmail.com',
-    company_phone: '+91 9063555552',
-    company_website: 'www.inhaus.in',
-    company_gstin: '',
+    company_address: 'Shop No 207, 1st Floor, Kokapet Terminal, Gandipet, Hyderabad - 500075',
+    company_email: 'support@inhaus.co.in',
+    company_phone: '+91 7416925607',
+    company_website: 'www.inhaus.co.in',
+    company_gstin: '36AAICI44681ZL',
     company_cin: '',
     bank_name: '',
     bank_account_no: '',
