@@ -672,6 +672,8 @@ async def generate_quote_number() -> str:
 async def create_quotation(input: QuotationCreate, payload: dict = Depends(verify_token)):
     """Create a new quotation (admin only)"""
     try:
+        logger.info(f"Creating quotation for customer: {input.customer_name}, items count: {len(input.items)}")
+        
         # Process items and calculate totals
         items = []
         for item_data in input.items:
