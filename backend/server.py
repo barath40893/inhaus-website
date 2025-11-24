@@ -301,11 +301,11 @@ class Settings(BaseModel):
     
     id: str = "company_settings"
     company_name: str = "InHaus Smart Automation"
-    company_address: str = ""
-    company_email: str = "inhaussmartautomation@gmail.com"
-    company_phone: str = "+91 9063555552"
-    company_website: str = "www.inhaus.in"
-    company_gstin: Optional[str] = None
+    company_address: str = "Shop No 207, 1st Floor, Kokapet Terminal, Gandipet, Hyderabad - 500075"
+    company_email: str = "support@inhaus.co.in"
+    company_phone: str = "+91 7416925607"
+    company_website: str = "www.inhaus.co.in"
+    company_gstin: Optional[str] = "36AAICI44681ZL"
     company_cin: Optional[str] = None
     bank_name: Optional[str] = None
     bank_account_no: Optional[str] = None
