@@ -139,8 +139,17 @@ const AdminCreateQuotationPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.customer_email)) {
+      alert('Please enter a valid email address (e.g., customer@example.com)');
+      return;
+    }
+    
+    // Validate items
     if (formData.items.length === 0) {
-      alert('Please add at least one item');
+      alert('Please add at least one product to the quotation');
       return;
     }
 
