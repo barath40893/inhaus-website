@@ -153,6 +153,14 @@ const AdminCreateQuotationPage = () => {
       const url = id ? `${backendUrl}/api/quotations/${id}` : `${backendUrl}/api/quotations`;
       const method = id ? 'PATCH' : 'POST';
 
+      // Log for debugging
+      console.log('Submitting quotation:', {
+        url,
+        method,
+        itemCount: formData.items.length,
+        hasToken: !!token
+      });
+
       const response = await fetch(url, {
         method,
         headers: {
