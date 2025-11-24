@@ -59,6 +59,15 @@ security = HTTPBearer()
 # Create the main app without a prefix
 app = FastAPI()
 
+# Add validation error handler for better debugging
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    logger.error(f"Validation error on {request.method} {request.url.path}: {exc.errors()}")
+    return JSONResponse(
+        status_code=422,
+        content={"detail": exc.errors(), "body": str(exc.body)[:500]}  # Include first 500 chars of body
+    )
+
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
