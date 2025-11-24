@@ -249,7 +249,17 @@ const AdminCreateQuotationPage = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Email*</label>
-                <input type="email" required value={formData.customer_email} onChange={(e) => setFormData({...formData, customer_email: e.target.value})} className="w-full px-4 py-2 border rounded-lg" />
+                <input 
+                  type="email" 
+                  required 
+                  placeholder="customer@example.com"
+                  value={formData.customer_email} 
+                  onChange={(e) => setFormData({...formData, customer_email: e.target.value})} 
+                  className="w-full px-4 py-2 border rounded-lg"
+                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                  title="Please enter a valid email address (e.g., customer@example.com)"
+                />
+                <p className="text-xs text-gray-500 mt-1">Enter a valid email (e.g., customer@example.com)</p>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Phone</label>
