@@ -1124,6 +1124,39 @@ async def generate_invoice_pdf(invoice_id: str, payload: dict = Depends(verify_t
         logger.error(f"Error generating invoice PDF: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.get("/invoices/{invoice_id}/download-pdf")
+async def download_invoice_pdf(invoice_id: str, payload: dict = Depends(verify_token)):
+    """Download PDF for an invoice (admin only)"""
+    try:
+        # Get invoice
+        invoice = await db.invoices.find_one({"id": invoice_id}, {"_id": 0})
+        if not invoice:
+            raise HTTPException(status_code=404, detail="Invoice not found")
+        
+        # Get settings
+        settings = await db.settings.find_one({"id": "company_settings"}, {"_id": 0})
+        if not settings:
+            settings = Settings().model_dump()
+        
+        # Generate PDF
+        pdf_filename = f"invoice_{invoice['invoice_number'].replace('/', '_')}.pdf"
+        pdf_path = PDF_DIR / pdf_filename
+        
+        # Generate if doesn't exist
+        if not pdf_path.exists():
+            pdf_generator.generate_invoice_pdf(invoice, settings, str(pdf_path))
+        
+        return FileResponse(
+            path=str(pdf_path),
+            media_type='application/pdf',
+            filename=pdf_filename
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error downloading invoice PDF: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # ============= EMAIL SENDING ENDPOINTS =============
 
 async def send_quotation_email(quotation_data: dict, pdf_path: str, settings_data: dict):
