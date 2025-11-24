@@ -811,39 +811,54 @@ class PDFGenerator:
         # Optimized column widths for clarity - wider spacing
         table = Table(data, colWidths=[0.4*inch, 0.75*inch, 0.95*inch, 2.45*inch, 0.5*inch, 1.05*inch, 1.15*inch])
         
-        # Bold black border table styling - matching reference design
+        # InHaus Brand Table Styling - Modern and Professional
         style_commands = [
-            # ========== HEADER - Bold Black with White Text ==========
-            ('BACKGROUND', (0, 0), (-1, 0), colors.black),  # Black header background
+            # ========== HEADER - Orange Gradient Effect ==========
+            ('BACKGROUND', (0, 0), (-1, 0), self.header_bg),  # Orange header
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),  # White text
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 12),
-            ('TOPPADDING', (0, 0), (-1, 0), 14),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 14),
+            ('FONTSIZE', (0, 0), (-1, 0), 11),
+            ('TOPPADDING', (0, 0), (-1, 0), 16),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 16),
             
-            # ========== BOLD BLACK BORDERS - Key Feature ==========
-            ('BOX', (0, 0), (-1, -1), 2.5, colors.black),  # BOLD outer border
-            ('INNERGRID', (0, 0), (-1, -1), 2, colors.black),  # BOLD inner grid lines
+            # ========== ELEGANT BORDERS - Orange Theme ==========
+            ('BOX', (0, 0), (-1, -1), 1.5, self.table_border),  # Orange outer border
+            ('LINEBELOW', (0, 0), (-1, 0), 2, self.primary_dark),  # Darker orange under header
+            ('INNERGRID', (0, 1), (-1, -1), 0.75, self.border_color),  # Light orange grid
             
-            # ========== ALL CELLS - WHITE BACKGROUND ==========
-            ('BACKGROUND', (0, 1), (-1, -1), colors.white),  # Pure white for all data cells
-            
-            # ========== ALIGNMENT - ALL CENTERED ==========
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # Center all columns
+            # ========== ALIGNMENT - Professional Layout ==========
+            ('ALIGN', (0, 1), (0, -1), 'CENTER'),  # S.No centered
+            ('ALIGN', (1, 1), (1, -1), 'CENTER'),  # Image centered
+            ('ALIGN', (2, 1), (2, -1), 'CENTER'),  # Model No centered
+            ('ALIGN', (3, 1), (3, -1), 'LEFT'),    # Product Details left
+            ('ALIGN', (4, 1), (4, -1), 'CENTER'),  # Qty centered
+            ('ALIGN', (5, 1), (5, -1), 'RIGHT'),   # Price right
+            ('ALIGN', (6, 1), (6, -1), 'RIGHT'),   # Amount right
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             
-            # ========== PADDING - Generous Spacing ==========
-            ('LEFTPADDING', (0, 0), (-1, -1), 10),
-            ('RIGHTPADDING', (0, 0), (-1, -1), 10),
+            # ========== PADDING - Comfortable Spacing ==========
+            ('LEFTPADDING', (0, 0), (-1, -1), 12),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 12),
             ('TOPPADDING', (0, 1), (-1, -1), 14),
             ('BOTTOMPADDING', (0, 1), (-1, -1), 14),
             
-            # ========== TOTAL ROW - Bold Text ==========
+            # ========== TOTAL ROW - Highlighted ==========
+            ('BACKGROUND', (0, -1), (-1, -1), self.total_bg),  # Light orange background
+            ('LINEABOVE', (0, -1), (-1, -1), 2, self.table_border),  # Orange line above
             ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, -1), (-1, -1), 12),
+            ('FONTSIZE', (0, -1), (-1, -1), 11),
+            ('TOPPADDING', (0, -1), (-1, -1), 16),
+            ('BOTTOMPADDING', (0, -1), (-1, -1), 16),
         ]
+        
+        # Alternating row colors for readability
+        for i in range(1, len(data) - 1):
+            if i % 2 == 0:
+                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_alt))  # Light orange tint
+            else:
+                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_light))  # White
         
         table.setStyle(TableStyle(style_commands))
         
