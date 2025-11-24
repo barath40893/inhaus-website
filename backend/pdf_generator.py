@@ -207,26 +207,33 @@ class PDFGenerator:
         return output_path
     
     def _create_header(self, settings_data: dict):
-        """Create header with logo and company info"""
+        """Create premium header with logo and company info"""
         elements = []
         
-        # Try to add logo
+        # Add top spacing
+        elements.append(Spacer(1, 15))
+        
+        # Try to add logo with better sizing
         logo_path = Path('/app/frontend/public/inhaus/fulllogo_transparent_nobuffer.png')
         if logo_path.exists():
-            logo = Image(str(logo_path), width=2*inch, height=0.8*inch)
+            # Larger, more prominent logo
+            logo = Image(str(logo_path), width=2.5*inch, height=1*inch, kind='proportional')
+            logo.hAlign = 'CENTER'
             elements.append(logo)
+            elements.append(Spacer(1, 10))
         
-        # Company info
+        # Company info in elegant style
         company_info = f"""
         <para align=center>
-        <b>{settings_data.get('company_name', 'InHaus Smart Automation')}</b><br/>
-        {settings_data.get('company_address', '')}<br/>
-        Email: {settings_data.get('company_email', '')}<br/>
-        Phone: {settings_data.get('company_phone', '')}<br/>
-        Website: {settings_data.get('company_website', '')}
+        <font size=11 color="#1F2937"><b>{settings_data.get('company_name', 'InHaus Smart Automation')}</b></font><br/>
+        <font size=9 color="#6B7280">
+        {settings_data.get('company_email', '')} | {settings_data.get('company_phone', '')}<br/>
+        {settings_data.get('company_website', '')}
+        </font>
         </para>
         """
         elements.append(Paragraph(company_info, self.small_style))
+        elements.append(Spacer(1, 5))
         
         return elements
     
