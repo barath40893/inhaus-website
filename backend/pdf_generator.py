@@ -28,7 +28,7 @@ class PDFGenerator:
         self.accent_color = colors.HexColor('#333333')  # Dark grey accent
         self.secondary_color = colors.black  # Black for headers
         self.header_bg = colors.black  # Classic black header
-        self.header_text = colors.white  'Pure white text on black header
+        self.header_text = colors.white  # Pure white text on black header
         self.row_light = colors.white  # Pure white for light rows
         self.row_alt = colors.HexColor('#F5F5F5')  # Very light grey for alternating rows
         self.border_color = colors.HexColor('#DDDDDD')  # Light grey border
