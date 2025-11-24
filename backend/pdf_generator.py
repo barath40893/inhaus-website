@@ -877,54 +877,54 @@ class PDFGenerator:
         # Optimized column widths for clarity - wider spacing
         table = Table(data, colWidths=[0.4*inch, 0.75*inch, 0.95*inch, 2.45*inch, 0.5*inch, 1.05*inch, 1.15*inch])
         
-        # Modern Pastel Table Styling with Bold Borders
+        # Professional Blue-Grey Table Styling - Matching Reference
         style_commands = [
-            # ========== HEADER - Light Pastel Background ==========
-            ('BACKGROUND', (0, 0), (-1, 0), self.header_bg),  # Light peach header
-            ('TEXTCOLOR', (0, 0), (-1, 0), self.header_text),  # Dark text on light bg
+            # ========== HEADER - Light Blue-Grey Background ==========
+            ('BACKGROUND', (0, 0), (-1, 0), self.header_bg),  # Light blue-grey header
+            ('TEXTCOLOR', (0, 0), (-1, 0), self.header_text),  # Dark grey text
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 9),  # Reduced from 11 to 9 for single line
-            ('TOPPADDING', (0, 0), (-1, 0), 12),  # Reduced padding
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('FONTSIZE', (0, 0), (-1, 0), 9),
+            ('TOPPADDING', (0, 0), (-1, 0), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
             
-            # ========== BOLD DARK BORDERS ==========
-            ('BOX', (0, 0), (-1, -1), 2.5, self.table_border),  # BOLD dark outer border
-            ('LINEBELOW', (0, 0), (-1, 0), 2.5, self.table_border),  # BOLD line under header
-            ('INNERGRID', (0, 1), (-1, -1), 1.5, self.border_color),  # Medium gray grid
+            # ========== SUBTLE BORDERS - Matching Reference ==========
+            ('BOX', (0, 0), (-1, -1), 1, self.table_border),  # 1px light grey outer border
+            ('LINEBELOW', (0, 0), (-1, 0), 1, self.border_color),  # 1px line under header
+            ('INNERGRID', (0, 1), (-1, -1), 1, self.border_color),  # 1px light grey grid
             
             # ========== ALIGNMENT - Professional Layout ==========
             ('ALIGN', (0, 1), (0, -1), 'CENTER'),  # S.No centered
             ('ALIGN', (1, 1), (1, -1), 'CENTER'),  # Image centered
             ('ALIGN', (2, 1), (2, -1), 'CENTER'),  # Model No centered
             ('ALIGN', (3, 1), (3, -1), 'LEFT'),    # Product Details left
-            ('ALIGN', (4, 1), (4, -1), 'CENTER'),  # Qty centered
+            ('ALIGN', (4, 1), (4, -1), 'RIGHT'),   # Qty right
             ('ALIGN', (5, 1), (5, -1), 'RIGHT'),   # Price right
             ('ALIGN', (6, 1), (6, -1), 'RIGHT'),   # Amount right
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             
-            # ========== PADDING - Comfortable Spacing ==========
-            ('LEFTPADDING', (0, 0), (-1, -1), 12),
-            ('RIGHTPADDING', (0, 0), (-1, -1), 12),
-            ('TOPPADDING', (0, 1), (-1, -1), 14),
-            ('BOTTOMPADDING', (0, 1), (-1, -1), 14),
+            # ========== PADDING - Clean Spacing ==========
+            ('LEFTPADDING', (0, 0), (-1, -1), 8),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 8),
+            ('TOPPADDING', (0, 1), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 1), (-1, -1), 10),
             
-            # ========== TOTAL ROW - Light Blue Highlight ==========
-            ('BACKGROUND', (0, -1), (-1, -1), self.total_bg),  # Light blue background
-            ('LINEABOVE', (0, -1), (-1, -1), 2.5, self.table_border),  # BOLD line above
+            # ========== TOTAL ROW - Light Blue-Grey with Thick Border ==========
+            ('BACKGROUND', (0, -1), (-1, -1), self.total_bg),  # Light blue-grey background
+            ('LINEABOVE', (0, -1), (-1, -1), 2, self.thick_border),  # 2px medium grey line
             ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, -1), (-1, -1), 11),
-            ('TOPPADDING', (0, -1), (-1, -1), 16),
-            ('BOTTOMPADDING', (0, -1), (-1, -1), 16),
+            ('FONTSIZE', (0, -1), (-1, -1), 10),
+            ('TOPPADDING', (0, -1), (-1, -1), 12),
+            ('BOTTOMPADDING', (0, -1), (-1, -1), 12),
         ]
         
-        # Alternating row colors - light yellow and white
+        # Alternating row colors - matching reference
         for i in range(1, len(data) - 1):
             if i % 2 == 0:
-                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_alt))  # Light yellow
+                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_alt))  # Slightly darker grey
             else:
-                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_light))  # White
+                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_light))  # Very light grey
         
         table.setStyle(TableStyle(style_commands))
         
