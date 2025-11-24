@@ -428,7 +428,7 @@ class PDFGenerator:
             # Product name in larger, bolder font
             product_para = Paragraph(
                 f"<font size=11 color='#001219'><b>{item['product_name']}</b></font><br/>"
-                f"<font size=9 color='#6C757D' leading=12>{desc}</font>", 
+                f"<font size=9 color='#6C757D'>{desc}</font>", 
                 self.normal_style
             )
             
