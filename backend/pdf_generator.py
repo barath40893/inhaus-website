@@ -227,14 +227,21 @@ class PDFGenerator:
         company_info = f"""
         <para align=center>
         <font size=11 color="#1F2937"><b>{settings_data.get('company_name', 'InHaus Smart Automation')}</b></font><br/>
-        <font size=9 color="#6B7280">
-        {settings_data.get('company_email', '')} | {settings_data.get('company_phone', '')}<br/>
-        {settings_data.get('company_website', '')}
+        <font size=8 color="#6B7280">
+        {settings_data.get('company_address', '')}<br/>
+        Email: {settings_data.get('company_email', '')} | Phone: {settings_data.get('company_phone', '')}<br/>
+        Website: {settings_data.get('company_website', '')}
+        """
+        
+        if settings_data.get('company_gstin'):
+            company_info += f" | GSTIN: {settings_data.get('company_gstin', '')}"
+        
+        company_info += """
         </font>
         </para>
         """
         elements.append(Paragraph(company_info, self.small_style))
-        elements.append(Spacer(1, 5))
+        elements.append(Spacer(1, 8))
         
         return elements
     
