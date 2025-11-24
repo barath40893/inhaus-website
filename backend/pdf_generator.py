@@ -538,29 +538,42 @@ class PDFGenerator:
         return elements
     
     def _create_footer(self, settings_data: dict, include_bank: bool = False):
-        """Create footer with company details"""
+        """Create premium footer with company details"""
         elements = []
+        
+        # Add horizontal line separator
+        elements.append(Spacer(1, 20))
         
         footer_text = f"""
         <para align=center>
-        <b>Thank you for your business!</b><br/>
-        {settings_data.get('company_name', 'InHaus Smart Automation')}<br/>
+        <font size=10 color="#FF6B35"><b>Thank you for your business!</b></font><br/>
+        <font size=9 color="#1F2937">
+        <b>{settings_data.get('company_name', 'InHaus Smart Automation')}</b><br/>
+        </font>
+        <font size=8 color="#6B7280">
         {settings_data.get('company_address', '')}<br/>
+        Email: {settings_data.get('company_email', '')} | Phone: {settings_data.get('company_phone', '')}<br/>
+        Website: {settings_data.get('company_website', '')}
         """
         
         if settings_data.get('company_gstin'):
-            footer_text += f"GSTIN: {settings_data['company_gstin']}<br/>"
+            footer_text += f"<br/>GSTIN: <b>{settings_data['company_gstin']}</b>"
+        
+        footer_text += "</font>"
         
         if include_bank and settings_data.get('bank_name'):
             footer_text += f"""
-            <br/>
-            <b>Bank Details:</b><br/>
-            Bank: {settings_data.get('bank_name', '')}<br/>
-            Account No: {settings_data.get('bank_account_no', '')}<br/>
-            IFSC: {settings_data.get('bank_ifsc', '')}<br/>
+            <br/><br/>
+            <font size=9 color="#1F2937"><b>Bank Details for Payment</b></font><br/>
+            <font size=8 color="#6B7280">
+            Bank Name: {settings_data.get('bank_name', '')}<br/>
+            Account Number: {settings_data.get('bank_account_no', '')}<br/>
+            IFSC Code: {settings_data.get('bank_ifsc', '')}<br/>
+            Branch: {settings_data.get('bank_branch', '')}
             """
             if settings_data.get('upi_id'):
-                footer_text += f"UPI ID: {settings_data['upi_id']}<br/>"
+                footer_text += f"<br/>UPI ID: <b>{settings_data['upi_id']}</b>"
+            footer_text += "</font>"
         
         footer_text += "</para>"
         
