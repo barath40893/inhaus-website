@@ -351,6 +351,18 @@ backend:
           agent: "testing"
           comment: "NEW COVER PAGE LAYOUT TESTING COMPLETED - ALL REQUIREMENTS MET! Successfully tested the new cover page layout as requested in the review: ✅ Created test quotation with 3 products across 3 rooms (Living Room, Master Bedroom, Kitchen) totaling Rs. 40,828 ✅ Generated PDF quotation_QT-2025-0047.pdf (2,995,992 bytes) with new cover page layout ✅ NEW COVER PAGE LAYOUT VERIFIED: Light grey header background (#E8E8E8) with InHaus logo, Interior image filling most of the page, Text overlay at BOTTOM of image (QUOTATION heading, taglines, company details), Dark gradient overlay for text readability, No white borders - image blends seamlessly with background, Light grey background throughout the page ✅ COVER PAGE EXTRACTION SUCCESSFUL: Extracted to /tmp/new_cover_layout.png (921,088 bytes) as requested, Copied to /app/backend/uploads/new_cover_layout.png for web access ✅ All new cover page layout requirements successfully implemented: header with logo, main area with interior image, text overlay at bottom, gradient for readability, no borders, light grey background. The new cover page layout is working perfectly and ready for user review."
 
+  - task: "PDF Updated Cover Page Reference Layout"
+    implemented: true
+    working: true
+    file: "/app/backend/pdf_generator.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "UPDATED COVER PAGE REFERENCE LAYOUT TESTING COMPLETED - ALL REQUIREMENTS MET! Successfully tested the updated cover page matching the reference layout provided by user: ✅ Created test quotation with 3 products across 3 rooms (Living Room, Master Bedroom, Kitchen) totaling Rs. 33,748 ✅ Generated PDF quotation_QT-2025-0048.pdf (2,994,612 bytes) with reference layout ✅ REFERENCE LAYOUT VERIFIED: TOP Section with light grey (#E8E8E8) background and InHaus logo (180px height), MIDDLE Section with interior image and 'QUOTATION' text overlay (white, centered), BOTTOM Section with light grey (#E8E8E8) background containing taglines and company info (220px height) ✅ LAYOUT MATCHING REFERENCE CONFIRMED: Logo centered at top in light grey section, Interior image in middle showing living room, 'QUOTATION' text overlaid on image (white, bold, 48pt), Bottom light grey section with Transform Your Space taglines, Energy efficient • Secure • Convenient • Modern, Company details (address, phone, email, website), No white borders around image ✅ COVER PAGE EXTRACTION SUCCESSFUL: Extracted to /tmp/reference_layout_cover.png (964,247 bytes), Copied to /app/backend/uploads/reference_layout_cover.png for web access ✅ All reference layout requirements successfully implemented and verified. The updated cover page reference layout is working perfectly and ready for user review."
+
 frontend:
   - task: "Admin Quotations Dashboard"
     implemented: true
