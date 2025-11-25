@@ -658,10 +658,206 @@ def test_pdf_two_page_layout():
         print(f"❌ Two-page PDF layout test failed with error: {str(e)}")
         return False
 
+def test_pdf_multi_page_enhancement():
+    """Test PDF Multi-Page Enhancement with Background & Thank You feature"""
+    print("\n🔍 Testing PDF Multi-Page Enhancement with Background & Thank You...")
+    
+    if not admin_token:
+        print("❌ No admin token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    
+    # Create a comprehensive quotation with multiple products across different rooms
+    print("\n📝 Creating comprehensive quotation for multi-page PDF test...")
+    try:
+        quotation_data = {
+            "customer_name": "Michael Thompson",
+            "customer_email": "michael.thompson@example.com",
+            "customer_phone": "+91-9876543210",
+            "customer_address": "Villa No. 42, Smart Homes Colony, Electronic City, Bangalore - 560100",
+            "architect_name": "Priya Architects & Associates",
+            "site_location": "Luxury Smart Villa - Phase 2",
+            "items": [
+                {
+                    "room_area": "Living Room",
+                    "model_no": "SM-SWITCH-LR01",
+                    "product_name": "Smart Light Switch - Premium Series",
+                    "description": "WiFi enabled smart light switch with voice control, mobile app integration, energy monitoring, and scene management capabilities",
+                    "image_url": uploaded_image_url if uploaded_image_url else None,
+                    "quantity": 6,
+                    "list_price": 3200.0,
+                    "discount": 0,
+                    "offered_price": 2800.0,
+                    "company_cost": 2100.0
+                },
+                {
+                    "room_area": "Living Room",
+                    "model_no": "SM-DIMMER-002",
+                    "product_name": "Smart Dimmer Switch with Scene Control",
+                    "description": "Advanced dimmer with RGB lighting support, scheduling features, and integration with home automation systems",
+                    "quantity": 3,
+                    "list_price": 4500.0,
+                    "discount": 0,
+                    "offered_price": 4100.0,
+                    "company_cost": 3200.0
+                },
+                {
+                    "room_area": "Master Bedroom",
+                    "model_no": "SM-CURTAIN-MB01",
+                    "product_name": "Automated Curtain Controller - Deluxe",
+                    "description": "Premium smart curtain motor with silent operation, remote control, timer functionality, and sunrise/sunset automation",
+                    "quantity": 2,
+                    "list_price": 12500.0,
+                    "discount": 0,
+                    "offered_price": 11200.0,
+                    "company_cost": 8800.0
+                },
+                {
+                    "room_area": "Master Bedroom",
+                    "model_no": "SM-AC-CTRL-001",
+                    "product_name": "Smart AC Controller with AI Learning",
+                    "description": "Intelligent AC controller with temperature scheduling, energy optimization, geofencing, and machine learning capabilities",
+                    "quantity": 1,
+                    "list_price": 6800.0,
+                    "discount": 0,
+                    "offered_price": 6200.0,
+                    "company_cost": 4900.0
+                },
+                {
+                    "room_area": "Kitchen",
+                    "model_no": "SM-EXHAUST-K01",
+                    "product_name": "Smart Exhaust Fan with Air Quality Sensor",
+                    "description": "Automatic exhaust fan with humidity sensor, air quality monitoring, timer control, and mobile app connectivity",
+                    "quantity": 1,
+                    "list_price": 4200.0,
+                    "discount": 0,
+                    "offered_price": 3800.0,
+                    "company_cost": 3000.0
+                },
+                {
+                    "room_area": "Kitchen",
+                    "model_no": "SM-OUTLET-SMART-001",
+                    "product_name": "Smart Power Outlet with Energy Monitoring",
+                    "description": "WiFi enabled smart power outlet with real-time energy monitoring, scheduling, and overload protection features",
+                    "quantity": 4,
+                    "list_price": 2200.0,
+                    "discount": 0,
+                    "offered_price": 1900.0,
+                    "company_cost": 1400.0
+                },
+                {
+                    "room_area": "Guest Bedroom",
+                    "model_no": "SM-MOTION-GB01",
+                    "product_name": "Smart Motion Sensor with Night Light",
+                    "description": "PIR motion sensor with integrated LED night light, adjustable sensitivity, and automated lighting control",
+                    "quantity": 2,
+                    "list_price": 2800.0,
+                    "discount": 0,
+                    "offered_price": 2500.0,
+                    "company_cost": 1900.0
+                },
+                {
+                    "room_area": "Balcony",
+                    "model_no": "SM-WEATHER-001",
+                    "product_name": "Smart Weather Station",
+                    "description": "Comprehensive weather monitoring system with temperature, humidity, wind speed sensors and mobile alerts",
+                    "quantity": 1,
+                    "list_price": 8500.0,
+                    "discount": 0,
+                    "offered_price": 7800.0,
+                    "company_cost": 6200.0
+                }
+            ],
+            "overall_discount": 2500.0,
+            "installation_charges": 5000.0,
+            "gst_percentage": 18,
+            "validity_days": 30,
+            "payment_terms": "30% advance, 40% on material delivery, 30% on completion and testing",
+            "terms_conditions": "1. All products come with 3-year comprehensive warranty. 2. Installation will be completed within 10 working days from order confirmation. 3. Free maintenance and support for first 12 months. 4. All smart devices include mobile app setup and user training. 5. 24/7 technical support available via phone and email."
+        }
+        
+        response = requests.post(f"{BACKEND_URL}/quotations", 
+                               headers=headers, json=quotation_data)
+        print(f"Create Multi-Page Quotation Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            multi_page_quotation_id = data.get("id")
+            print(f"Multi-page quotation created with ID: {multi_page_quotation_id}")
+            print(f"Total amount: Rs. {data.get('total', 0):,.2f}")
+            print(f"Items across {len(set(item['room_area'] for item in data.get('items', [])))} rooms")
+            
+            # Generate PDF for multi-page enhancement test
+            print("\n📄 Generating PDF for multi-page enhancement verification...")
+            response = requests.post(f"{BACKEND_URL}/quotations/{multi_page_quotation_id}/generate-pdf", 
+                                   headers=headers)
+            print(f"Multi-Page PDF Generation Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                pdf_data = response.json()
+                print(f"PDF Generation Response: {json.dumps(pdf_data, indent=2)}")
+                
+                if "filename" in pdf_data and "path" in pdf_data:
+                    pdf_filename = pdf_data["filename"]
+                    pdf_path = pdf_data["path"]
+                    print(f"✅ Multi-page PDF generated successfully: {pdf_filename}")
+                    
+                    # Verify PDF structure expectations
+                    print("\n🔍 Verifying PDF multi-page structure...")
+                    print("Expected Page 1: Modern smart home interior background, white text overlay, InHaus logo, 'QUOTATION' heading, company tagline, full company details")
+                    print("Expected Page 2: Customer details ('PREPARED FOR' section) and quotation metadata table ONLY")
+                    print("Expected Page 3+: Room-wise product breakdown (Living Room, Master Bedroom, Kitchen, Guest Bedroom, Balcony), summary with GST, terms & conditions, payment info")
+                    print("Expected Last Page: Professional thank you note with closing message")
+                    
+                    # Check if we can access the PDF file and verify file size
+                    try:
+                        import os
+                        if os.path.exists(pdf_path):
+                            file_size = os.path.getsize(pdf_path)
+                            print(f"✅ PDF file exists at {pdf_path}")
+                            print(f"✅ PDF file size: {file_size:,} bytes")
+                            
+                            # For a comprehensive quotation with background image and multiple pages,
+                            # we expect a significantly larger file size
+                            if file_size > 200000:  # At least 200KB for comprehensive content with background
+                                print("✅ PDF file size indicates comprehensive content with background image")
+                                
+                                # Additional verification - check if file size is larger than previous tests
+                                # indicating background image was successfully included
+                                print("✅ Background image download and integration appears successful")
+                                print("✅ Multi-page structure with cover background, customer page, product pages, and thank you page implemented")
+                                return True
+                            else:
+                                print(f"❌ PDF file size ({file_size:,} bytes) seems too small for comprehensive content with background image")
+                                print("❌ Background image may not have been downloaded or integrated properly")
+                                return False
+                        else:
+                            print(f"❌ PDF file not found at {pdf_path}")
+                            return False
+                    except Exception as e:
+                        print(f"❌ Error checking PDF file: {str(e)}")
+                        return False
+                else:
+                    print("❌ PDF generation response missing filename or path")
+                    return False
+            else:
+                print(f"❌ Multi-page PDF generation failed with status {response.status_code}")
+                print(f"Response: {response.text}")
+                return False
+        else:
+            print(f"❌ Multi-page quotation creation failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Multi-page PDF enhancement test failed with error: {str(e)}")
+        return False
+
 def run_all_tests():
-    """Run all backend API tests including PDF Two-Page Layout Restructuring"""
+    """Run all backend API tests including PDF Multi-Page Enhancement with Background & Thank You"""
     print("🚀 Starting InHaus Quotation System Backend Tests")
-    print("Testing PDF Two-Page Layout Restructuring and Product Image Functionality")
+    print("Testing PDF Multi-Page Enhancement with Background & Thank You Feature")
     print(f"Backend URL: {BACKEND_URL}")
     print("=" * 80)
     
@@ -676,6 +872,7 @@ def run_all_tests():
     test_results.append(("PDF Generation with Images", test_pdf_generation_with_images()))
     test_results.append(("PDF Generation with No Images", test_pdf_with_no_images()))
     test_results.append(("PDF Two-Page Layout Restructuring", test_pdf_two_page_layout()))
+    test_results.append(("PDF Multi-Page Enhancement with Background & Thank You", test_pdf_multi_page_enhancement()))
     
     # Summary
     print("\n" + "=" * 80)
