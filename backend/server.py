@@ -433,6 +433,41 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(secur
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
+async def log_activity(user_id: str, user_email: str, action: str, resource_type: str, resource_id: str = None, details: str = None):
+    """Log user activity"""
+    try:
+        log_entry = ActivityLog(
+            user_id=user_id,
+            user_email=user_email,
+            action=action,
+            resource_type=resource_type,
+            resource_id=resource_id,
+            details=details
+        )
+        doc = log_entry.model_dump()
+        doc['timestamp'] = doc['timestamp'].isoformat()
+        await db.activity_logs.insert_one(doc)
+    except Exception as e:
+        logger.error(f"Failed to log activity: {str(e)}")
+
+async def check_admin(payload: dict):
+    """Check if user is admin"""
+    user_email = payload.get("sub")
+    if user_email == ADMIN_USERNAME:
+        return True
+    user = await db.users.find_one({"email": user_email, "role": "admin", "status": "approved"}, {"_id": 0})
+    return user is not None
+
+async def check_quotation_access(quotation_id: str, user_id: str, is_admin: bool):
+    """Check if user can edit quotation"""
+    if is_admin:
+        return True
+    quotation = await db.quotations.find_one({"id": quotation_id}, {"_id": 0})
+    if not quotation:
+        return False
+    # User can edit if they created it or if it's assigned to them
+    return quotation.get("created_by") == user_id or user_id in quotation.get("assigned_to", [])
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
