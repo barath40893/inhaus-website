@@ -23,35 +23,35 @@ class PDFGenerator:
         self.styles = getSampleStyleSheet()
         self.page_width, self.page_height = A4
         
-        # Professional Blue-Grey Color Palette - Matching Reference
+        # Professional Blue-Grey Color Palette - Consistent Design
         self.primary_color = colors.HexColor('#D3DDF0')  # Light blue-grey (header)
-        self.primary_dark = colors.HexColor('#999999')  # Medium grey (thick borders)
-        self.accent_color = colors.HexColor('#E0E8F5')  # Very light blue-grey (subtotal)
+        self.primary_dark = colors.black  # Pure black for borders
+        self.accent_color = colors.HexColor('#D3DDF0')  # Same light blue-grey (consistent)
         self.secondary_color = colors.HexColor('#333333')  # Dark grey text
         
-        # Header colors - light blue-grey
+        # Header colors - consistent light blue-grey
         self.header_bg = colors.HexColor('#D3DDF0')  # Light blue-grey for headers
         self.header_text = colors.HexColor('#333333')  # Dark grey text on light bg
         
-        # Row colors - alternating light greys
-        self.row_light = colors.HexColor('#F8F8F8')  # Very light grey (even rows)
-        self.row_alt = colors.HexColor('#F0F0F0')  # Slightly darker light grey (odd rows)
+        # Row colors - pure white for consistency
+        self.row_light = colors.white  # Pure white (no grey tint)
+        self.row_alt = colors.HexColor('#F8FAFB')  # Very subtle light blue tint
         
-        # Border colors - subtle and professional
-        self.table_border = colors.HexColor('#CCCCCC')  # Light grey outer border (1px)
-        self.border_color = colors.HexColor('#E0E0E0')  # Very light grey inner borders (1px)
-        self.thick_border = colors.HexColor('#999999')  # Medium grey for thick borders (2px)
+        # Border colors - BOLD BLACK
+        self.table_border = colors.black  # Pure black for ALL borders
+        self.border_color = colors.black  # Pure black inner borders
+        self.thick_border = colors.black  # Pure black thick borders
         
         # Text colors
         self.text_color = colors.HexColor('#333333')  # Dark grey
         self.light_text = colors.HexColor('#666666')  # Medium grey
         
-        # Other colors
-        self.light_gray = colors.HexColor('#F3F4F6')  # Very light gray
-        self.medium_gray = colors.HexColor('#D1D5DB')  # Light gray
+        # Other colors - consistent light blue-grey
+        self.light_gray = colors.HexColor('#D3DDF0')  # Same as header
+        self.medium_gray = colors.HexColor('#D3DDF0')  # Same as header
         self.success_color = colors.HexColor('#86EFAC')  # Light green
-        self.highlight_color = colors.HexColor('#E8E8E8')  # Light grey
-        self.total_bg = colors.HexColor('#E0E8F5')  # Light blue-grey for totals
+        self.highlight_color = colors.HexColor('#D3DDF0')  # Same light blue-grey
+        self.total_bg = colors.HexColor('#D3DDF0')  # Same light blue-grey for totals
         self.total_text = colors.HexColor('#333333')  # Dark grey for total text
         
         # Custom styles with premium fonts and spacing
