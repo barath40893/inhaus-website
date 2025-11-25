@@ -360,7 +360,7 @@ class PDFGenerator:
         elements = []
         
         # ========== TOP SECTION: Logo on light background ==========
-        elements.append(Spacer(1, 35))
+        elements.append(Spacer(1, 50))
         
         # Try new transparent logo first, fallback to old logo
         logo_path = Path('/app/backend/uploads/inhaus_logo_transparent.png')
@@ -384,9 +384,15 @@ class PDFGenerator:
             except Exception as e:
                 logging.error(f"Failed to load logo on cover: {str(e)}")
         
+        # Spacer after logo to separate from image
+        elements.append(Spacer(1, 30))
+        
         # ========== MIDDLE SECTION: Interior image ==========
-        # Spacer for middle image area
-        elements.append(Spacer(1, 360))
+        # This spacer represents the height of the image section
+        elements.append(Spacer(1, 400))
+        
+        # Spacer after image to separate from bottom text
+        elements.append(Spacer(1, 30))
         
         # ========== BOTTOM SECTION: QUOTATION + taglines + company info ==========
         
@@ -394,27 +400,27 @@ class PDFGenerator:
         title_style = ParagraphStyle(
             'CoverTitle',
             parent=self.styles['Heading1'],
-            fontSize=42,
+            fontSize=40,
             textColor=colors.HexColor('#1A1A1A'),
             alignment=TA_CENTER,
             fontName='Helvetica-Bold',
-            leading=50,
-            spaceBefore=15,
-            spaceAfter=15
+            leading=48,
+            spaceBefore=0,
+            spaceAfter=10
         )
         
         elements.append(Paragraph("QUOTATION", title_style))
-        elements.append(Spacer(1, 12))
+        elements.append(Spacer(1, 10))
         
         # Company taglines with dark color
         tagline_style = ParagraphStyle(
             'CoverTagline',
             parent=self.styles['Normal'],
-            fontSize=12,
+            fontSize=11,
             textColor=colors.HexColor('#333333'),
             alignment=TA_CENTER,
             fontName='Helvetica',
-            leading=16,
+            leading=15,
             leftIndent=50,
             rightIndent=50
         )
@@ -427,9 +433,9 @@ class PDFGenerator:
         
         for quote in branding_quotes:
             elements.append(Paragraph(quote, tagline_style))
-            elements.append(Spacer(1, 6))
+            elements.append(Spacer(1, 5))
         
-        elements.append(Spacer(1, 15))
+        elements.append(Spacer(1, 12))
         
         # Company info at bottom
         footer_style = ParagraphStyle(
@@ -439,7 +445,7 @@ class PDFGenerator:
             textColor=colors.HexColor('#555555'),
             alignment=TA_CENTER,
             fontName='Helvetica',
-            leading=13
+            leading=12
         )
         
         elements.append(Paragraph(
