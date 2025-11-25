@@ -905,6 +905,8 @@ async def create_quotation(input: QuotationCreate, payload: dict = Depends(verif
         quotation_data['items'] = [item.model_dump() for item in items]
         quotation_data['quote_number'] = quote_number
         quotation_data.update(totals)
+        quotation_data['created_by'] = payload.get("user_id")  # Add creator
+        quotation_data['assigned_to'] = []  # Initialize empty assignment list
         
         quotation_obj = Quotation(**quotation_data)
         
@@ -916,6 +918,10 @@ async def create_quotation(input: QuotationCreate, payload: dict = Depends(verif
             doc['sent_at'] = doc['sent_at'].isoformat()
         
         await db.quotations.insert_one(doc)
+        
+        # Log activity
+        await log_activity(payload.get("user_id"), payload.get("sub"), "create", "quotation", quotation_obj.id, f"Created quotation {quote_number}")
+        
         return quotation_obj
     except Exception as e:
         logger.error(f"Error creating quotation: {str(e)}")
