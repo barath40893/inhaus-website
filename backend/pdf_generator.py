@@ -544,10 +544,29 @@ class PDFGenerator:
         
         elements.append(Paragraph(
             f"<b>Warm Regards,</b><br/>"
-            f"<b>Team InHaus</b><br/>"
-            f"{settings_data.get('company_phone', '+91 7416925607')}<br/>"
-            f"{settings_data.get('company_email', 'support@inhaus.co.in')}",
+            f"<b>Team InHaus</b>",
             signature_style
+        ))
+        
+        elements.append(Spacer(1, 40))
+        
+        # Company information at the end
+        company_info_style = ParagraphStyle(
+            'CompanyInfo',
+            parent=self.styles['Normal'],
+            fontSize=11,
+            textColor=colors.HexColor('#333333'),
+            alignment=TA_CENTER,
+            fontName='Helvetica',
+            leading=16
+        )
+        
+        elements.append(Paragraph(
+            f"<b>{settings_data.get('company_name', 'InHaus Smart Automation')}</b><br/>"
+            f"{settings_data.get('company_address', 'Shop No 207, 1st Floor, Kokapet Terminal, Gandipet, Hyderabad - 500075')}<br/>"
+            f"Phone: {settings_data.get('company_phone', '+91 7416925607')} | Email: {settings_data.get('company_email', 'support@inhaus.co.in')}<br/>"
+            f"Website: {settings_data.get('company_website', 'www.inhaus.co.in')}",
+            company_info_style
         ))
         
         return elements
