@@ -966,8 +966,8 @@ class PDFGenerator:
         
         # Premium table styling
         style_commands = [
-            # Header styling - light blue-grey
-            ('BACKGROUND', (0, 0), (-1, 0), self.header_bg),
+            # Header styling - consistent light blue-grey
+            ('BACKGROUND', (0, 0), (-1, 0), self.header_bg),  # #D3DDF0
             ('TEXTCOLOR', (0, 0), (-1, 0), self.header_text),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
@@ -975,21 +975,21 @@ class PDFGenerator:
             ('TOPPADDING', (0, 0), (-1, 0), 10),
             ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
             
-            # Data rows - alternating light greys
-            ('BACKGROUND', (0, 1), (-1, -2), self.row_light),
+            # Data rows - pure white
+            ('BACKGROUND', (0, 1), (-1, -2), colors.white),
             
-            # Grand total styling - light blue-grey
-            ('BACKGROUND', (0, -1), (-1, -1), self.total_bg),
+            # Grand total styling - same light blue-grey
+            ('BACKGROUND', (0, -1), (-1, -1), self.total_bg),  # Same #D3DDF0
             ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
             ('FONTSIZE', (0, -1), (-1, -1), 11),
             ('TOPPADDING', (0, -1), (-1, -1), 12),
             ('BOTTOMPADDING', (0, -1), (-1, -1), 12),
-            ('LINEABOVE', (0, -1), (-1, -1), 2, self.thick_border),
+            ('LINEABOVE', (0, -1), (-1, -1), 2, colors.black),
             
-            # Subtle borders - matching reference
-            ('BOX', (0, 0), (-1, -1), 1, self.table_border),
-            ('LINEBELOW', (0, 0), (-1, 0), 1, self.border_color),
-            ('INNERGRID', (0, 1), (-1, -1), 1, self.border_color),
+            # BOLD BLACK BORDERS
+            ('BOX', (0, 0), (-1, -1), 2, colors.black),
+            ('LINEBELOW', (0, 0), (-1, 0), 2, colors.black),
+            ('INNERGRID', (0, 1), (-1, -1), 1.5, colors.black),
             
             # Alignment - all centered
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
