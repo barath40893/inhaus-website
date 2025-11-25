@@ -339,6 +339,18 @@ backend:
           agent: "testing"
           comment: "NEW TRANSPARENT LOGO TESTING COMPLETED - ALL FEATURES WORKING PERFECTLY! Successfully tested the new transparent logo implementation as requested: ✅ Created test quotation for logo verification with 2 products across 2 rooms totaling Rs. 20,886 ✅ Generated PDF quotation_QT-2025-0045.pdf (2,972,476 bytes) as specifically requested ✅ NEW TRANSPARENT LOGO VERIFIED: Logo extracted from user-uploaded image with white background removed, Transparent background blends seamlessly with light grey background (#E8E8E8), Optimized size 2.5 inch width fits perfectly in 120px header section, Mask enabled using reportlab's mask='auto' for transparency support, No white background visible - completely transparent, Professional appearance with clear positioning ✅ COVER PAGE EXTRACTION SUCCESSFUL: Extracted cover page to /tmp/cover_with_new_logo.png (1,661,797 bytes), Copied to /app/backend/uploads/cover_with_new_logo.png for web access ✅ All new logo requirements successfully implemented and verified. The new transparent logo is working perfectly and ready for production use."
 
+  - task: "PDF New Cover Page Layout with Screenshot"
+    implemented: true
+    working: true
+    file: "/app/backend/pdf_generator.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "NEW COVER PAGE LAYOUT TESTING COMPLETED - ALL REQUIREMENTS MET! Successfully tested the new cover page layout as requested in the review: ✅ Created test quotation with 3 products across 3 rooms (Living Room, Master Bedroom, Kitchen) totaling Rs. 40,828 ✅ Generated PDF quotation_QT-2025-0047.pdf (2,995,992 bytes) with new cover page layout ✅ NEW COVER PAGE LAYOUT VERIFIED: Light grey header background (#E8E8E8) with InHaus logo, Interior image filling most of the page, Text overlay at BOTTOM of image (QUOTATION heading, taglines, company details), Dark gradient overlay for text readability, No white borders - image blends seamlessly with background, Light grey background throughout the page ✅ COVER PAGE EXTRACTION SUCCESSFUL: Extracted to /tmp/new_cover_layout.png (921,088 bytes) as requested, Copied to /app/backend/uploads/new_cover_layout.png for web access ✅ All new cover page layout requirements successfully implemented: header with logo, main area with interior image, text overlay at bottom, gradient for readability, no borders, light grey background. The new cover page layout is working perfectly and ready for user review."
+
 frontend:
   - task: "Admin Quotations Dashboard"
     implemented: true
