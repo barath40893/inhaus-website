@@ -311,6 +311,21 @@ backend:
         - working: true
           agent: "testing"
           comment: "RESTRUCTURED COVER PAGE TESTING COMPLETED - ALL FEATURES WORKING PERFECTLY! Comprehensive testing of the restructured cover page layout completed successfully: ✅ Created test quotation with 3 products across 3 rooms (Living Room, Master Bedroom, Kitchen) totaling Rs. 40,474 ✅ Generated PDF with POST /api/quotations/{id}/generate-pdf successfully ✅ PDF file created: quotation_QT-2025-0043.pdf (3,014,323 bytes) ✅ RESTRUCTURED COVER PAGE LAYOUT VERIFIED: TOP Section with grey background (#4A4A4A) containing InHaus logo ONLY (3 inch width), MIDDLE Section with clean interior image and NO text overlay (320px height), BOTTOM Section with grey background containing QUOTATION heading, taglines, and company info ✅ NO blank pages between sections - content flows naturally without forced PageBreaks ✅ Multi-page structure confirmed: Page 1 (Restructured cover) → Page 2+ (Customer details and quotation content flow naturally) ✅ COVER PAGE IMAGE EXTRACTED: Successfully extracted cover page as PNG image (quotation_QT-2025-0043_cover_page.png, 1,655,720 bytes) for user review ✅ All 11 backend tests PASSED including comprehensive PDF generation, product image upload, CRUD operations, and email functionality. The restructured cover page with screenshot capability is working exactly as specified and ready for production use."
+        - working: true
+          agent: "testing"
+          comment: "FINAL COVER PAGE DESIGN TESTING COMPLETED - ALL SPECIFICATIONS MET! Successfully tested and verified the updated cover page design with all requested improvements: ✅ Created test quotation with 3 products across 3 rooms totaling Rs. 47,200 ✅ Generated PDF quotation_QT-2025-0044.pdf (2,991,157 bytes) ✅ FINAL DESIGN VERIFIED: Smaller logo reduced from 3 inch to 2.2 inch for better proportions, Light background changed from dark grey (#4A4A4A) to light grey (#E8E8E8), Dark text colors updated for optimal contrast on light background, Symmetric layout with proper section proportions (top 120px, middle ~420px, bottom 280px) ✅ COVER PAGE EXTRACTION SUCCESSFUL: Extracted cover page as PNG using pdf2image and poppler-utils, Saved to /tmp/cover_page_final.png (999,207 bytes), Copied to /app/backend/uploads/cover_page_final.png for web access ✅ All design requirements successfully implemented and verified. The final cover page design meets all specifications and is ready for user review."
+
+  - task: "PDF Final Cover Page Design with Screenshot"
+    implemented: true
+    working: true
+    file: "/app/backend/pdf_generator.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "FINAL COVER PAGE DESIGN TESTING COMPLETED - ALL SPECIFICATIONS MET! Successfully tested and verified the updated cover page design with all requested improvements: ✅ Created test quotation with 3 products across 3 rooms totaling Rs. 47,200 ✅ Generated PDF quotation_QT-2025-0044.pdf (2,991,157 bytes) ✅ FINAL DESIGN VERIFIED: Smaller logo reduced from 3 inch to 2.2 inch for better proportions, Light background changed from dark grey (#4A4A4A) to light grey (#E8E8E8), Dark text colors updated for optimal contrast on light background, Symmetric layout with proper section proportions (top 120px, middle ~420px, bottom 280px) ✅ COVER PAGE EXTRACTION SUCCESSFUL: Extracted cover page as PNG using pdf2image and poppler-utils, Saved to /tmp/cover_page_final.png (999,207 bytes), Copied to /app/backend/uploads/cover_page_final.png for web access ✅ All design requirements successfully implemented and verified. The final cover page design meets all specifications and is ready for user review."
 
 frontend:
   - task: "Admin Quotations Dashboard"
