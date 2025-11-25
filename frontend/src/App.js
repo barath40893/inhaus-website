@@ -21,6 +21,7 @@ import AdminInvoicesPage from './pages/AdminInvoicesPage';
 import AdminCreateInvoicePage from './pages/AdminCreateInvoicePage';
 import AdminProductsPage from './pages/AdminProductsPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
+import ProtectedRoute from './components/ProtectedRoute';
 import { Toaster } from './components/ui/toaster';
 import WhatsAppButton from './components/WhatsAppButton';
 import WelcomeScreen from './components/WelcomeScreen';
