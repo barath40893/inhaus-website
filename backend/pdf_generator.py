@@ -317,7 +317,10 @@ class PDFGenerator:
         
         page_width, page_height = A4
         
-        # Add background image with lighter overlay
+        # Define grey color for top and bottom sections
+        grey_color = colors.HexColor('#4A4A4A')  # Medium-dark grey
+        
+        # Add background image in the MIDDLE section only (clean, no overlay)
         bg_image_url = 'https://images.unsplash.com/photo-1705321963943-de94bb3f0dd3'
         bg_image_path = Path('/tmp/cover_background.jpg')
         
@@ -327,36 +330,34 @@ class PDFGenerator:
                 import urllib.request
                 urllib.request.urlretrieve(bg_image_url, str(bg_image_path))
             
-            # Draw the background image
+            # Calculate dimensions for three sections
+            top_section_height = 140  # Grey section for logo
+            bottom_section_height = 280  # Grey section for text
+            image_section_height = page_height - top_section_height - bottom_section_height
+            
+            # Draw TOP grey section (for logo)
+            canvas.setFillColor(grey_color)
+            canvas.rect(0, page_height - top_section_height, page_width, top_section_height, fill=1, stroke=0)
+            
+            # Draw the interior image in MIDDLE section (clean, no text)
             canvas.drawImage(
                 str(bg_image_path),
-                0, 0,
+                0, bottom_section_height,
                 width=page_width,
-                height=page_height,
+                height=image_section_height,
                 preserveAspectRatio=True,
                 anchor='c'
             )
             
-            # Add lighter overlay for visibility - reduced from 0.5 to 0.25
-            canvas.setFillColorRGB(0, 0, 0)
-            canvas.setFillAlpha(0.25)
-            canvas.rect(0, 0, page_width, page_height, fill=1, stroke=0)
-            
-            # Add darker grey overlay at TOP for logo area
-            canvas.setFillColorRGB(0.3, 0.3, 0.3)
-            canvas.setFillAlpha(0.7)
-            canvas.rect(0, page_height - 200, page_width, 200, fill=1, stroke=0)
+            # Draw BOTTOM grey section (for text)
+            canvas.setFillColor(grey_color)
+            canvas.rect(0, 0, page_width, bottom_section_height, fill=1, stroke=0)
             
         except Exception as e:
             logging.error(f"Failed to load cover background image: {str(e)}")
-            # Fallback to gradient background
-            canvas.setFillAlpha(0.05)
-            for i in range(60):
-                y = page_height - (i * page_height / 60)
-                height = page_height / 60
-                progress = i / 60
-                canvas.setFillColorRGB(0.85 + (0.1 * progress), 0.88 + (0.05 * progress), 0.95 - (0.15 * progress))
-                canvas.rect(0, y, page_width, -height, fill=1, stroke=0)
+            # Fallback to solid grey background
+            canvas.setFillColor(grey_color)
+            canvas.rect(0, 0, page_width, page_height, fill=1, stroke=0)
         
         canvas.restoreState()
     
