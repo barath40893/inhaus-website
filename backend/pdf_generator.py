@@ -121,20 +121,18 @@ class PDFGenerator:
         canvas.setFillColorRGB(0.2, 0.4, 0.8)  # Light blue
         
         # Top-left corner WiFi waves
-        for i in range(4):
-            radius = 60 + (i * 40)
-            canvas.arc(0, page_height, radius, radius, 270, 360)
-            canvas.setLineWidth(15)
-            canvas.setStrokeColorRGB(0.2, 0.4, 0.8)
-            canvas.stroke()
+        canvas.setLineWidth(10)
+        canvas.setStrokeColorRGB(0.2, 0.4, 0.8)
+        for i in range(3):
+            radius = 50 + (i * 30)
+            canvas.circle(0, page_height, radius, stroke=1, fill=0)
         
         # Bottom-right corner WiFi waves
-        for i in range(4):
-            radius = 60 + (i * 40)
-            canvas.arc(page_width, 0, radius, radius, 90, 180)
-            canvas.setLineWidth(15)
-            canvas.setStrokeColorRGB(0.2, 0.4, 0.8)
-            canvas.stroke()
+        canvas.setLineWidth(10)
+        canvas.setStrokeColorRGB(0.2, 0.4, 0.8)
+        for i in range(3):
+            radius = 50 + (i * 30)
+            canvas.circle(page_width, 0, radius, stroke=1, fill=0)
         
         # 2. Circuit board pattern - very subtle
         canvas.setFillAlpha(0.02)
