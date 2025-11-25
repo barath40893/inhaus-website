@@ -317,10 +317,10 @@ class PDFGenerator:
         
         page_width, page_height = A4
         
-        # Define light grey color for top and bottom sections
-        light_grey_color = colors.HexColor('#E8E8E8')  # Light grey for better aesthetics
+        # Define light grey color for header section
+        light_grey_color = colors.HexColor('#E8E8E8')  # Light grey background
         
-        # Add background image in the MIDDLE section only (clean, no overlay)
+        # Add background image with text overlay at bottom
         bg_image_url = 'https://images.unsplash.com/photo-1705321963943-de94bb3f0dd3'
         bg_image_path = Path('/tmp/cover_background.jpg')
         
@@ -330,28 +330,24 @@ class PDFGenerator:
                 import urllib.request
                 urllib.request.urlretrieve(bg_image_url, str(bg_image_path))
             
-            # Calculate dimensions for three sections - symmetric
-            top_section_height = 120  # Light grey section for logo (smaller)
-            bottom_section_height = 280  # Light grey section for text
-            image_section_height = page_height - top_section_height - bottom_section_height
+            # Calculate dimensions
+            header_height = 100  # Light grey header for logo
+            image_height = page_height - header_height  # Rest for image
             
-            # Draw TOP light grey section (for logo)
+            # Draw TOP light grey header (for logo)
             canvas.setFillColor(light_grey_color)
-            canvas.rect(0, page_height - top_section_height, page_width, top_section_height, fill=1, stroke=0)
+            canvas.rect(0, page_height - header_height, page_width, header_height, fill=1, stroke=0)
             
-            # Draw the interior image in MIDDLE section (clean, no text)
+            # Draw the interior image filling from bottom to below header
+            # Add light grey borders on sides to blend with background
             canvas.drawImage(
                 str(bg_image_path),
-                0, bottom_section_height,
+                0, 0,
                 width=page_width,
-                height=image_section_height,
+                height=image_height,
                 preserveAspectRatio=True,
                 anchor='c'
             )
-            
-            # Draw BOTTOM light grey section (for text)
-            canvas.setFillColor(light_grey_color)
-            canvas.rect(0, 0, page_width, bottom_section_height, fill=1, stroke=0)
             
         except Exception as e:
             logging.error(f"Failed to load cover background image: {str(e)}")
