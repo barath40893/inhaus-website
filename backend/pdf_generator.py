@@ -311,11 +311,57 @@ class PDFGenerator:
         
         canvas.restoreState()
     
+    def _add_cover_page_background(self, canvas, doc):
+        """Add modern smart home interior background to cover page only"""
+        canvas.saveState()
+        
+        page_width, page_height = A4
+        
+        # Add background image with overlay
+        bg_image_url = 'https://images.unsplash.com/photo-1705321963943-de94bb3f0dd3'
+        bg_image_path = Path('/tmp/cover_background.jpg')
+        
+        try:
+            # Download image if not already cached
+            if not bg_image_path.exists():
+                import urllib.request
+                urllib.request.urlretrieve(bg_image_url, str(bg_image_path))
+            
+            # Draw the background image
+            canvas.drawImage(
+                str(bg_image_path),
+                0, 0,
+                width=page_width,
+                height=page_height,
+                preserveAspectRatio=True,
+                anchor='c'
+            )
+            
+            # Add dark overlay for better text readability
+            canvas.setFillColorRGB(0, 0, 0)
+            canvas.setFillAlpha(0.5)
+            canvas.rect(0, 0, page_width, page_height, fill=1, stroke=0)
+            
+        except Exception as e:
+            logging.error(f"Failed to load cover background image: {str(e)}")
+            # Fallback to gradient background
+            canvas.setFillAlpha(0.05)
+            for i in range(60):
+                y = page_height - (i * page_height / 60)
+                height = page_height / 60
+                progress = i / 60
+                canvas.setFillColorRGB(0.85 + (0.1 * progress), 0.88 + (0.05 * progress), 0.95 - (0.15 * progress))
+                canvas.rect(0, y, page_width, -height, fill=1, stroke=0)
+        
+        canvas.restoreState()
+    
     def _create_cover_page(self, quotation_data: dict, settings_data: dict):
-        """Create simple branded cover page with InHaus branding only"""
+        """Create branded cover page with modern interior background"""
         elements = []
         
-        # Large logo centered
+        elements.append(Spacer(1, 100))
+        
+        # Large logo centered with white background for visibility
         logo_path = Path('/app/frontend/public/inhaus/fulllogo_transparent_nobuffer.png')
         if logo_path.exists():
             try:
@@ -330,71 +376,187 @@ class PDFGenerator:
                     logo = Image(str(logo_path), width=4*inch, height=1.4*inch)
                 
                 logo.hAlign = 'CENTER'
-                elements.append(Spacer(1, 80))
                 elements.append(logo)
                 elements.append(Spacer(1, 60))
             except Exception as e:
                 logging.error(f"Failed to load logo on cover: {str(e)}")
         
-        # Simple QUOTATION heading
+        # QUOTATION heading with white color for dark background
         title_style = ParagraphStyle(
-            'SimpleTitle',
+            'CoverTitle',
             parent=self.styles['Heading1'],
-            fontSize=36,
-            textColor=colors.HexColor('#1A1A1A'),
+            fontSize=42,
+            textColor=colors.white,
             alignment=TA_CENTER,
             fontName='Helvetica-Bold',
-            leading=42,
-            spaceBefore=40,
+            leading=50,
+            spaceBefore=30,
             spaceAfter=40
         )
         
         elements.append(Paragraph("QUOTATION", title_style))
-        elements.append(Spacer(1, 80))
+        elements.append(Spacer(1, 60))
         
-        # Company tagline/branding
+        # Company tagline with white color
         tagline_style = ParagraphStyle(
-            'Tagline',
+            'CoverTagline',
             parent=self.styles['Normal'],
-            fontSize=14,
-            textColor=colors.HexColor('#333333'),
+            fontSize=15,
+            textColor=colors.white,
             alignment=TA_CENTER,
             fontName='Helvetica',
-            leading=20,
+            leading=22,
             leftIndent=60,
             rightIndent=60
         )
         
         branding_quotes = [
-            "<i>Transform Your Space with Smart Automation</i>",
+            "<b><i>Transform Your Space with Smart Automation</i></b>",
             "<i>Experience the future of living with intelligent home automation</i>",
             "<i>Energy efficient • Secure • Convenient • Modern</i>"
         ]
         
         for quote in branding_quotes:
             elements.append(Paragraph(quote, tagline_style))
-            elements.append(Spacer(1, 15))
+            elements.append(Spacer(1, 18))
         
-        # Push footer to bottom with flexible spacer
-        elements.append(Spacer(1, 150))
+        # Push footer to bottom
+        elements.append(Spacer(1, 180))
         
-        # Company address at bottom
+        # Company info at bottom with white text
         footer_style = ParagraphStyle(
             'CoverFooter',
             parent=self.styles['Normal'],
-            fontSize=10,
-            textColor=colors.HexColor('#666666'),
+            fontSize=11,
+            textColor=colors.white,
             alignment=TA_CENTER,
             fontName='Helvetica',
-            leading=14
+            leading=16
         )
         
         elements.append(Paragraph(
-            f"<b>{settings_data.get('company_name', 'InHaus')}</b><br/>"
-            f"{settings_data.get('company_address', '')}<br/>"
-            f"Phone: {settings_data.get('company_phone', '')} | Email: {settings_data.get('company_email', '')}<br/>"
-            f"Website: {settings_data.get('company_website', '')}",
+            f"<b>{settings_data.get('company_name', 'InHaus Smart Automation')}</b><br/>"
+            f"{settings_data.get('company_address', 'Shop No 207, 1st Floor, Kokapet Terminal, Gandipet, Hyderabad - 500075')}<br/>"
+            f"Phone: {settings_data.get('company_phone', '+91 7416925607')} | Email: {settings_data.get('company_email', 'support@inhaus.co.in')}<br/>"
+            f"Website: {settings_data.get('company_website', 'www.inhaus.co.in')}",
             footer_style
+        ))
+        
+        return elements
+    
+    def _create_customer_quote_page(self, quotation_data: dict):
+        """Create dedicated page with customer details and quote info only"""
+        elements = []
+        
+        elements.append(Spacer(1, 30))
+        
+        # Prepared For section
+        prepared_for_style = ParagraphStyle(
+            'PreparedFor',
+            parent=self.styles['Normal'],
+            fontSize=14,
+            textColor=colors.HexColor('#1A1A1A'),
+            fontName='Helvetica-Bold',
+            alignment=TA_LEFT,
+            spaceBefore=5,
+            spaceAfter=15
+        )
+        
+        elements.append(Paragraph("<b>PREPARED FOR:</b>", prepared_for_style))
+        
+        # Customer details
+        customer_style = ParagraphStyle(
+            'CustomerDetail',
+            parent=self.styles['Normal'],
+            fontSize=11,
+            textColor=colors.HexColor('#333333'),
+            alignment=TA_LEFT,
+            leading=16
+        )
+        
+        customer_info = f"<b>Name:</b> {quotation_data['customer_name']}<br/>"
+        customer_info += f"<b>Email:</b> {quotation_data['customer_email']}"
+        
+        if quotation_data.get('customer_phone'):
+            customer_info += f"<br/><b>Phone:</b> {quotation_data['customer_phone']}"
+        
+        elements.append(Paragraph(customer_info, customer_style))
+        elements.append(Spacer(1, 30))
+        
+        # Quotation details table
+        elements.extend(self._create_quotation_details_table(quotation_data))
+        
+        return elements
+    
+    def _create_thank_you_page(self, settings_data: dict):
+        """Create professional thank you page"""
+        elements = []
+        
+        elements.append(Spacer(1, 150))
+        
+        # Thank you heading
+        thank_you_style = ParagraphStyle(
+            'ThankYouHeading',
+            parent=self.styles['Heading1'],
+            fontSize=32,
+            textColor=colors.HexColor('#1A1A1A'),
+            alignment=TA_CENTER,
+            fontName='Helvetica-Bold',
+            leading=38,
+            spaceAfter=30
+        )
+        
+        elements.append(Paragraph("Thank You for Choosing InHaus", thank_you_style))
+        elements.append(Spacer(1, 30))
+        
+        # Thank you message
+        message_style = ParagraphStyle(
+            'ThankYouMessage',
+            parent=self.styles['Normal'],
+            fontSize=12,
+            textColor=colors.HexColor('#333333'),
+            alignment=TA_CENTER,
+            fontName='Helvetica',
+            leading=18,
+            leftIndent=80,
+            rightIndent=80
+        )
+        
+        thank_you_message = """
+        We appreciate the opportunity to provide you with this quotation for transforming your space 
+        with intelligent home automation solutions. At InHaus, we are committed to delivering exceptional 
+        quality, innovative technology, and outstanding customer service.
+        <br/><br/>
+        Our team of experts is ready to bring your smart home vision to life. We look forward to working 
+        with you to create a seamlessly connected, energy-efficient, and secure living environment that 
+        enhances your lifestyle.
+        <br/><br/>
+        Should you have any questions or require further clarification, please don't hesitate to reach out. 
+        We're here to help make your smart home journey smooth and enjoyable.
+        <br/><br/>
+        <b><i>Experience the Future of Living with InHaus</i></b>
+        """
+        
+        elements.append(Paragraph(thank_you_message, message_style))
+        elements.append(Spacer(1, 60))
+        
+        # Closing signature
+        signature_style = ParagraphStyle(
+            'Signature',
+            parent=self.styles['Normal'],
+            fontSize=11,
+            textColor=colors.HexColor('#333333'),
+            alignment=TA_CENTER,
+            fontName='Helvetica',
+            leading=16
+        )
+        
+        elements.append(Paragraph(
+            f"<b>Warm Regards,</b><br/>"
+            f"<b>Team InHaus</b><br/>"
+            f"{settings_data.get('company_phone', '+91 7416925607')}<br/>"
+            f"{settings_data.get('company_email', 'support@inhaus.co.in')}",
+            signature_style
         ))
         
         return elements
