@@ -339,7 +339,6 @@ class PDFGenerator:
             canvas.rect(0, page_height - header_height, page_width, header_height, fill=1, stroke=0)
             
             # Draw the interior image filling from bottom to below header
-            # Add light grey borders on sides to blend with background
             canvas.drawImage(
                 str(bg_image_path),
                 0, 0,
@@ -348,6 +347,19 @@ class PDFGenerator:
                 preserveAspectRatio=True,
                 anchor='c'
             )
+            
+            # Add dark gradient overlay at bottom for text readability
+            canvas.setFillColorRGB(0, 0, 0)
+            
+            # Create gradient effect - darker at bottom
+            overlay_height = 280  # Height of text area
+            num_steps = 40
+            for i in range(num_steps):
+                y = i * (overlay_height / num_steps)
+                alpha = 0.05 + (0.5 * (i / num_steps))  # Gradient from 0.05 to 0.55
+                canvas.setFillAlpha(alpha)
+                step_height = overlay_height / num_steps
+                canvas.rect(0, y, page_width, step_height, fill=1, stroke=0)
             
         except Exception as e:
             logging.error(f"Failed to load cover background image: {str(e)}")
