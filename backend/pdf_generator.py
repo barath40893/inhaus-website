@@ -519,15 +519,16 @@ class PDFGenerator:
                     leftIndent=0,
                     borderColor=self.primary_color,
                     borderWidth=0,
-                    borderPadding=0
+                    borderPadding=0,
+                    keepWithNext=True  # Keep heading with table
                 )
             )
             story.append(room_heading)
             story.extend(self._create_items_table(items))
             story.append(Spacer(1, 18))
         
-        # Summary with bold dark heading
-        story.append(PageBreak())
+        # Summary - NO PAGE BREAK, continue flowing
+        story.append(Spacer(1, 30))
         
         summary_heading_style = ParagraphStyle(
             'SummaryHeading',
