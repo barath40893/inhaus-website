@@ -1186,8 +1186,8 @@ class PDFGenerator:
         
         # Premium table styling
         style_commands = [
-            # Header styling - consistent grey (NOT blue)
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#E8E8E8')),  # Light grey, not blue
+            # Header styling - BLUE background
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#D3DDF0')),  # Light blue
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#333333')),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
@@ -1199,8 +1199,8 @@ class PDFGenerator:
             ('BACKGROUND', (0, 1), (-1, -2), colors.white),
             ('TEXTCOLOR', (0, 1), (-1, -2), colors.HexColor('#333333')),
             
-            # Grand total styling - same light grey (NOT blue)
-            ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor('#E8E8E8')),  # Same as header
+            # Grand total styling - BLUE background (same as header)
+            ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor('#D3DDF0')),  # Light blue
             ('TEXTCOLOR', (0, -1), (-1, -1), colors.HexColor('#333333')),
             ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
             ('FONTSIZE', (0, -1), (-1, -1), 11),
