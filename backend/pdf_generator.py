@@ -113,16 +113,21 @@ class PDFGenerator:
         
         page_width, page_height = A4
         
-        # ========== LAYER 1: SUBTLE GRADIENT OVERLAY ==========
-        # Top to bottom gradient effect (very subtle blue tint)
-        canvas.setFillAlpha(0.015)
-        num_gradient_steps = 50
+        # ========== LAYER 1: PREMIUM GRADIENT OVERLAY ==========
+        # Sophisticated multi-color gradient (blue to soft gold)
+        canvas.setFillAlpha(0.02)  # Slightly more visible
+        num_gradient_steps = 60
         for i in range(num_gradient_steps):
             y = page_height - (i * page_height / num_gradient_steps)
             height = page_height / num_gradient_steps
-            # Gradient from light blue at top to transparent at bottom
-            blue_intensity = 0.7 + (0.3 * i / num_gradient_steps)
-            canvas.setFillColorRGB(0.85, 0.90, blue_intensity)
+            
+            # Gradient from cool blue-grey at top to warm gold tint at bottom
+            progress = i / num_gradient_steps
+            red = 0.85 + (0.1 * progress)  # Increases towards bottom
+            green = 0.88 + (0.05 * progress)
+            blue = 0.95 - (0.15 * progress)  # Decreases towards bottom
+            
+            canvas.setFillColorRGB(red, green, blue)
             canvas.rect(0, y, page_width, -height, fill=1, stroke=0)
         
         # ========== LAYER 2: MODERN HEXAGON PATTERN (IoT Connected Home) ==========
