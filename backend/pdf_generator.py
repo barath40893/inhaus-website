@@ -394,27 +394,6 @@ class PDFGenerator:
         )
         
         elements.append(Paragraph("QUOTATION", title_style))
-        elements.append(Spacer(1, 30))
-        
-        # Quote details box
-        quote_info_style = ParagraphStyle(
-            'QuoteInfo',
-            parent=self.styles['Normal'],
-            fontSize=11,
-            textColor=colors.black,
-            alignment=TA_LEFT,
-            fontName='Helvetica',
-            leading=16
-        )
-        
-        quote_date = quotation_data['created_at']
-        if isinstance(quote_date, str):
-            quote_date = datetime.fromisoformat(quote_date).date()
-        elif isinstance(quote_date, datetime):
-            quote_date = quote_date.date()
-        
-        # Use the new quotation details table design
-        elements.extend(self._create_quotation_details_table(quotation_data))
         elements.append(Spacer(1, 40))
         
         # Customer details with same table style
