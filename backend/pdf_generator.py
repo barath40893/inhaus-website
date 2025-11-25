@@ -1171,30 +1171,32 @@ class PDFGenerator:
         
         # Premium table styling
         style_commands = [
-            # Header styling - consistent light blue-grey
-            ('BACKGROUND', (0, 0), (-1, 0), self.header_bg),  # #D3DDF0
-            ('TEXTCOLOR', (0, 0), (-1, 0), self.header_text),
+            # Header styling - consistent grey (NOT blue)
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#E8E8E8')),  # Light grey, not blue
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#333333')),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 9),
-            ('TOPPADDING', (0, 0), (-1, 0), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('TOPPADDING', (0, 0), (-1, 0), 12),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
             
-            # Data rows - pure white
+            # Data rows - pure white with consistent color
             ('BACKGROUND', (0, 1), (-1, -2), colors.white),
+            ('TEXTCOLOR', (0, 1), (-1, -2), colors.HexColor('#333333')),
             
-            # Grand total styling - same light blue-grey
-            ('BACKGROUND', (0, -1), (-1, -1), self.total_bg),  # Same #D3DDF0
+            # Grand total styling - same light grey (NOT blue)
+            ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor('#E8E8E8')),  # Same as header
+            ('TEXTCOLOR', (0, -1), (-1, -1), colors.HexColor('#333333')),
             ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
             ('FONTSIZE', (0, -1), (-1, -1), 11),
-            ('TOPPADDING', (0, -1), (-1, -1), 12),
-            ('BOTTOMPADDING', (0, -1), (-1, -1), 12),
-            ('LINEABOVE', (0, -1), (-1, -1), 2, colors.black),
+            ('TOPPADDING', (0, -1), (-1, -1), 14),
+            ('BOTTOMPADDING', (0, -1), (-1, -1), 14),
+            ('LINEABOVE', (0, -1), (-1, -1), 2.5, colors.black),  # Thicker for emphasis
             
-            # BOLD BLACK BORDERS
-            ('BOX', (0, 0), (-1, -1), 2, colors.black),
-            ('LINEBELOW', (0, 0), (-1, 0), 2, colors.black),
-            ('INNERGRID', (0, 1), (-1, -1), 1.5, colors.black),
+            # BOLD BLACK BORDERS - MORE PROMINENT
+            ('BOX', (0, 0), (-1, -1), 2.5, colors.black),  # Thicker outer border
+            ('LINEBELOW', (0, 0), (-1, 0), 2.5, colors.black),  # Thicker under header
+            ('INNERGRID', (0, 0), (-1, -1), 2, colors.black),  # Thicker grid
             
             # Alignment - all centered
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
