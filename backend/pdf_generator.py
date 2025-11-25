@@ -317,8 +317,8 @@ class PDFGenerator:
         
         page_width, page_height = A4
         
-        # Define grey color for top and bottom sections
-        grey_color = colors.HexColor('#4A4A4A')  # Medium-dark grey
+        # Define light grey color for top and bottom sections
+        light_grey_color = colors.HexColor('#E8E8E8')  # Light grey for better aesthetics
         
         # Add background image in the MIDDLE section only (clean, no overlay)
         bg_image_url = 'https://images.unsplash.com/photo-1705321963943-de94bb3f0dd3'
@@ -330,13 +330,13 @@ class PDFGenerator:
                 import urllib.request
                 urllib.request.urlretrieve(bg_image_url, str(bg_image_path))
             
-            # Calculate dimensions for three sections
-            top_section_height = 140  # Grey section for logo
-            bottom_section_height = 280  # Grey section for text
+            # Calculate dimensions for three sections - symmetric
+            top_section_height = 120  # Light grey section for logo (smaller)
+            bottom_section_height = 280  # Light grey section for text
             image_section_height = page_height - top_section_height - bottom_section_height
             
-            # Draw TOP grey section (for logo)
-            canvas.setFillColor(grey_color)
+            # Draw TOP light grey section (for logo)
+            canvas.setFillColor(light_grey_color)
             canvas.rect(0, page_height - top_section_height, page_width, top_section_height, fill=1, stroke=0)
             
             # Draw the interior image in MIDDLE section (clean, no text)
@@ -349,14 +349,14 @@ class PDFGenerator:
                 anchor='c'
             )
             
-            # Draw BOTTOM grey section (for text)
-            canvas.setFillColor(grey_color)
+            # Draw BOTTOM light grey section (for text)
+            canvas.setFillColor(light_grey_color)
             canvas.rect(0, 0, page_width, bottom_section_height, fill=1, stroke=0)
             
         except Exception as e:
             logging.error(f"Failed to load cover background image: {str(e)}")
-            # Fallback to solid grey background
-            canvas.setFillColor(grey_color)
+            # Fallback to solid light grey background
+            canvas.setFillColor(light_grey_color)
             canvas.rect(0, 0, page_width, page_height, fill=1, stroke=0)
         
         canvas.restoreState()
