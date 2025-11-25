@@ -270,6 +270,18 @@ backend:
           agent: "testing"
           comment: "PDF product images display working excellently. ✅ Created quotations with products that have image URLs ✅ Generated PDFs successfully include product images in items table ✅ Image column properly sized (0.7 inch width, max 0.6 inch height) ✅ Aspect ratio preserved using PIL ✅ Products without images show 'No Image' gracefully ✅ PDF file sizes correctly larger when images included (60KB vs 56KB) ✅ Handles both /uploads/products/ and /api/uploads/products/ URL formats. Image integration in PDFs working perfectly with proper sizing and fallback handling."
 
+  - task: "PDF Two-Page Layout Restructuring"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/pdf_generator.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Restructured PDF layout to have dedicated branding cover page: Page 1 shows clean InHaus logo + 'QUOTATION' heading + company tagline. Page 2 contains all details - customer info ('PREPARED FOR' section), quotation metadata table (Quote No, Date, Revision, Valid Until), room-wise product items, summary, terms. Created _create_cover_page method for branded first page. Modified generate_quotation_pdf to call _create_cover_page, add PageBreak, then render all details on second page. Ensures professional separation of branding and content."
+
 frontend:
   - task: "Admin Quotations Dashboard"
     implemented: true
