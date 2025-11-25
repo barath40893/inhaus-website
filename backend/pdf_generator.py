@@ -383,14 +383,14 @@ class PDFGenerator:
                 logging.error(f"Failed to load logo on cover: {str(e)}")
         
         # Spacer after logo to separate from image
-        elements.append(Spacer(1, 30))
+        elements.append(Spacer(1, 50))
         
         # ========== MIDDLE SECTION: Interior image ==========
-        # This spacer represents the height of the image section
-        elements.append(Spacer(1, 400))
+        # This spacer represents the height of the image section (page_height - 200 top - 260 bottom = ~380)
+        elements.append(Spacer(1, 380))
         
         # Spacer after image to separate from bottom text
-        elements.append(Spacer(1, 30))
+        elements.append(Spacer(1, 20))
         
         # ========== BOTTOM SECTION: QUOTATION + taglines + company info ==========
         
