@@ -559,11 +559,135 @@ async def get_contact_submission(contact_id: str):
 
 @api_router.post("/admin/login")
 async def admin_login(credentials: AdminLogin):
-    """Admin login endpoint"""
+    """Admin/User login endpoint"""
+    # Check if it's the main admin
     if credentials.username == ADMIN_USERNAME and credentials.password == ADMIN_PASSWORD:
-        access_token = create_access_token({"sub": credentials.username})
-        return {"access_token": access_token, "token_type": "bearer"}
-    raise HTTPException(status_code=401, detail="Invalid credentials")
+        access_token = create_access_token({"sub": credentials.username, "user_id": "admin", "role": "admin"})
+        await log_activity("admin", ADMIN_USERNAME, "login", "auth")
+        return {"access_token": access_token, "token_type": "bearer", "role": "admin", "user_id": "admin"}
+    
+    # Check if it's a registered user
+    user = await db.users.find_one({"email": credentials.username}, {"_id": 0})
+    if user and user.get("status") == "approved":
+        if pwd_context.verify(credentials.password, user["password_hash"]):
+            # Update last login
+            await db.users.update_one(
+                {"id": user["id"]},
+                {"$set": {"last_login": datetime.now(timezone.utc).isoformat()}}
+            )
+            access_token = create_access_token({"sub": user["email"], "user_id": user["id"], "role": user["role"]})
+            await log_activity(user["id"], user["email"], "login", "auth")
+            return {"access_token": access_token, "token_type": "bearer", "role": user["role"], "user_id": user["id"]}
+    
+    raise HTTPException(status_code=401, detail="Invalid credentials or account not approved")
+
+@api_router.post("/register")
+async def register_user(user_data: UserRegister):
+    """User registration endpoint"""
+    try:
+        # Check if user already exists
+        existing_user = await db.users.find_one({"email": user_data.email}, {"_id": 0})
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        # Hash password
+        password_hash = pwd_context.hash(user_data.password)
+        
+        # Create user
+        user = User(
+            email=user_data.email,
+            name=user_data.name,
+            password_hash=password_hash,
+            role="user",
+            status="pending"
+        )
+        
+        doc = user.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        
+        await db.users.insert_one(doc)
+        
+        return {"message": "Registration successful. Waiting for admin approval.", "status": "pending"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error registering user: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/users", response_model=List[dict])
+async def get_users(payload: dict = Depends(verify_token)):
+    """Get all users (admin only)"""
+    try:
+        is_admin = await check_admin(payload)
+        if not is_admin:
+            raise HTTPException(status_code=403, detail="Admin access required")
+        
+        users = await db.users.find({}, {"_id": 0, "password_hash": 0}).to_list(1000)
+        
+        # Convert datetime fields
+        for user in users:
+            if isinstance(user.get('created_at'), str):
+                user['created_at'] = datetime.fromisoformat(user['created_at'])
+            if user.get('last_login') and isinstance(user['last_login'], str):
+                user['last_login'] = datetime.fromisoformat(user['last_login'])
+        
+        return users
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching users: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.patch("/users/{user_id}/approval")
+async def approve_user(user_id: str, approval: UserApproval, payload: dict = Depends(verify_token)):
+    """Approve or deny user registration (admin only)"""
+    try:
+        is_admin = await check_admin(payload)
+        if not is_admin:
+            raise HTTPException(status_code=403, detail="Admin access required")
+        
+        if approval.status not in ["approved", "denied"]:
+            raise HTTPException(status_code=400, detail="Status must be 'approved' or 'denied'")
+        
+        result = await db.users.update_one(
+            {"id": user_id},
+            {"$set": {"status": approval.status}}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        user = await db.users.find_one({"id": user_id}, {"_id": 0})
+        await log_activity(payload.get("user_id"), payload.get("sub"), "update", "user", user_id, f"User {approval.status}")
+        
+        return {"message": f"User {approval.status} successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error approving user: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/activity-logs", response_model=List[dict])
+async def get_activity_logs(payload: dict = Depends(verify_token), limit: int = 100):
+    """Get activity logs (admin only)"""
+    try:
+        is_admin = await check_admin(payload)
+        if not is_admin:
+            raise HTTPException(status_code=403, detail="Admin access required")
+        
+        logs = await db.activity_logs.find({}, {"_id": 0}).sort("timestamp", -1).to_list(limit)
+        
+        # Convert datetime fields
+        for log in logs:
+            if isinstance(log.get('timestamp'), str):
+                log['timestamp'] = datetime.fromisoformat(log['timestamp'])
+        
+        return logs
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching activity logs: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.patch("/contact/{contact_id}/status")
 async def update_contact_status(contact_id: str, update: ContactUpdate, payload: dict = Depends(verify_token)):
