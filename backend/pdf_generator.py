@@ -410,12 +410,12 @@ class PDFGenerator:
         elements.append(Paragraph("QUOTATION", title_style))
         elements.append(Spacer(1, 8))
         
-        # Company taglines with dark color
+        # Company taglines with orange color
         tagline_style = ParagraphStyle(
             'CoverTagline',
             parent=self.styles['Normal'],
             fontSize=11,
-            textColor=colors.HexColor('#333333'),
+            textColor=colors.HexColor('#FF6600'),  # Orange color
             alignment=TA_CENTER,
             fontName='Helvetica',
             leading=14,
