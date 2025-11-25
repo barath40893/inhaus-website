@@ -362,11 +362,11 @@ class PDFGenerator:
         canvas.restoreState()
     
     def _create_cover_page(self, quotation_data: dict, settings_data: dict):
-        """Create branded cover page: logo in header, interior image with text overlay at bottom"""
+        """Create branded cover page matching reference: logo at top, QUOTATION on image, details at bottom"""
         elements = []
         
         # ========== TOP SECTION: Logo in light grey header ==========
-        elements.append(Spacer(1, 20))
+        elements.append(Spacer(1, 40))
         
         # Try new transparent logo first, fallback to old logo
         logo_path = Path('/app/backend/uploads/inhaus_logo_transparent.png')
@@ -379,73 +379,77 @@ class PDFGenerator:
                     pil_img = PILImage.open(str(logo_path))
                     img_width, img_height = pil_img.size
                     aspect_ratio = img_height / img_width
-                    desired_width = 2.2 * inch
+                    desired_width = 2.8 * inch
                     calculated_height = desired_width * aspect_ratio
                     logo = Image(str(logo_path), width=desired_width, height=calculated_height, mask='auto')
                 else:
-                    logo = Image(str(logo_path), width=2.2*inch, height=0.48*inch)
+                    logo = Image(str(logo_path), width=2.8*inch, height=0.6*inch)
                 
                 logo.hAlign = 'CENTER'
                 elements.append(logo)
             except Exception as e:
                 logging.error(f"Failed to load logo on cover: {str(e)}")
         
-        # ========== MIDDLE: Spacer for interior image (text will overlay at bottom) ==========
-        # Push content to the bottom of the image
-        elements.append(Spacer(1, 420))
+        # ========== MIDDLE: Spacer + QUOTATION text on image ==========
+        elements.append(Spacer(1, 140))
         
-        # ========== BOTTOM: Text overlay on image ==========
-        
-        # QUOTATION heading with white color for dark image overlay
+        # QUOTATION heading overlaid on image with white color
         title_style = ParagraphStyle(
             'CoverTitle',
             parent=self.styles['Heading1'],
-            fontSize=38,
+            fontSize=48,
             textColor=colors.white,
             alignment=TA_CENTER,
             fontName='Helvetica-Bold',
-            leading=46,
+            leading=56,
             spaceBefore=0,
-            spaceAfter=15
+            spaceAfter=0
         )
         
         elements.append(Paragraph("QUOTATION", title_style))
-        elements.append(Spacer(1, 10))
         
-        # Company tagline with white color on image
+        # Spacer to push to bottom grey section
+        elements.append(Spacer(1, 190))
+        
+        # ========== BOTTOM: Taglines and company info in light grey section ==========
+        
+        # Company taglines with dark color for light grey background
         tagline_style = ParagraphStyle(
             'CoverTagline',
             parent=self.styles['Normal'],
-            fontSize=12,
-            textColor=colors.white,
+            fontSize=13,
+            textColor=colors.HexColor('#333333'),
             alignment=TA_CENTER,
             fontName='Helvetica',
-            leading=16,
+            leading=18,
             leftIndent=50,
             rightIndent=50
         )
         
         branding_quotes = [
             "<b><i>Transform Your Space with Smart Automation</i></b>",
+            "",
             "<i>Experience the future of living with intelligent home automation</i>",
+            "",
             "<i>Energy efficient • Secure • Convenient • Modern</i>"
         ]
         
         for quote in branding_quotes:
-            elements.append(Paragraph(quote, tagline_style))
+            if quote:
+                elements.append(Paragraph(quote, tagline_style))
             elements.append(Spacer(1, 8))
         
-        elements.append(Spacer(1, 15))
+        elements.append(Spacer(1, 10))
         
-        # Company info at bottom with white text on image
+        # Company info at bottom with dark text for light grey background
         footer_style = ParagraphStyle(
             'CoverFooter',
             parent=self.styles['Normal'],
-            fontSize=9,
-            textColor=colors.white,
+            fontSize=10,
+            textColor=colors.HexColor('#555555'),
             alignment=TA_CENTER,
             fontName='Helvetica',
-            leading=13
+            leading=14
         )
         
         elements.append(Paragraph(
