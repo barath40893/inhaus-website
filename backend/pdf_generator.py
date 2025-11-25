@@ -362,11 +362,11 @@ class PDFGenerator:
         canvas.restoreState()
     
     def _create_cover_page(self, quotation_data: dict, settings_data: dict):
-        """Create branded cover page with clean layout: grey top (logo), clean image middle, grey bottom (text)"""
+        """Create branded cover page with clean layout: light grey top (logo), clean image middle, light grey bottom (text)"""
         elements = []
         
-        # ========== TOP SECTION: Logo in grey area ==========
-        elements.append(Spacer(1, 25))
+        # ========== TOP SECTION: Smaller logo in light grey area ==========
+        elements.append(Spacer(1, 20))
         
         logo_path = Path('/app/frontend/public/inhaus/fulllogo_transparent_nobuffer.png')
         if logo_path.exists():
@@ -375,11 +375,11 @@ class PDFGenerator:
                     pil_img = PILImage.open(str(logo_path))
                     img_width, img_height = pil_img.size
                     aspect_ratio = img_height / img_width
-                    desired_width = 3 * inch
+                    desired_width = 2.2 * inch  # Reduced from 3 inch to 2.2 inch
                     calculated_height = desired_width * aspect_ratio
                     logo = Image(str(logo_path), width=desired_width, height=calculated_height)
                 else:
-                    logo = Image(str(logo_path), width=3*inch, height=1*inch)
+                    logo = Image(str(logo_path), width=2.2*inch, height=0.75*inch)
                 
                 logo.hAlign = 'CENTER'
                 elements.append(logo)
@@ -390,14 +390,14 @@ class PDFGenerator:
         # Spacer to move past the clean image area
         elements.append(Spacer(1, 320))  # Height of clean image section
         
-        # ========== BOTTOM SECTION: All text in grey area ==========
+        # ========== BOTTOM SECTION: All text in light grey area ==========
         
-        # QUOTATION heading
+        # QUOTATION heading with dark color for light background
         title_style = ParagraphStyle(
             'CoverTitle',
             parent=self.styles['Heading1'],
             fontSize=42,
-            textColor=colors.white,
+            textColor=colors.HexColor('#1A1A1A'),  # Dark text for light background
             alignment=TA_CENTER,
             fontName='Helvetica-Bold',
             leading=50,
@@ -408,12 +408,12 @@ class PDFGenerator:
         elements.append(Paragraph("QUOTATION", title_style))
         elements.append(Spacer(1, 15))
         
-        # Company tagline
+        # Company tagline with dark color
         tagline_style = ParagraphStyle(
             'CoverTagline',
             parent=self.styles['Normal'],
             fontSize=13,
-            textColor=colors.white,
+            textColor=colors.HexColor('#333333'),  # Dark grey for light background
             alignment=TA_CENTER,
             fontName='Helvetica',
             leading=18,
@@ -433,12 +433,12 @@ class PDFGenerator:
         
         elements.append(Spacer(1, 20))
         
-        # Company info at bottom
+        # Company info at bottom with dark color
         footer_style = ParagraphStyle(
             'CoverFooter',
             parent=self.styles['Normal'],
             fontSize=10,
-            textColor=colors.white,
+            textColor=colors.HexColor('#555555'),  # Medium grey for light background
             alignment=TA_CENTER,
             fontName='Helvetica',
             leading=14
