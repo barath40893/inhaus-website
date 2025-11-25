@@ -877,10 +877,10 @@ class PDFGenerator:
         # Optimized column widths for clarity - wider spacing
         table = Table(data, colWidths=[0.4*inch, 0.75*inch, 0.95*inch, 2.45*inch, 0.5*inch, 1.05*inch, 1.15*inch])
         
-        # Professional Blue-Grey Table Styling - Matching Reference
+        # Professional Blue-Grey Table with BOLD BLACK Borders
         style_commands = [
-            # ========== HEADER - Light Blue-Grey Background ==========
-            ('BACKGROUND', (0, 0), (-1, 0), self.header_bg),  # Light blue-grey header
+            # ========== HEADER - Consistent Light Blue-Grey ==========
+            ('BACKGROUND', (0, 0), (-1, 0), self.header_bg),  # Light blue-grey #D3DDF0
             ('TEXTCOLOR', (0, 0), (-1, 0), self.header_text),  # Dark grey text
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
@@ -889,10 +889,10 @@ class PDFGenerator:
             ('TOPPADDING', (0, 0), (-1, 0), 10),
             ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
             
-            # ========== SUBTLE BORDERS - Matching Reference ==========
-            ('BOX', (0, 0), (-1, -1), 1, self.table_border),  # 1px light grey outer border
-            ('LINEBELOW', (0, 0), (-1, 0), 1, self.border_color),  # 1px line under header
-            ('INNERGRID', (0, 1), (-1, -1), 1, self.border_color),  # 1px light grey grid
+            # ========== BOLD BLACK BORDERS ==========
+            ('BOX', (0, 0), (-1, -1), 2, colors.black),  # 2px BLACK outer border
+            ('LINEBELOW', (0, 0), (-1, 0), 2, colors.black),  # 2px BLACK line under header
+            ('INNERGRID', (0, 0), (-1, -1), 1.5, colors.black),  # 1.5px BLACK grid
             
             # ========== ALIGNMENT - Professional Layout ==========
             ('ALIGN', (0, 1), (0, -1), 'CENTER'),  # S.No centered
@@ -910,21 +910,21 @@ class PDFGenerator:
             ('TOPPADDING', (0, 1), (-1, -1), 10),
             ('BOTTOMPADDING', (0, 1), (-1, -1), 10),
             
-            # ========== TOTAL ROW - Light Blue-Grey with Thick Border ==========
-            ('BACKGROUND', (0, -1), (-1, -1), self.total_bg),  # Light blue-grey background
-            ('LINEABOVE', (0, -1), (-1, -1), 2, self.thick_border),  # 2px medium grey line
+            # ========== TOTAL ROW - Same Light Blue-Grey ==========
+            ('BACKGROUND', (0, -1), (-1, -1), self.total_bg),  # Same light blue-grey #D3DDF0
+            ('LINEABOVE', (0, -1), (-1, -1), 2, colors.black),  # 2px BLACK line
             ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
             ('FONTSIZE', (0, -1), (-1, -1), 10),
             ('TOPPADDING', (0, -1), (-1, -1), 12),
             ('BOTTOMPADDING', (0, -1), (-1, -1), 12),
         ]
         
-        # Alternating row colors - matching reference
+        # Clean alternating rows - white and very subtle blue tint
         for i in range(1, len(data) - 1):
             if i % 2 == 0:
-                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_alt))  # Slightly darker grey
+                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_alt))  # Very light blue tint
             else:
-                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.row_light))  # Very light grey
+                style_commands.append(('BACKGROUND', (0, i), (-1, i), colors.white))  # Pure white
         
         table.setStyle(TableStyle(style_commands))
         
