@@ -64,15 +64,15 @@ function App() {
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
-            <Route path="/admin/contacts" element={<AdminContactsPage />} />
-            <Route path="/admin/quotations" element={<AdminQuotationsPage />} />
-            <Route path="/admin/quotations/new" element={<AdminCreateQuotationPage />} />
-            <Route path="/admin/quotations/edit/:id" element={<AdminCreateQuotationPage />} />
-            <Route path="/admin/invoices" element={<AdminInvoicesPage />} />
-            <Route path="/admin/invoices/new" element={<AdminCreateInvoicePage />} />
-            <Route path="/admin/invoices/edit/:id" element={<AdminCreateInvoicePage />} />
-            <Route path="/admin/products" element={<AdminProductsPage />} />
-            <Route path="/admin/settings" element={<AdminSettingsPage />} />
+            <Route path="/admin/contacts" element={<ProtectedRoute><AdminContactsPage /></ProtectedRoute>} />
+            <Route path="/admin/quotations" element={<ProtectedRoute><AdminQuotationsPage /></ProtectedRoute>} />
+            <Route path="/admin/quotations/new" element={<ProtectedRoute><AdminCreateQuotationPage /></ProtectedRoute>} />
+            <Route path="/admin/quotations/edit/:id" element={<ProtectedRoute><AdminCreateQuotationPage /></ProtectedRoute>} />
+            <Route path="/admin/invoices" element={<ProtectedRoute><AdminInvoicesPage /></ProtectedRoute>} />
+            <Route path="/admin/invoices/new" element={<ProtectedRoute><AdminCreateInvoicePage /></ProtectedRoute>} />
+            <Route path="/admin/invoices/edit/:id" element={<ProtectedRoute><AdminCreateInvoicePage /></ProtectedRoute>} />
+            <Route path="/admin/products" element={<ProtectedRoute><AdminProductsPage /></ProtectedRoute>} />
+            <Route path="/admin/settings" element={<ProtectedRoute><AdminSettingsPage /></ProtectedRoute>} />
           </Routes>
           <Toaster />
           <WhatsAppButton />
