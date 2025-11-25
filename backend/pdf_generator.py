@@ -506,9 +506,9 @@ class PDFGenerator:
         
         # Create table for each room with enhanced section heading
         for room, items in items_by_room.items():
-            # Clean section heading in black
+            # Room heading with orange-highlighted area name
             room_heading = Paragraph(
-                f'<font size=14 color="#000000"><b>Scope of Automation - {room}</b></font>',
+                f'<font size=14 color="#000000"><b>Scope of Automation - </b></font><font size=14 color="#FF6B35"><b>{room}</b></font>',
                 ParagraphStyle(
                     'RoomHeading',
                     parent=self.heading_style,
