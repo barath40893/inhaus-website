@@ -1139,9 +1139,8 @@ async def download_quotation_pdf(quotation_id: str, payload: dict = Depends(veri
         pdf_filename = f"quotation_{quotation['quote_number'].replace('/', '_')}.pdf"
         pdf_path = PDF_DIR / pdf_filename
         
-        # Generate if doesn't exist
-        if not pdf_path.exists():
-            pdf_generator.generate_quotation_pdf(quotation, settings, str(pdf_path))
+        # Always regenerate PDF to ensure latest data
+        pdf_generator.generate_quotation_pdf(quotation, settings, str(pdf_path))
         
         return FileResponse(
             path=str(pdf_path),
