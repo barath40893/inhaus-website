@@ -365,21 +365,26 @@ class PDFGenerator:
         """Create branded cover page with clean layout: light grey top (logo), clean image middle, light grey bottom (text)"""
         elements = []
         
-        # ========== TOP SECTION: Smaller logo in light grey area ==========
-        elements.append(Spacer(1, 20))
+        # ========== TOP SECTION: New transparent logo in light grey area ==========
+        elements.append(Spacer(1, 25))
         
-        logo_path = Path('/app/frontend/public/inhaus/fulllogo_transparent_nobuffer.png')
+        # Try new transparent logo first, fallback to old logo
+        logo_path = Path('/app/backend/uploads/inhaus_logo_transparent.png')
+        if not logo_path.exists():
+            logo_path = Path('/app/frontend/public/inhaus/fulllogo_transparent_nobuffer.png')
+        
         if logo_path.exists():
             try:
                 if PIL_AVAILABLE:
                     pil_img = PILImage.open(str(logo_path))
                     img_width, img_height = pil_img.size
                     aspect_ratio = img_height / img_width
-                    desired_width = 2.2 * inch  # Reduced from 3 inch to 2.2 inch
+                    # Size to fit nicely in 120px header (with some padding)
+                    desired_width = 2.5 * inch
                     calculated_height = desired_width * aspect_ratio
-                    logo = Image(str(logo_path), width=desired_width, height=calculated_height)
+                    logo = Image(str(logo_path), width=desired_width, height=calculated_height, mask='auto')
                 else:
-                    logo = Image(str(logo_path), width=2.2*inch, height=0.75*inch)
+                    logo = Image(str(logo_path), width=2.5*inch, height=0.55*inch)
                 
                 logo.hAlign = 'CENTER'
                 elements.append(logo)
