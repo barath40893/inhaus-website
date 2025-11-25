@@ -312,10 +312,10 @@ class PDFGenerator:
         canvas.restoreState()
     
     def _create_cover_page(self, quotation_data: dict, settings_data: dict):
-        """Create an attractive cover page with branding and customer details"""
+        """Create simple branded cover page with InHaus branding only"""
         elements = []
         
-        # Large logo at top
+        # Large logo centered
         logo_path = Path('/app/frontend/public/inhaus/fulllogo_transparent_nobuffer.png')
         if logo_path.exists():
             try:
@@ -323,144 +323,74 @@ class PDFGenerator:
                     pil_img = PILImage.open(str(logo_path))
                     img_width, img_height = pil_img.size
                     aspect_ratio = img_height / img_width
-                    desired_width = 3.5 * inch
+                    desired_width = 4 * inch
                     calculated_height = desired_width * aspect_ratio
                     logo = Image(str(logo_path), width=desired_width, height=calculated_height)
                 else:
-                    logo = Image(str(logo_path), width=3.5*inch, height=1.2*inch)
+                    logo = Image(str(logo_path), width=4*inch, height=1.4*inch)
                 
                 logo.hAlign = 'CENTER'
-                elements.append(Spacer(1, 30))
+                elements.append(Spacer(1, 80))
                 elements.append(logo)
-                elements.append(Spacer(1, 30))
+                elements.append(Spacer(1, 60))
             except Exception as e:
                 logging.error(f"Failed to load logo on cover: {str(e)}")
+        
+        # Simple QUOTATION heading
+        title_style = ParagraphStyle(
+            'SimpleTitle',
+            parent=self.styles['Heading1'],
+            fontSize=36,
+            textColor=colors.HexColor('#1A1A1A'),
+            alignment=TA_CENTER,
+            fontName='Helvetica-Bold',
+            leading=42,
+            spaceBefore=40,
+            spaceAfter=40
+        )
+        
+        elements.append(Paragraph("QUOTATION", title_style))
+        elements.append(Spacer(1, 80))
         
         # Company tagline/branding
         tagline_style = ParagraphStyle(
             'Tagline',
             parent=self.styles['Normal'],
-            fontSize=16,
-            textColor=colors.black,
-            alignment=TA_CENTER,
-            fontName='Helvetica-Bold',
-            leading=22,
-            spaceBefore=10,
-            spaceAfter=10
-        )
-        
-        elements.append(Paragraph(
-            "<b>Transform Your Space with Smart Automation</b>",
-            tagline_style
-        ))
-        elements.append(Spacer(1, 15))
-        
-        # Attractive branding quotes
-        quote_style = ParagraphStyle(
-            'Quote',
-            parent=self.styles['Normal'],
-            fontSize=12,
+            fontSize=14,
             textColor=colors.HexColor('#333333'),
             alignment=TA_CENTER,
             fontName='Helvetica',
-            leading=18,
-            leftIndent=40,
-            rightIndent=40
+            leading=20,
+            leftIndent=60,
+            rightIndent=60
         )
         
         branding_quotes = [
-            "Experience the future of living with intelligent home automation",
-            "Control your entire home with a single touch",
-            "Energy efficient • Secure • Convenient • Modern"
+            "<i>Transform Your Space with Smart Automation</i>",
+            "<i>Experience the future of living with intelligent home automation</i>",
+            "<i>Energy efficient • Secure • Convenient • Modern</i>"
         ]
         
         for quote in branding_quotes:
-            elements.append(Paragraph(f"<i>{quote}</i>", quote_style))
-            elements.append(Spacer(1, 10))
+            elements.append(Paragraph(quote, tagline_style))
+            elements.append(Spacer(1, 15))
         
-        elements.append(Spacer(1, 40))
+        # Push footer to bottom with flexible spacer
+        elements.append(Spacer(1, 150))
         
-        # Quotation title
-        title_style = ParagraphStyle(
-            'CoverTitle',
-            parent=self.styles['Heading1'],
-            fontSize=28,
-            textColor=colors.black,
-            alignment=TA_CENTER,
-            fontName='Helvetica-Bold',
-            leading=34,
-            spaceBefore=20,
-            spaceAfter=20
-        )
-        
-        elements.append(Paragraph("QUOTATION", title_style))
-        elements.append(Spacer(1, 40))
-        
-        # Customer details with same table style
-        customer_heading = ParagraphStyle(
-            'CustomerHeading',
-            parent=self.styles['Normal'],
-            fontSize=14,
-            textColor=colors.black,
-            fontName='Helvetica-Bold',
-            leading=18,
-            spaceBefore=10,
-            spaceAfter=15
-        )
-        
-        elements.append(Paragraph("<b>PREPARED FOR:</b>", customer_heading))
-        
-        customer_info_data = [
-            [Paragraph('<b>Customer Name:</b>', self.normal_style), Paragraph(quotation_data['customer_name'], self.normal_style)],
-            [Paragraph('<b>Email:</b>', self.normal_style), Paragraph(quotation_data['customer_email'], self.normal_style)],
-        ]
-        
-        if quotation_data.get('customer_phone'):
-            customer_info_data.append([Paragraph('<b>Phone:</b>', self.normal_style), Paragraph(quotation_data['customer_phone'], self.normal_style)])
-        
-        if quotation_data.get('customer_address'):
-            customer_info_data.append([Paragraph('<b>Address:</b>', self.normal_style), Paragraph(quotation_data['customer_address'], self.normal_style)])
-        
-        if quotation_data.get('site_location'):
-            customer_info_data.append([Paragraph('<b>Site Location:</b>', self.normal_style), Paragraph(quotation_data['site_location'], self.normal_style)])
-        
-        customer_info_table = Table(customer_info_data, colWidths=[2.5*inch, 3.5*inch])
-        customer_info_table.setStyle(TableStyle([
-            # Light grey background for labels
-            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#F5F5F5')),
-            # White background for values
-            ('BACKGROUND', (1, 0), (1, -1), colors.white),
-            # Light grey borders
-            ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#DDDDDD')),
-            ('INNERGRID', (0, 0), (-1, -1), 1, colors.HexColor('#DDDDDD')),
-            # Alignment
-            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            # Padding
-            ('LEFTPADDING', (0, 0), (-1, -1), 10),
-            ('RIGHTPADDING', (0, 0), (-1, -1), 10),
-            ('TOPPADDING', (0, 0), (-1, -1), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
-            # Font
-            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-            ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ]))
-        
-        elements.append(customer_info_table)
-        elements.append(Spacer(1, 40))
-        
-        # Footer with contact info
+        # Company address at bottom
         footer_style = ParagraphStyle(
             'CoverFooter',
             parent=self.styles['Normal'],
-            fontSize=9,
+            fontSize=10,
             textColor=colors.HexColor('#666666'),
             alignment=TA_CENTER,
             fontName='Helvetica',
-            leading=12
+            leading=14
         )
         
         elements.append(Paragraph(
+            f"<b>{settings_data.get('company_name', 'InHaus')}</b><br/>"
             f"{settings_data.get('company_address', '')}<br/>"
             f"Phone: {settings_data.get('company_phone', '')} | Email: {settings_data.get('company_email', '')}<br/>"
             f"Website: {settings_data.get('company_website', '')}",
