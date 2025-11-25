@@ -317,7 +317,7 @@ class PDFGenerator:
         
         page_width, page_height = A4
         
-        # Add background image with overlay
+        # Add background image with lighter overlay
         bg_image_url = 'https://images.unsplash.com/photo-1705321963943-de94bb3f0dd3'
         bg_image_path = Path('/tmp/cover_background.jpg')
         
@@ -337,10 +337,15 @@ class PDFGenerator:
                 anchor='c'
             )
             
-            # Add dark overlay for better text readability
+            # Add lighter overlay for visibility - reduced from 0.5 to 0.25
             canvas.setFillColorRGB(0, 0, 0)
-            canvas.setFillAlpha(0.5)
+            canvas.setFillAlpha(0.25)
             canvas.rect(0, 0, page_width, page_height, fill=1, stroke=0)
+            
+            # Add darker grey overlay at TOP for logo area
+            canvas.setFillColorRGB(0.3, 0.3, 0.3)
+            canvas.setFillAlpha(0.7)
+            canvas.rect(0, page_height - 200, page_width, 200, fill=1, stroke=0)
             
         except Exception as e:
             logging.error(f"Failed to load cover background image: {str(e)}")
