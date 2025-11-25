@@ -472,8 +472,8 @@ class PDFGenerator:
         # Footer with company details
         story.extend(self._create_footer(settings_data))
         
-        # Build PDF with watermark on each page
-        doc.build(story, onFirstPage=self._add_watermark, onLaterPages=self._add_watermark)
+        # Build PDF with premium background on each page
+        doc.build(story, onFirstPage=self._add_premium_background, onLaterPages=self._add_premium_background)
         return output_path
     
     def generate_invoice_pdf(self, invoice_data: dict, settings_data: dict, output_path: str):
@@ -545,8 +545,8 @@ class PDFGenerator:
         # Footer with company details and bank info
         story.extend(self._create_footer(settings_data, include_bank=True))
         
-        # Build PDF with watermark on each page
-        doc.build(story, onFirstPage=self._add_watermark, onLaterPages=self._add_watermark)
+        # Build PDF with premium background on each page
+        doc.build(story, onFirstPage=self._add_premium_background, onLaterPages=self._add_premium_background)
         return output_path
     
     def _create_header(self, settings_data: dict):
