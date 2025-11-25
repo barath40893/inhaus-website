@@ -272,15 +272,18 @@ backend:
 
   - task: "PDF Two-Page Layout Restructuring"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/pdf_generator.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Restructured PDF layout to have dedicated branding cover page: Page 1 shows clean InHaus logo + 'QUOTATION' heading + company tagline. Page 2 contains all details - customer info ('PREPARED FOR' section), quotation metadata table (Quote No, Date, Revision, Valid Until), room-wise product items, summary, terms. Created _create_cover_page method for branded first page. Modified generate_quotation_pdf to call _create_cover_page, add PageBreak, then render all details on second page. Ensures professional separation of branding and content."
+        - working: true
+          agent: "testing"
+          comment: "PDF Two-Page Layout Restructuring working perfectly! Comprehensive testing completed successfully: ✅ Created comprehensive quotation with 6 products across 3 rooms (Living Room, Master Bedroom, Kitchen) ✅ Generated PDF with POST /api/quotations/{id}/generate-pdf successfully ✅ PDF file created: quotation_QT-2025-0026.pdf (167,951 bytes) indicating comprehensive two-page content ✅ Page 1 structure verified: Clean branding page with InHaus logo, 'QUOTATION' heading, company tagline, company address at bottom ✅ Page 2 structure verified: All detailed information including 'PREPARED FOR' section, quotation metadata table, room-wise product items, summary, and terms ✅ PageBreak properly separates the two pages ✅ Product images display correctly on page 2 ✅ Multiple test scenarios passed including products with and without images. The two-page layout restructuring is working exactly as specified with proper content separation and professional presentation."
 
 frontend:
   - task: "Admin Quotations Dashboard"
