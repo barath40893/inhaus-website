@@ -182,21 +182,21 @@ class PDFGenerator:
         canvas.setFillAlpha(0.04)
         canvas.setStrokeAlpha(0.04)
         canvas.setFillColorRGB(0.2, 0.5, 0.9)
+        canvas.setStrokeColorRGB(0.2, 0.5, 0.9)
         
-        # Top-right WiFi symbol
+        # Top-right WiFi symbol - simple circles
         wifi_x = page_width - 80
         wifi_y = page_height - 80
         
-        # WiFi waves (3 arcs)
+        # WiFi waves (3 circles)
+        canvas.setLineWidth(2)
         for i in range(3):
-            radius = 15 + (i * 8)
-            canvas.arc(wifi_x - radius, wifi_y - radius, wifi_x + radius, wifi_y + radius, 45, 135)
-            canvas.setLineWidth(3)
-            canvas.setStrokeColorRGB(0.2, 0.5, 0.9)
-            canvas.stroke()
+            radius = 12 + (i * 6)
+            canvas.circle(wifi_x, wifi_y, radius, stroke=1, fill=0)
         
         # WiFi dot
-        canvas.circle(wifi_x, wifi_y - 25, 3, fill=1)
+        canvas.setFillAlpha(0.06)
+        canvas.circle(wifi_x, wifi_y, 3, stroke=0, fill=1)
         
         # 5. Smart home icon silhouette - bottom left
         canvas.setFillAlpha(0.04)
