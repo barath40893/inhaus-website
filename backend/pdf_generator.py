@@ -645,11 +645,20 @@ class PDFGenerator:
         story.append(Paragraph(f"<b>Validity:</b> {quotation_data['validity_days']} days from quote date", self.normal_style))
         story.append(Spacer(1, 20))
         
-        # Footer with company details
-        story.extend(self._create_footer(settings_data))
+        # ========== LAST PAGE: THANK YOU NOTE ==========
+        story.append(PageBreak())
+        story.extend(self._create_thank_you_page(settings_data))
         
-        # Build PDF with premium background on each page
-        doc.build(story, onFirstPage=self._add_premium_background, onLaterPages=self._add_premium_background)
+        # Build PDF with different backgrounds for cover vs other pages
+        def add_page_backgrounds(canvas, doc):
+            if doc.page == 1:
+                # Cover page gets the interior background
+                self._add_cover_page_background(canvas, doc)
+            else:
+                # Other pages get the premium pattern background
+                self._add_premium_background(canvas, doc)
+        
+        doc.build(story, onFirstPage=add_page_backgrounds, onLaterPages=add_page_backgrounds)
         return output_path
     
     def generate_invoice_pdf(self, invoice_data: dict, settings_data: dict, output_path: str):
