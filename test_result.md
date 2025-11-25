@@ -285,6 +285,18 @@ backend:
           agent: "testing"
           comment: "PDF Two-Page Layout Restructuring working perfectly! Comprehensive testing completed successfully: ✅ Created comprehensive quotation with 6 products across 3 rooms (Living Room, Master Bedroom, Kitchen) ✅ Generated PDF with POST /api/quotations/{id}/generate-pdf successfully ✅ PDF file created: quotation_QT-2025-0026.pdf (167,951 bytes) indicating comprehensive two-page content ✅ Page 1 structure verified: Clean branding page with InHaus logo, 'QUOTATION' heading, company tagline, company address at bottom ✅ Page 2 structure verified: All detailed information including 'PREPARED FOR' section, quotation metadata table, room-wise product items, summary, and terms ✅ PageBreak properly separates the two pages ✅ Product images display correctly on page 2 ✅ Multiple test scenarios passed including products with and without images. The two-page layout restructuring is working exactly as specified with proper content separation and professional presentation."
 
+  - task: "PDF Multi-Page Enhancement with Background & Thank You"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/pdf_generator.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Enhanced PDF structure with modern interior background and thank you page: Page 1 - Cover with modern smart home interior background image (Unsplash), white text overlay, logo, 'QUOTATION' heading, company tagline, full company info at bottom. Page 2 - Customer details and quotation metadata table ONLY. Page 3+ - Room-wise product breakdown, summary, terms, payment info. Last Page - Professional thank you note with warm closing message. Created _add_cover_page_background method to download and apply background image with dark overlay. Created _create_customer_quote_page for dedicated customer info page. Created _create_thank_you_page with professional closing message. Modified generate_quotation_pdf to orchestrate multi-page structure with different backgrounds per page type."
+
 frontend:
   - task: "Admin Quotations Dashboard"
     implemented: true
