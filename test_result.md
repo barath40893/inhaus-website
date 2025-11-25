@@ -376,11 +376,12 @@ frontend:
 metadata:
   created_by: "testing_agent"
   version: "1.0"
-  test_sequence: 2
+  test_sequence: 3
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "PDF Two-Page Layout Restructuring"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
