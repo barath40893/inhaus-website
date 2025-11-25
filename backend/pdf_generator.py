@@ -512,9 +512,22 @@ class PDFGenerator:
             story.extend(self._create_items_table(items))
             story.append(Spacer(1, 18))
         
-        # Summary
+        # Summary with bold dark heading
         story.append(PageBreak())
-        story.append(Paragraph("SUMMARY", self.heading_style))
+        
+        summary_heading_style = ParagraphStyle(
+            'SummaryHeading',
+            parent=self.styles['Heading1'],
+            fontSize=18,
+            textColor=colors.HexColor('#1A1A1A'),  # Very dark, almost black
+            fontName='Helvetica-Bold',
+            alignment=TA_LEFT,
+            spaceBefore=10,
+            spaceAfter=20,
+            leading=22
+        )
+        
+        story.append(Paragraph("<b>SUMMARY</b>", summary_heading_style))
         story.extend(self._create_summary_table(quotation_data, items_by_room))
         story.append(Spacer(1, 20))
         
