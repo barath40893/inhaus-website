@@ -112,6 +112,40 @@ class AdminLogin(BaseModel):
 class ContactUpdate(BaseModel):
     status: str
 
+# ============= USER MANAGEMENT MODELS =============
+
+class User(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    email: EmailStr
+    name: str
+    password_hash: str
+    role: str = "user"  # "admin" or "user"
+    status: str = "pending"  # "pending", "approved", "denied"
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_login: Optional[datetime] = None
+
+class UserRegister(BaseModel):
+    email: EmailStr
+    name: str
+    password: str
+
+class UserApproval(BaseModel):
+    status: str  # "approved" or "denied"
+
+class ActivityLog(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    user_email: str
+    action: str  # "create", "update", "delete", "view", "login", "logout"
+    resource_type: str  # "quotation", "invoice", "product", "user"
+    resource_id: Optional[str] = None
+    details: Optional[str] = None
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 # ============= QUOTATION & INVOICE MODELS =============
 
 class ProductMaster(BaseModel):
