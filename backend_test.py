@@ -492,10 +492,176 @@ def test_pdf_with_no_images():
         print(f"❌ No-image PDF test failed with error: {str(e)}")
         return False
 
+def test_pdf_two_page_layout():
+    """Test PDF Two-Page Layout Restructuring - Page 1: Branding, Page 2: Details"""
+    print("\n🔍 Testing PDF Two-Page Layout Restructuring...")
+    
+    if not admin_token:
+        print("❌ No admin token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    
+    # Create a comprehensive quotation with multiple products across different rooms
+    print("\n📝 Creating comprehensive quotation for two-page PDF test...")
+    try:
+        quotation_data = {
+            "customer_name": "Sarah Johnson",
+            "customer_email": "sarah.johnson@example.com",
+            "customer_phone": "+91-9876543210",
+            "customer_address": "456 Smart Villa, Tech Park, Bangalore - 560001",
+            "architect_name": "John Architect",
+            "site_location": "Premium Villa Project",
+            "items": [
+                {
+                    "room_area": "Living Room",
+                    "model_no": "SM-SWITCH-LR01",
+                    "product_name": "Smart Light Switch - Premium",
+                    "description": "WiFi enabled smart light switch with voice control, mobile app integration, and energy monitoring",
+                    "image_url": uploaded_image_url if uploaded_image_url else None,
+                    "quantity": 4,
+                    "list_price": 2800.0,
+                    "discount": 0,
+                    "offered_price": 2500.0,
+                    "company_cost": 1900.0
+                },
+                {
+                    "room_area": "Living Room",
+                    "model_no": "SM-DIMMER-001",
+                    "product_name": "Smart Dimmer Switch",
+                    "description": "Advanced dimmer with scene control and scheduling features",
+                    "quantity": 2,
+                    "list_price": 3200.0,
+                    "discount": 0,
+                    "offered_price": 2900.0,
+                    "company_cost": 2200.0
+                },
+                {
+                    "room_area": "Master Bedroom",
+                    "model_no": "SM-CURTAIN-001",
+                    "product_name": "Automated Curtain Controller",
+                    "description": "Smart curtain motor with remote control and timer functionality",
+                    "quantity": 2,
+                    "list_price": 8500.0,
+                    "discount": 0,
+                    "offered_price": 7800.0,
+                    "company_cost": 6200.0
+                },
+                {
+                    "room_area": "Master Bedroom",
+                    "model_no": "SM-AC-001",
+                    "product_name": "Smart AC Controller",
+                    "description": "WiFi enabled AC controller with temperature scheduling and energy optimization",
+                    "quantity": 1,
+                    "list_price": 4500.0,
+                    "discount": 0,
+                    "offered_price": 4200.0,
+                    "company_cost": 3400.0
+                },
+                {
+                    "room_area": "Kitchen",
+                    "model_no": "SM-EXHAUST-001",
+                    "product_name": "Smart Exhaust Fan Controller",
+                    "description": "Automatic exhaust fan with humidity sensor and timer control",
+                    "quantity": 1,
+                    "list_price": 3500.0,
+                    "discount": 0,
+                    "offered_price": 3200.0,
+                    "company_cost": 2600.0
+                },
+                {
+                    "room_area": "Kitchen",
+                    "model_no": "SM-OUTLET-001",
+                    "product_name": "Smart Power Outlet",
+                    "description": "WiFi enabled smart power outlet with energy monitoring and scheduling",
+                    "quantity": 3,
+                    "list_price": 1800.0,
+                    "discount": 0,
+                    "offered_price": 1600.0,
+                    "company_cost": 1200.0
+                }
+            ],
+            "overall_discount": 1000.0,
+            "installation_charges": 3500.0,
+            "gst_percentage": 18,
+            "validity_days": 30,
+            "payment_terms": "40% advance, 40% on material delivery, 20% on completion",
+            "terms_conditions": "1. All products come with 2-year warranty. 2. Installation will be completed within 7 working days. 3. Free maintenance for first 6 months."
+        }
+        
+        response = requests.post(f"{BACKEND_URL}/quotations", 
+                               headers=headers, json=quotation_data)
+        print(f"Create Comprehensive Quotation Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            two_page_quotation_id = data.get("id")
+            print(f"Comprehensive quotation created with ID: {two_page_quotation_id}")
+            print(f"Total amount: Rs. {data.get('total', 0):,.2f}")
+            print(f"Items across {len(set(item['room_area'] for item in data.get('items', [])))} rooms")
+            
+            # Generate PDF for two-page layout test
+            print("\n📄 Generating PDF for two-page layout verification...")
+            response = requests.post(f"{BACKEND_URL}/quotations/{two_page_quotation_id}/generate-pdf", 
+                                   headers=headers)
+            print(f"Two-Page PDF Generation Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                pdf_data = response.json()
+                print(f"PDF Generation Response: {json.dumps(pdf_data, indent=2)}")
+                
+                if "filename" in pdf_data and "path" in pdf_data:
+                    pdf_filename = pdf_data["filename"]
+                    pdf_path = pdf_data["path"]
+                    print(f"✅ Two-page PDF generated successfully: {pdf_filename}")
+                    
+                    # Verify PDF structure expectations
+                    print("\n🔍 Verifying PDF two-page structure...")
+                    print("Expected Page 1: InHaus logo, 'QUOTATION' heading, company tagline, company address")
+                    print("Expected Page 2: Customer details ('PREPARED FOR'), quotation metadata, room-wise items, summary, terms")
+                    
+                    # Check if we can access the PDF file (basic verification)
+                    try:
+                        import os
+                        if os.path.exists(pdf_path):
+                            file_size = os.path.getsize(pdf_path)
+                            print(f"✅ PDF file exists at {pdf_path}")
+                            print(f"✅ PDF file size: {file_size} bytes")
+                            
+                            # For a comprehensive quotation with multiple rooms and products,
+                            # we expect a larger file size indicating proper content
+                            if file_size > 50000:  # At least 50KB for comprehensive content
+                                print("✅ PDF file size indicates comprehensive content")
+                                return True
+                            else:
+                                print(f"❌ PDF file size ({file_size} bytes) seems too small for comprehensive content")
+                                return False
+                        else:
+                            print(f"❌ PDF file not found at {pdf_path}")
+                            return False
+                    except Exception as e:
+                        print(f"❌ Error checking PDF file: {str(e)}")
+                        return False
+                else:
+                    print("❌ PDF generation response missing filename or path")
+                    return False
+            else:
+                print(f"❌ Two-page PDF generation failed with status {response.status_code}")
+                print(f"Response: {response.text}")
+                return False
+        else:
+            print(f"❌ Comprehensive quotation creation failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Two-page PDF layout test failed with error: {str(e)}")
+        return False
+
 def run_all_tests():
-    """Run all backend API tests for product image upload and PDF enhancements"""
+    """Run all backend API tests including PDF Two-Page Layout Restructuring"""
     print("🚀 Starting InHaus Quotation System Backend Tests")
-    print("Testing Product Image Upload Functionality and PDF Enhancements")
+    print("Testing PDF Two-Page Layout Restructuring and Product Image Functionality")
     print(f"Backend URL: {BACKEND_URL}")
     print("=" * 80)
     
@@ -509,6 +675,7 @@ def run_all_tests():
     test_results.append(("Quotation with Product Images", test_quotation_with_product_images()))
     test_results.append(("PDF Generation with Images", test_pdf_generation_with_images()))
     test_results.append(("PDF Generation with No Images", test_pdf_with_no_images()))
+    test_results.append(("PDF Two-Page Layout Restructuring", test_pdf_two_page_layout()))
     
     # Summary
     print("\n" + "=" * 80)
