@@ -398,17 +398,17 @@ class PDFGenerator:
         title_style = ParagraphStyle(
             'CoverTitle',
             parent=self.styles['Heading1'],
-            fontSize=40,
+            fontSize=38,
             textColor=colors.HexColor('#1A1A1A'),
             alignment=TA_CENTER,
             fontName='Helvetica-Bold',
-            leading=48,
+            leading=46,
             spaceBefore=0,
-            spaceAfter=10
+            spaceAfter=8
         )
         
         elements.append(Paragraph("QUOTATION", title_style))
-        elements.append(Spacer(1, 10))
+        elements.append(Spacer(1, 8))
         
         # Company taglines with dark color
         tagline_style = ParagraphStyle(
@@ -418,7 +418,7 @@ class PDFGenerator:
             textColor=colors.HexColor('#333333'),
             alignment=TA_CENTER,
             fontName='Helvetica',
-            leading=15,
+            leading=14,
             leftIndent=50,
             rightIndent=50
         )
@@ -431,9 +431,9 @@ class PDFGenerator:
         
         for quote in branding_quotes:
             elements.append(Paragraph(quote, tagline_style))
-            elements.append(Spacer(1, 5))
+            elements.append(Spacer(1, 4))
         
-        elements.append(Spacer(1, 12))
+        elements.append(Spacer(1, 10))
         
         # Company info at bottom
         footer_style = ParagraphStyle(
@@ -443,7 +443,7 @@ class PDFGenerator:
             textColor=colors.HexColor('#555555'),
             alignment=TA_CENTER,
             fontName='Helvetica',
-            leading=12
+            leading=11
         )
         
         elements.append(Paragraph(
