@@ -362,13 +362,12 @@ class PDFGenerator:
         canvas.restoreState()
     
     def _create_cover_page(self, quotation_data: dict, settings_data: dict):
-        """Create branded cover page with modern interior background"""
+        """Create branded cover page with clean layout: grey top (logo), clean image middle, grey bottom (text)"""
         elements = []
         
-        # Small top spacing to position logo in grey area
-        elements.append(Spacer(1, 30))
+        # ========== TOP SECTION: Logo in grey area ==========
+        elements.append(Spacer(1, 25))
         
-        # Logo at top in grey area
         logo_path = Path('/app/frontend/public/inhaus/fulllogo_transparent_nobuffer.png')
         if logo_path.exists():
             try:
@@ -376,45 +375,50 @@ class PDFGenerator:
                     pil_img = PILImage.open(str(logo_path))
                     img_width, img_height = pil_img.size
                     aspect_ratio = img_height / img_width
-                    desired_width = 3.5 * inch
+                    desired_width = 3 * inch
                     calculated_height = desired_width * aspect_ratio
                     logo = Image(str(logo_path), width=desired_width, height=calculated_height)
                 else:
-                    logo = Image(str(logo_path), width=3.5*inch, height=1.2*inch)
+                    logo = Image(str(logo_path), width=3*inch, height=1*inch)
                 
                 logo.hAlign = 'CENTER'
                 elements.append(logo)
-                elements.append(Spacer(1, 30))
             except Exception as e:
                 logging.error(f"Failed to load logo on cover: {str(e)}")
         
-        # QUOTATION heading below logo with white color
+        # ========== MIDDLE SECTION: Clean interior image (no text) ==========
+        # Spacer to move past the clean image area
+        elements.append(Spacer(1, 320))  # Height of clean image section
+        
+        # ========== BOTTOM SECTION: All text in grey area ==========
+        
+        # QUOTATION heading
         title_style = ParagraphStyle(
             'CoverTitle',
             parent=self.styles['Heading1'],
-            fontSize=48,
+            fontSize=42,
             textColor=colors.white,
             alignment=TA_CENTER,
             fontName='Helvetica-Bold',
-            leading=56,
+            leading=50,
             spaceBefore=10,
-            spaceAfter=50
+            spaceAfter=20
         )
         
         elements.append(Paragraph("QUOTATION", title_style))
-        elements.append(Spacer(1, 80))
+        elements.append(Spacer(1, 15))
         
-        # Company tagline with white color - visible on the image
+        # Company tagline
         tagline_style = ParagraphStyle(
             'CoverTagline',
             parent=self.styles['Normal'],
-            fontSize=16,
+            fontSize=13,
             textColor=colors.white,
             alignment=TA_CENTER,
-            fontName='Helvetica-Bold',
-            leading=24,
-            leftIndent=60,
-            rightIndent=60
+            fontName='Helvetica',
+            leading=18,
+            leftIndent=50,
+            rightIndent=50
         )
         
         branding_quotes = [
@@ -425,20 +429,19 @@ class PDFGenerator:
         
         for quote in branding_quotes:
             elements.append(Paragraph(quote, tagline_style))
-            elements.append(Spacer(1, 20))
+            elements.append(Spacer(1, 10))
         
-        # Push footer to bottom
-        elements.append(Spacer(1, 180))
+        elements.append(Spacer(1, 20))
         
-        # Company info at bottom with white text
+        # Company info at bottom
         footer_style = ParagraphStyle(
             'CoverFooter',
             parent=self.styles['Normal'],
-            fontSize=11,
+            fontSize=10,
             textColor=colors.white,
             alignment=TA_CENTER,
             fontName='Helvetica',
-            leading=16
+            leading=14
         )
         
         elements.append(Paragraph(
