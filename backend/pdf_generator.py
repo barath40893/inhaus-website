@@ -312,15 +312,19 @@ class PDFGenerator:
         canvas.restoreState()
     
     def _add_cover_page_background(self, canvas, doc):
-        """Add modern smart home interior background to cover page only"""
+        """Add light background cover page with three sections"""
         canvas.saveState()
         
         page_width, page_height = A4
         
-        # Define light grey color for top and bottom sections
-        light_grey_color = colors.HexColor('#E8E8E8')  # Light grey background
+        # Light color background for entire page
+        light_bg_color = colors.HexColor('#F5F5F5')  # Light grey background for whole page
         
-        # Add background image with grey sections
+        # Fill entire page with light background
+        canvas.setFillColor(light_bg_color)
+        canvas.rect(0, 0, page_width, page_height, fill=1, stroke=0)
+        
+        # Add interior image in middle section
         bg_image_url = 'https://images.unsplash.com/photo-1705321963943-de94bb3f0dd3'
         bg_image_path = Path('/tmp/cover_background.jpg')
         
@@ -330,34 +334,24 @@ class PDFGenerator:
                 import urllib.request
                 urllib.request.urlretrieve(bg_image_url, str(bg_image_path))
             
-            # Calculate dimensions - matching reference layout
-            header_height = 180  # Light grey header for logo
-            footer_height = 220  # Light grey footer for taglines
-            image_height = page_height - header_height - footer_height
+            # Calculate dimensions for three sections
+            top_height = 140  # Top section for logo
+            bottom_height = 280  # Bottom section for QUOTATION + text
+            middle_height = page_height - top_height - bottom_height  # Middle for image
             
-            # Draw TOP light grey section (for logo)
-            canvas.setFillColor(light_grey_color)
-            canvas.rect(0, page_height - header_height, page_width, header_height, fill=1, stroke=0)
-            
-            # Draw the interior image in middle
+            # Draw the interior image in middle section with slight padding
+            image_padding = 20  # Small padding around image
             canvas.drawImage(
                 str(bg_image_path),
-                0, footer_height,
-                width=page_width,
-                height=image_height,
+                image_padding, bottom_height + image_padding,
+                width=page_width - (2 * image_padding),
+                height=middle_height - (2 * image_padding),
                 preserveAspectRatio=True,
                 anchor='c'
             )
             
-            # Draw BOTTOM light grey section (for taglines)
-            canvas.setFillColor(light_grey_color)
-            canvas.rect(0, 0, page_width, footer_height, fill=1, stroke=0)
-            
         except Exception as e:
             logging.error(f"Failed to load cover background image: {str(e)}")
-            # Fallback to solid light grey background
-            canvas.setFillColor(light_grey_color)
-            canvas.rect(0, 0, page_width, page_height, fill=1, stroke=0)
         
         canvas.restoreState()
     
