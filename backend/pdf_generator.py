@@ -433,27 +433,6 @@ class PDFGenerator:
             elements.append(Paragraph(quote, tagline_style))
             elements.append(Spacer(1, 4))
         
-        elements.append(Spacer(1, 10))
-        
-        # Company info at bottom
-        footer_style = ParagraphStyle(
-            'CoverFooter',
-            parent=self.styles['Normal'],
-            fontSize=9,
-            textColor=colors.HexColor('#555555'),
-            alignment=TA_CENTER,
-            fontName='Helvetica',
-            leading=11
-        )
-        
-        elements.append(Paragraph(
-            f"<b>{settings_data.get('company_name', 'InHaus Smart Automation')}</b><br/>"
-            f"{settings_data.get('company_address', 'Shop No 207, 1st Floor, Kokapet Terminal, Gandipet, Hyderabad - 500075')}<br/>"
-            f"Phone: {settings_data.get('company_phone', '+91 7416925607')} | Email: {settings_data.get('company_email', 'support@inhaus.co.in')}<br/>"
-            f"Website: {settings_data.get('company_website', 'www.inhaus.co.in')}",
-            footer_style
-        ))
-        
         return elements
     
     def _create_customer_quote_page(self, quotation_data: dict):
