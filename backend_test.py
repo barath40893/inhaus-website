@@ -1546,7 +1546,7 @@ def run_all_tests():
     
     # Run tests in sequence (some depend on previous tests)
     test_results.append(("Admin Login", admin_login()))
-    test_results.append(("Final Cover Page Design with Screenshot", test_final_cover_page_design()))
+    test_results.append(("New Transparent Logo PDF Generation", test_new_transparent_logo_pdf()))
     
     # Summary
     print("\n" + "=" * 80)
