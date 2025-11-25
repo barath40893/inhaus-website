@@ -486,11 +486,15 @@ class PDFGenerator:
         story.extend(self._create_cover_page(quotation_data, settings_data))
         story.append(PageBreak())
         
-        # ========== SECOND PAGE: QUOTATION HEADING + PRODUCT DETAILS ==========
+        # ========== SECOND PAGE: QUOTATION HEADING + DETAILS + PRODUCT TABLES ==========
         # Add Quotation title on second page
         story.append(Spacer(1, 20))
         story.append(Paragraph("QUOTATION", self.title_style))
         story.append(Spacer(1, 15))
+        
+        # Add quotation details table (Quote No, Date, etc.)
+        story.extend(self._create_quotation_details_table(quotation_data))
+        story.append(Spacer(1, 20))
         
         # Group items by room/area
         items_by_room = {}
