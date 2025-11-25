@@ -1086,11 +1086,25 @@ class PDFGenerator:
         return elements
     
     def _create_summary_table(self, quotation_data: dict, items_by_room: dict):
-        """Create premium summary table for quotation"""
+        """Create summary table with room totals - premium styling"""
         elements = []
         
-        # Room-wise summary with elegant styling
-        data = [['S.No', 'Scope of Automation', 'Amount']]
+        # Header with consistent styling
+        header_style = ParagraphStyle(
+            'SummaryHeader',
+            parent=self.styles['Normal'],
+            fontSize=10,
+            textColor=colors.HexColor('#333333'),
+            fontName='Helvetica-Bold',
+            alignment=TA_CENTER,
+            leading=13
+        )
+        
+        data = [[
+            Paragraph('<b>S.No</b>', header_style),
+            Paragraph('<b>Scope of Automation</b>', header_style),
+            Paragraph('<b>Amount</b>', header_style)
+        ]]
         
         for idx, (room, items) in enumerate(items_by_room.items(), 1):
             room_total = sum(item['total_amount'] for item in items)
