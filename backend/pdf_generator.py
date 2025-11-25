@@ -108,61 +108,143 @@ class PDFGenerator:
         )
     
     def _add_premium_background(self, canvas, doc):
-        """Add premium background with WiFi automation graphics"""
+        """Add sophisticated premium background with modern UI/UX design"""
         canvas.saveState()
         
         page_width, page_height = A4
         
-        # ========== PREMIUM BACKGROUND ELEMENTS ==========
+        # ========== LAYER 1: SUBTLE GRADIENT OVERLAY ==========
+        # Top to bottom gradient effect (very subtle blue tint)
+        canvas.setFillAlpha(0.015)
+        num_gradient_steps = 50
+        for i in range(num_gradient_steps):
+            y = page_height - (i * page_height / num_gradient_steps)
+            height = page_height / num_gradient_steps
+            # Gradient from light blue at top to transparent at bottom
+            blue_intensity = 0.7 + (0.3 * i / num_gradient_steps)
+            canvas.setFillColorRGB(0.85, 0.90, blue_intensity)
+            canvas.rect(0, y, page_width, -height, fill=1, stroke=0)
         
-        # 1. Subtle corner decorations - WiFi signal pattern
+        # ========== LAYER 2: MODERN HEXAGON PATTERN (IoT Connected Home) ==========
+        canvas.setStrokeAlpha(0.02)
+        canvas.setStrokeColorRGB(0.3, 0.5, 0.7)
+        canvas.setLineWidth(1)
+        
+        # Create hexagon honeycomb pattern
+        hex_size = 40
+        for row in range(-2, int(page_height / hex_size) + 2):
+            for col in range(-2, int(page_width / hex_size) + 2):
+                x = col * hex_size * 1.5
+                y = row * hex_size * 0.866  # sqrt(3)/2
+                if col % 2:
+                    y += hex_size * 0.433
+                
+                # Draw hexagon
+                path = canvas.beginPath()
+                for i in range(6):
+                    angle = 60 * i
+                    import math
+                    px = x + hex_size * 0.5 * math.cos(math.radians(angle))
+                    py = y + hex_size * 0.5 * math.sin(math.radians(angle))
+                    if i == 0:
+                        path.moveTo(px, py)
+                    else:
+                        path.lineTo(px, py)
+                path.close()
+                canvas.drawPath(path, fill=0, stroke=1)
+        
+        # ========== LAYER 3: FLOWING CONNECTION LINES (Data Flow) ==========
+        canvas.setStrokeAlpha(0.03)
+        canvas.setLineWidth(1.5)
+        
+        # Diagonal flowing lines from top-left to bottom-right
+        for i in range(5):
+            x_start = -100 + (i * 150)
+            y_start = page_height + 100
+            x_end = page_width + 100
+            y_end = -100 + (i * 150)
+            
+            canvas.setStrokeColorRGB(0.2, 0.4, 0.8)
+            canvas.line(x_start, y_start, x_end, y_end)
+        
+        # ========== LAYER 4: PARTICLE EFFECT (IoT Network Nodes) ==========
+        canvas.setFillAlpha(0.04)
+        import random
+        random.seed(42)  # Consistent pattern
+        
+        for _ in range(80):
+            x = random.uniform(40, page_width - 40)
+            y = random.uniform(40, page_height - 40)
+            size = random.uniform(1, 3)
+            
+            # Vary colors - blues and greys
+            if random.random() > 0.5:
+                canvas.setFillColorRGB(0.2, 0.4, 0.8)  # Blue
+            else:
+                canvas.setFillColorRGB(0.4, 0.4, 0.5)  # Grey
+            
+            canvas.circle(x, y, size, fill=1, stroke=0)
+        
+        # ========== LAYER 5: ELEGANT CORNER FRAMES ==========
+        canvas.setStrokeAlpha(0.06)
+        canvas.setLineWidth(2)
+        canvas.setStrokeColorRGB(0.2, 0.4, 0.8)
+        
+        # Top-left corner frame
+        corner_size = 60
+        canvas.line(30, page_height - 30, 30 + corner_size, page_height - 30)
+        canvas.line(30, page_height - 30, 30, page_height - 30 - corner_size)
+        
+        # Top-right corner frame
+        canvas.line(page_width - 30, page_height - 30, page_width - 30 - corner_size, page_height - 30)
+        canvas.line(page_width - 30, page_height - 30, page_width - 30, page_height - 30 - corner_size)
+        
+        # Bottom-left corner frame
+        canvas.line(30, 30, 30 + corner_size, 30)
+        canvas.line(30, 30, 30, 30 + corner_size)
+        
+        # Bottom-right corner frame
+        canvas.line(page_width - 30, 30, page_width - 30 - corner_size, 30)
+        canvas.line(page_width - 30, 30, page_width - 30, 30 + corner_size)
+        
+        # ========== LAYER 6: SMART DEVICE ICONS ==========
         canvas.setFillAlpha(0.03)
         canvas.setStrokeAlpha(0.03)
-        canvas.setFillColorRGB(0.2, 0.4, 0.8)  # Light blue
         
-        # Top-left corner WiFi waves
-        canvas.setLineWidth(10)
-        canvas.setStrokeColorRGB(0.2, 0.4, 0.8)
-        for i in range(3):
-            radius = 50 + (i * 30)
-            canvas.circle(0, page_height, radius, stroke=1, fill=0)
+        # Light bulb icon (top-left, small)
+        bulb_x, bulb_y = 80, page_height - 100
+        canvas.setFillColorRGB(0.9, 0.7, 0.2)
+        canvas.circle(bulb_x, bulb_y, 8, fill=1, stroke=0)
+        canvas.rect(bulb_x - 3, bulb_y - 15, 6, 10, fill=1, stroke=0)
         
-        # Bottom-right corner WiFi waves
-        canvas.setLineWidth(10)
-        canvas.setStrokeColorRGB(0.2, 0.4, 0.8)
-        for i in range(3):
-            radius = 50 + (i * 30)
-            canvas.circle(page_width, 0, radius, stroke=1, fill=0)
+        # Thermostat icon (bottom-left)
+        therm_x, therm_y = 100, 100
+        canvas.setFillColorRGB(0.8, 0.3, 0.3)
+        canvas.circle(therm_x, therm_y, 10, fill=1, stroke=0)
+        canvas.circle(therm_x, therm_y, 5, fill=1, stroke=0)
         
-        # 2. Circuit board pattern - very subtle
-        canvas.setFillAlpha(0.02)
-        canvas.setStrokeAlpha(0.02)
-        canvas.setStrokeColorRGB(0.3, 0.3, 0.3)
-        canvas.setLineWidth(0.5)
-        
-        # Horizontal lines
-        for y_pos in range(100, int(page_height), 150):
-            canvas.line(50, y_pos, page_width - 50, y_pos)
-        
-        # Vertical lines
-        for x_pos in range(100, int(page_width), 150):
-            canvas.line(x_pos, 50, x_pos, page_height - 50)
-        
-        # Small circuit nodes at intersections
+        # Camera icon (top-right)
+        cam_x, cam_y = page_width - 100, page_height - 100
         canvas.setFillColorRGB(0.3, 0.3, 0.3)
-        for y_pos in range(100, int(page_height), 150):
-            for x_pos in range(100, int(page_width), 150):
-                canvas.circle(x_pos, y_pos, 2, fill=1)
+        canvas.rect(cam_x - 10, cam_y - 6, 20, 12, fill=1, stroke=0)
+        canvas.circle(cam_x, cam_y, 5, fill=0, stroke=1)
         
-        # 3. Center watermark - InHaus logo
+        # Speaker icon (bottom-right)
+        speak_x, speak_y = page_width - 100, 100
+        canvas.setFillColorRGB(0.2, 0.6, 0.4)
+        canvas.rect(speak_x - 8, speak_y - 10, 16, 20, fill=1, stroke=0)
+        canvas.circle(speak_x, speak_y + 3, 4, fill=0, stroke=1)
+        canvas.circle(speak_x, speak_y - 3, 4, fill=0, stroke=1)
+        
+        # ========== LAYER 7: CENTER LOGO WATERMARK ==========
         logo_path = Path('/app/frontend/public/inhaus/fulllogo_transparent_nobuffer.png')
         if logo_path.exists():
             try:
-                canvas.setFillAlpha(0.08)
-                canvas.setStrokeAlpha(0.08)
+                canvas.setFillAlpha(0.06)
+                canvas.setStrokeAlpha(0.06)
                 
-                watermark_width = 5.5 * inch
-                watermark_height = 2 * inch
+                watermark_width = 5 * inch
+                watermark_height = 1.8 * inch
                 
                 x = (page_width - watermark_width) / 2
                 y = (page_height - watermark_height) / 2
@@ -178,47 +260,23 @@ class PDFGenerator:
             except Exception as e:
                 logging.error(f"Failed to add watermark: {str(e)}")
         
-        # 4. WiFi icon in corners - subtle
-        canvas.setFillAlpha(0.04)
-        canvas.setStrokeAlpha(0.04)
-        canvas.setFillColorRGB(0.2, 0.5, 0.9)
+        # ========== LAYER 8: WIFI SIGNAL WAVES (Main Feature) ==========
+        canvas.setStrokeAlpha(0.05)
+        canvas.setLineWidth(3)
         canvas.setStrokeColorRGB(0.2, 0.5, 0.9)
         
-        # Top-right WiFi symbol - simple circles
-        wifi_x = page_width - 80
-        wifi_y = page_height - 80
+        # WiFi emanating from top-center
+        wifi_center_x = page_width / 2
+        wifi_center_y = page_height - 50
         
-        # WiFi waves (3 circles)
-        canvas.setLineWidth(2)
-        for i in range(3):
-            radius = 12 + (i * 6)
-            canvas.circle(wifi_x, wifi_y, radius, stroke=1, fill=0)
+        for i in range(5):
+            radius = 80 + (i * 35)
+            canvas.circle(wifi_center_x, wifi_center_y, radius, stroke=1, fill=0)
         
-        # WiFi dot
-        canvas.setFillAlpha(0.06)
-        canvas.circle(wifi_x, wifi_y, 3, stroke=0, fill=1)
-        
-        # 5. Smart home icon silhouette - bottom left
-        canvas.setFillAlpha(0.04)
-        house_x = 60
-        house_y = 60
-        
-        # Simple house shape
-        path = canvas.beginPath()
-        path.moveTo(house_x, house_y)
-        path.lineTo(house_x + 40, house_y)
-        path.lineTo(house_x + 40, house_y + 30)
-        path.lineTo(house_x, house_y + 30)
-        path.close()
-        canvas.drawPath(path, fill=1, stroke=0)
-        
-        # Roof
-        path2 = canvas.beginPath()
-        path2.moveTo(house_x - 5, house_y + 30)
-        path2.lineTo(house_x + 20, house_y + 45)
-        path2.lineTo(house_x + 45, house_y + 30)
-        path2.close()
-        canvas.drawPath(path2, fill=1, stroke=0)
+        # WiFi dot at center
+        canvas.setFillAlpha(0.08)
+        canvas.setFillColorRGB(0.2, 0.5, 0.9)
+        canvas.circle(wifi_center_x, wifi_center_y, 5, fill=1, stroke=0)
         
         canvas.restoreState()
     
