@@ -1224,13 +1224,8 @@ class PDFGenerator:
             ('BOTTOMPADDING', (0, 1), (-1, -2), 10),
         ]
         
-        # Add alternating row colors for room items
-        room_count = len(items_by_room)
-        for i in range(1, room_count + 1):
-            if i % 2 == 0:
-                style_commands.append(('BACKGROUND', (0, i), (-1, i), colors.white))
-            else:
-                style_commands.append(('BACKGROUND', (0, i), (-1, i), self.light_gray))
+        # NO alternating colors - all room rows have pure white background (transparent)
+        # This ensures Hall, Bed room, kitchen all look the same
         
         table.setStyle(TableStyle(style_commands))
         
