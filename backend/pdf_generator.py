@@ -335,8 +335,8 @@ class PDFGenerator:
                 urllib.request.urlretrieve(bg_image_url, str(bg_image_path))
             
             # Calculate dimensions for three sections
-            top_height = 200  # Top section for logo (increased from 140 to 200)
-            bottom_height = 260  # Bottom section for QUOTATION + text
+            top_height = 180  # Top section for logo
+            bottom_height = 280  # Bottom section for QUOTATION + text (increased for more space)
             middle_height = page_height - top_height - bottom_height  # Middle for image
             
             # Draw the interior image in middle section with slight padding
