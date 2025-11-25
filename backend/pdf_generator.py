@@ -362,10 +362,8 @@ class PDFGenerator:
         # ========== TOP SECTION: Logo on light background ==========
         elements.append(Spacer(1, 50))
         
-        # Try new transparent logo first, fallback to old logo
-        logo_path = Path('/app/backend/uploads/inhaus_logo_transparent.png')
-        if not logo_path.exists():
-            logo_path = Path('/app/frontend/public/inhaus/fulllogo_transparent_nobuffer.png')
+        # Use the original logo with better visibility
+        logo_path = Path('/app/frontend/public/inhaus/fulllogo_transparent_nobuffer.png')
         
         if logo_path.exists():
             try:
@@ -373,11 +371,11 @@ class PDFGenerator:
                     pil_img = PILImage.open(str(logo_path))
                     img_width, img_height = pil_img.size
                     aspect_ratio = img_height / img_width
-                    desired_width = 2.5 * inch
+                    desired_width = 3.5 * inch  # Increased size for better visibility
                     calculated_height = desired_width * aspect_ratio
-                    logo = Image(str(logo_path), width=desired_width, height=calculated_height, mask='auto')
+                    logo = Image(str(logo_path), width=desired_width, height=calculated_height)
                 else:
-                    logo = Image(str(logo_path), width=2.5*inch, height=0.55*inch)
+                    logo = Image(str(logo_path), width=3.5*inch, height=1.2*inch)
                 
                 logo.hAlign = 'CENTER'
                 elements.append(logo)
