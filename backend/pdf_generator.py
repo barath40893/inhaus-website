@@ -588,11 +588,11 @@ class PDFGenerator:
         story.extend(self._create_cover_page(quotation_data, settings_data))
         story.append(PageBreak())
         
-        # ========== PAGE 2: CUSTOMER DETAILS + QUOTE INFO ONLY ==========
+        # ========== PAGE 2+: CUSTOMER DETAILS, QUOTE INFO, PRODUCTS, SUMMARY ==========
         story.extend(self._create_customer_quote_page(quotation_data))
-        story.append(PageBreak())
+        story.append(Spacer(1, 30))
         
-        # ========== PAGE 3+: PRODUCT TABLES, SUMMARY, TERMS ==========
+        # Products start on same page or flow to next page naturally
         
         # Group items by room/area
         items_by_room = {}
