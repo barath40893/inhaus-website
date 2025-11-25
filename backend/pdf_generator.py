@@ -317,10 +317,10 @@ class PDFGenerator:
         
         page_width, page_height = A4
         
-        # Define light grey color for header section
+        # Define light grey color for top and bottom sections
         light_grey_color = colors.HexColor('#E8E8E8')  # Light grey background
         
-        # Add background image with text overlay at bottom
+        # Add background image with grey sections
         bg_image_url = 'https://images.unsplash.com/photo-1705321963943-de94bb3f0dd3'
         bg_image_path = Path('/tmp/cover_background.jpg')
         
@@ -330,36 +330,28 @@ class PDFGenerator:
                 import urllib.request
                 urllib.request.urlretrieve(bg_image_url, str(bg_image_path))
             
-            # Calculate dimensions
-            header_height = 100  # Light grey header for logo
-            image_height = page_height - header_height  # Rest for image
+            # Calculate dimensions - matching reference layout
+            header_height = 180  # Light grey header for logo
+            footer_height = 220  # Light grey footer for taglines
+            image_height = page_height - header_height - footer_height
             
-            # Draw TOP light grey header (for logo)
+            # Draw TOP light grey section (for logo)
             canvas.setFillColor(light_grey_color)
             canvas.rect(0, page_height - header_height, page_width, header_height, fill=1, stroke=0)
             
-            # Draw the interior image filling from bottom to below header
+            # Draw the interior image in middle
             canvas.drawImage(
                 str(bg_image_path),
-                0, 0,
+                0, footer_height,
                 width=page_width,
                 height=image_height,
                 preserveAspectRatio=True,
                 anchor='c'
             )
             
-            # Add dark gradient overlay at bottom for text readability
-            canvas.setFillColorRGB(0, 0, 0)
-            
-            # Create gradient effect - darker at bottom
-            overlay_height = 280  # Height of text area
-            num_steps = 40
-            for i in range(num_steps):
-                y = i * (overlay_height / num_steps)
-                alpha = 0.05 + (0.5 * (i / num_steps))  # Gradient from 0.05 to 0.55
-                canvas.setFillAlpha(alpha)
-                step_height = overlay_height / num_steps
-                canvas.rect(0, y, page_width, step_height, fill=1, stroke=0)
+            # Draw BOTTOM light grey section (for taglines)
+            canvas.setFillColor(light_grey_color)
+            canvas.rect(0, 0, page_width, footer_height, fill=1, stroke=0)
             
         except Exception as e:
             logging.error(f"Failed to load cover background image: {str(e)}")
