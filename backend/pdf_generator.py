@@ -360,7 +360,7 @@ class PDFGenerator:
         elements = []
         
         # ========== TOP SECTION: Logo on light background ==========
-        elements.append(Spacer(1, 50))
+        elements.append(Spacer(1, 45))
         
         # Use the original logo with 2 inch width
         logo_path = Path('/app/frontend/public/inhaus/fulllogo_transparent_nobuffer.png')
@@ -371,7 +371,7 @@ class PDFGenerator:
                     pil_img = PILImage.open(str(logo_path))
                     img_width, img_height = pil_img.size
                     aspect_ratio = img_height / img_width
-                    desired_width = 2 * inch  # Reduced to 2 inches to avoid overlap
+                    desired_width = 2 * inch  # 2 inches to avoid overlap
                     calculated_height = desired_width * aspect_ratio
                     logo = Image(str(logo_path), width=desired_width, height=calculated_height)
                 else:
@@ -383,14 +383,14 @@ class PDFGenerator:
                 logging.error(f"Failed to load logo on cover: {str(e)}")
         
         # Spacer after logo to separate from image
-        elements.append(Spacer(1, 50))
+        elements.append(Spacer(1, 45))
         
         # ========== MIDDLE SECTION: Interior image ==========
-        # This spacer represents the height of the image section (page_height - 200 top - 260 bottom = ~380)
-        elements.append(Spacer(1, 380))
+        # This spacer represents the height of the image section (~370px)
+        elements.append(Spacer(1, 370))
         
         # Spacer after image to separate from bottom text
-        elements.append(Spacer(1, 20))
+        elements.append(Spacer(1, 25))
         
         # ========== BOTTOM SECTION: QUOTATION + taglines + company info ==========
         
