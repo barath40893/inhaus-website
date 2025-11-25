@@ -929,9 +929,16 @@ async def create_quotation(input: QuotationCreate, payload: dict = Depends(verif
 
 @api_router.get("/quotations", response_model=List[Quotation])
 async def get_quotations(payload: dict = Depends(verify_token)):
-    """Get all quotations (admin only)"""
+    """Get quotations - admin sees all, users see only their own"""
     try:
-        quotations = await db.quotations.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+        is_admin = await check_admin(payload)
+        user_id = payload.get("user_id")
+        
+        # Admin sees all, users see only their created ones
+        if is_admin:
+            quotations = await db.quotations.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+        else:
+            quotations = await db.quotations.find({"created_by": user_id}, {"_id": 0}).sort("created_at", -1).to_list(1000)
         
         for quotation in quotations:
             if isinstance(quotation['created_at'], str):
