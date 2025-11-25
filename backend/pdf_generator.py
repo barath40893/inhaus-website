@@ -107,29 +107,68 @@ class PDFGenerator:
             fontName='Helvetica-Bold'
         )
     
-    def _add_watermark(self, canvas, doc):
-        """Add transparent logo watermark to each page - large and prominent"""
+    def _add_premium_background(self, canvas, doc):
+        """Add premium background with WiFi automation graphics"""
         canvas.saveState()
         
-        # Try to load and add watermark logo
+        page_width, page_height = A4
+        
+        # ========== PREMIUM BACKGROUND ELEMENTS ==========
+        
+        # 1. Subtle corner decorations - WiFi signal pattern
+        canvas.setFillAlpha(0.03)
+        canvas.setStrokeAlpha(0.03)
+        canvas.setFillColorRGB(0.2, 0.4, 0.8)  # Light blue
+        
+        # Top-left corner WiFi waves
+        for i in range(4):
+            radius = 60 + (i * 40)
+            canvas.arc(0, page_height, radius, radius, 270, 360)
+            canvas.setLineWidth(15)
+            canvas.setStrokeColorRGB(0.2, 0.4, 0.8)
+            canvas.stroke()
+        
+        # Bottom-right corner WiFi waves
+        for i in range(4):
+            radius = 60 + (i * 40)
+            canvas.arc(page_width, 0, radius, radius, 90, 180)
+            canvas.setLineWidth(15)
+            canvas.setStrokeColorRGB(0.2, 0.4, 0.8)
+            canvas.stroke()
+        
+        # 2. Circuit board pattern - very subtle
+        canvas.setFillAlpha(0.02)
+        canvas.setStrokeAlpha(0.02)
+        canvas.setStrokeColorRGB(0.3, 0.3, 0.3)
+        canvas.setLineWidth(0.5)
+        
+        # Horizontal lines
+        for y_pos in range(100, int(page_height), 150):
+            canvas.line(50, y_pos, page_width - 50, y_pos)
+        
+        # Vertical lines
+        for x_pos in range(100, int(page_width), 150):
+            canvas.line(x_pos, 50, x_pos, page_height - 50)
+        
+        # Small circuit nodes at intersections
+        canvas.setFillColorRGB(0.3, 0.3, 0.3)
+        for y_pos in range(100, int(page_height), 150):
+            for x_pos in range(100, int(page_width), 150):
+                canvas.circle(x_pos, y_pos, 2, fill=1)
+        
+        # 3. Center watermark - InHaus logo
         logo_path = Path('/app/frontend/public/inhaus/fulllogo_transparent_nobuffer.png')
         if logo_path.exists():
             try:
-                # Set transparency - slightly more visible like reference image
-                canvas.setFillAlpha(0.12)  # More visible watermark (was 0.08)
-                canvas.setStrokeAlpha(0.12)
+                canvas.setFillAlpha(0.08)
+                canvas.setStrokeAlpha(0.08)
                 
-                # Calculate center position
-                page_width, page_height = A4
-                
-                # LARGER watermark like in reference - almost full width
-                watermark_width = 5.5 * inch  # Increased from 4 inches
-                watermark_height = 2 * inch    # Increased from 1.5 inches
+                watermark_width = 5.5 * inch
+                watermark_height = 2 * inch
                 
                 x = (page_width - watermark_width) / 2
                 y = (page_height - watermark_height) / 2
                 
-                # Draw the watermark
                 canvas.drawImage(
                     str(logo_path),
                     x, y,
@@ -140,6 +179,48 @@ class PDFGenerator:
                 )
             except Exception as e:
                 logging.error(f"Failed to add watermark: {str(e)}")
+        
+        # 4. WiFi icon in corners - subtle
+        canvas.setFillAlpha(0.04)
+        canvas.setStrokeAlpha(0.04)
+        canvas.setFillColorRGB(0.2, 0.5, 0.9)
+        
+        # Top-right WiFi symbol
+        wifi_x = page_width - 80
+        wifi_y = page_height - 80
+        
+        # WiFi waves (3 arcs)
+        for i in range(3):
+            radius = 15 + (i * 8)
+            canvas.arc(wifi_x - radius, wifi_y - radius, wifi_x + radius, wifi_y + radius, 45, 135)
+            canvas.setLineWidth(3)
+            canvas.setStrokeColorRGB(0.2, 0.5, 0.9)
+            canvas.stroke()
+        
+        # WiFi dot
+        canvas.circle(wifi_x, wifi_y - 25, 3, fill=1)
+        
+        # 5. Smart home icon silhouette - bottom left
+        canvas.setFillAlpha(0.04)
+        house_x = 60
+        house_y = 60
+        
+        # Simple house shape
+        path = canvas.beginPath()
+        path.moveTo(house_x, house_y)
+        path.lineTo(house_x + 40, house_y)
+        path.lineTo(house_x + 40, house_y + 30)
+        path.lineTo(house_x, house_y + 30)
+        path.close()
+        canvas.drawPath(path, fill=1, stroke=0)
+        
+        # Roof
+        path2 = canvas.beginPath()
+        path2.moveTo(house_x - 5, house_y + 30)
+        path2.lineTo(house_x + 20, house_y + 45)
+        path2.lineTo(house_x + 45, house_y + 30)
+        path2.close()
+        canvas.drawPath(path2, fill=1, stroke=0)
         
         canvas.restoreState()
     
