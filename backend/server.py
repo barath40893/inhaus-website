@@ -248,6 +248,8 @@ class Quotation(BaseModel):
     # Status tracking
     status: str = "draft"  # draft, sent, accepted, rejected, converted
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_by: Optional[str] = None  # User ID who created this quotation
+    assigned_to: List[str] = []  # List of user IDs who can edit this quotation
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     sent_at: Optional[datetime] = None
     
