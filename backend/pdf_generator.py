@@ -190,27 +190,53 @@ class PDFGenerator:
             
             canvas.circle(x, y, size, fill=1, stroke=0)
         
-        # ========== LAYER 5: ELEGANT CORNER FRAMES ==========
-        canvas.setStrokeAlpha(0.06)
-        canvas.setLineWidth(2)
-        canvas.setStrokeColorRGB(0.2, 0.4, 0.8)
+        # ========== LAYER 5: PREMIUM CORNER FRAMES WITH METALLIC EFFECT ==========
+        # Double-line corners for luxury feel
+        canvas.setStrokeAlpha(0.08)
+        canvas.setLineWidth(3)
+        canvas.setStrokeColorRGB(0.15, 0.35, 0.7)  # Deeper blue
         
-        # Top-left corner frame
-        corner_size = 60
-        canvas.line(30, page_height - 30, 30 + corner_size, page_height - 30)
-        canvas.line(30, page_height - 30, 30, page_height - 30 - corner_size)
+        corner_size = 70
+        offset = 5  # For double line effect
         
-        # Top-right corner frame
-        canvas.line(page_width - 30, page_height - 30, page_width - 30 - corner_size, page_height - 30)
-        canvas.line(page_width - 30, page_height - 30, page_width - 30, page_height - 30 - corner_size)
+        # Top-left corner - outer lines
+        canvas.line(25, page_height - 25, 25 + corner_size, page_height - 25)
+        canvas.line(25, page_height - 25, 25, page_height - 25 - corner_size)
+        # Inner lines for depth
+        canvas.setLineWidth(1.5)
+        canvas.setStrokeAlpha(0.05)
+        canvas.line(25 + offset, page_height - 25 - offset, 25 + corner_size - offset, page_height - 25 - offset)
+        canvas.line(25 + offset, page_height - 25 - offset, 25 + offset, page_height - 25 - corner_size + offset)
         
-        # Bottom-left corner frame
-        canvas.line(30, 30, 30 + corner_size, 30)
-        canvas.line(30, 30, 30, 30 + corner_size)
+        # Top-right corner
+        canvas.setLineWidth(3)
+        canvas.setStrokeAlpha(0.08)
+        canvas.line(page_width - 25, page_height - 25, page_width - 25 - corner_size, page_height - 25)
+        canvas.line(page_width - 25, page_height - 25, page_width - 25, page_height - 25 - corner_size)
+        canvas.setLineWidth(1.5)
+        canvas.setStrokeAlpha(0.05)
+        canvas.line(page_width - 25 - offset, page_height - 25 - offset, page_width - 25 - corner_size + offset, page_height - 25 - offset)
+        canvas.line(page_width - 25 - offset, page_height - 25 - offset, page_width - 25 - offset, page_height - 25 - corner_size + offset)
         
-        # Bottom-right corner frame
-        canvas.line(page_width - 30, 30, page_width - 30 - corner_size, 30)
-        canvas.line(page_width - 30, 30, page_width - 30, 30 + corner_size)
+        # Bottom-left corner
+        canvas.setLineWidth(3)
+        canvas.setStrokeAlpha(0.08)
+        canvas.line(25, 25, 25 + corner_size, 25)
+        canvas.line(25, 25, 25, 25 + corner_size)
+        canvas.setLineWidth(1.5)
+        canvas.setStrokeAlpha(0.05)
+        canvas.line(25 + offset, 25 + offset, 25 + corner_size - offset, 25 + offset)
+        canvas.line(25 + offset, 25 + offset, 25 + offset, 25 + corner_size - offset)
+        
+        # Bottom-right corner
+        canvas.setLineWidth(3)
+        canvas.setStrokeAlpha(0.08)
+        canvas.line(page_width - 25, 25, page_width - 25 - corner_size, 25)
+        canvas.line(page_width - 25, 25, page_width - 25, 25 + corner_size)
+        canvas.setLineWidth(1.5)
+        canvas.setStrokeAlpha(0.05)
+        canvas.line(page_width - 25 - offset, 25 + offset, page_width - 25 - corner_size + offset, 25 + offset)
+        canvas.line(page_width - 25 - offset, 25 + offset, page_width - 25 - offset, 25 + corner_size - offset)
         
         # ========== LAYER 6: SMART DEVICE ICONS ==========
         canvas.setFillAlpha(0.03)
