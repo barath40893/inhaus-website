@@ -1106,9 +1106,46 @@ class PDFGenerator:
             Paragraph('<b>Amount</b>', header_style)
         ]]
         
+        # Content styling - consistent colors
+        sno_style = ParagraphStyle(
+            'SummaryNumber',
+            parent=self.styles['Normal'],
+            fontSize=10,
+            textColor=colors.HexColor('#333333'),
+            alignment=TA_CENTER,
+            leading=13
+        )
+        
+        room_style = ParagraphStyle(
+            'SummaryRoom',
+            parent=self.styles['Normal'],
+            fontSize=10,
+            textColor=colors.HexColor('#333333'),
+            alignment=TA_LEFT,
+            leading=13
+        )
+        
+        amount_style = ParagraphStyle(
+            'SummaryAmount',
+            parent=self.styles['Normal'],
+            fontSize=10,
+            textColor=colors.HexColor('#333333'),
+            fontName='Helvetica-Bold',
+            alignment=TA_RIGHT,
+            leading=13
+        )
+        
         for idx, (room, items) in enumerate(items_by_room.items(), 1):
             room_total = sum(item['total_amount'] for item in items)
-            data.append([str(idx), room, f"Rs.  {room_total:,.0f}"])
+            
+            # Highlight room name with background color
+            room_text = f"Scope of Automation - <b><font color='#FF6B35'>{room}</font></b>"
+            
+            data.append([
+                Paragraph(str(idx), sno_style),
+                Paragraph(room_text, room_style),
+                Paragraph(f"Rs.  {room_total:,.0f}", amount_style)
+            ])
         
         # Add spacing row
         data.append(['', '', ''])
