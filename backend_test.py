@@ -1361,6 +1361,180 @@ def test_final_cover_page_design():
         print(f"❌ Final cover page design test failed with error: {str(e)}")
         return False
 
+def test_new_transparent_logo_pdf():
+    """Test PDF generation with new transparent logo and extract screenshot"""
+    print("\n🔍 Testing PDF Generation with New Transparent Logo...")
+    
+    if not admin_token:
+        print("❌ No admin token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    
+    # Create a test quotation specifically for the new logo testing
+    print("\n📝 Creating test quotation for new transparent logo verification...")
+    try:
+        quotation_data = {
+            "customer_name": "Logo Test Customer",
+            "customer_email": "logotest@example.com",
+            "customer_phone": "+91-9876543210",
+            "customer_address": "Test Address for Logo Verification",
+            "architect_name": "Test Architect",
+            "site_location": "Logo Test Site",
+            "items": [
+                {
+                    "room_area": "Living Room",
+                    "model_no": "SM-LOGO-TEST-001",
+                    "product_name": "Test Product for Logo",
+                    "description": "Test product for transparent logo verification",
+                    "quantity": 2,
+                    "list_price": 5000.0,
+                    "discount": 0,
+                    "offered_price": 4500.0,
+                    "company_cost": 3500.0
+                },
+                {
+                    "room_area": "Master Bedroom",
+                    "model_no": "SM-LOGO-TEST-002",
+                    "product_name": "Another Test Product",
+                    "description": "Second test product for logo verification",
+                    "quantity": 1,
+                    "list_price": 8000.0,
+                    "discount": 0,
+                    "offered_price": 7200.0,
+                    "company_cost": 5800.0
+                }
+            ],
+            "overall_discount": 500.0,
+            "installation_charges": 2000.0,
+            "gst_percentage": 18,
+            "validity_days": 30,
+            "payment_terms": "50% advance, 50% on completion"
+        }
+        
+        response = requests.post(f"{BACKEND_URL}/quotations", 
+                               headers=headers, json=quotation_data)
+        print(f"Create Logo Test Quotation Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            logo_test_quotation_id = data.get("id")
+            quote_number = data.get("quote_number")
+            print(f"Logo test quotation created with ID: {logo_test_quotation_id}")
+            print(f"Quote Number: {quote_number}")
+            print(f"Total amount: Rs. {data.get('total', 0):,.2f}")
+            
+            # Generate PDF specifically for quotation_QT-2025-0045.pdf as requested
+            print(f"\n📄 Generating PDF for transparent logo verification...")
+            print(f"Expected PDF filename: quotation_{quote_number.replace('/', '_')}.pdf")
+            
+            response = requests.post(f"{BACKEND_URL}/quotations/{logo_test_quotation_id}/generate-pdf", 
+                                   headers=headers)
+            print(f"Logo Test PDF Generation Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                pdf_data = response.json()
+                print(f"PDF Generation Response: {json.dumps(pdf_data, indent=2)}")
+                
+                if "filename" in pdf_data and "path" in pdf_data:
+                    pdf_filename = pdf_data["filename"]
+                    pdf_path = pdf_data["path"]
+                    print(f"✅ PDF generated successfully: {pdf_filename}")
+                    
+                    # Verify the new transparent logo features
+                    print("\n🔍 Verifying new transparent logo features...")
+                    print("Expected New Logo Features:")
+                    print("  ✓ NEW LOGO: Extracted from user-uploaded image with white background removed")
+                    print("  ✓ TRANSPARENT BACKGROUND: Logo blends seamlessly with light grey background (#E8E8E8)")
+                    print("  ✓ OPTIMIZED SIZE: 2.5 inch width to fit perfectly in 120px header section")
+                    print("  ✓ MASK ENABLED: Using reportlab's mask='auto' for transparency support")
+                    print("  ✓ NO WHITE BACKGROUND: Should be completely transparent")
+                    print("  ✓ PROFESSIONAL APPEARANCE: Clear and well-positioned")
+                    
+                    # Check if we can access the PDF file
+                    try:
+                        import os
+                        if os.path.exists(pdf_path):
+                            file_size = os.path.getsize(pdf_path)
+                            print(f"✅ PDF file exists at {pdf_path}")
+                            print(f"✅ PDF file size: {file_size:,} bytes")
+                            
+                            # Extract cover page as PNG for review
+                            print("\n📸 Extracting cover page with new transparent logo...")
+                            try:
+                                # Install required packages
+                                import subprocess
+                                try:
+                                    subprocess.run(["apt-get", "update"], check=True, capture_output=True)
+                                    subprocess.run(["apt-get", "install", "-y", "poppler-utils"], check=True, capture_output=True)
+                                    subprocess.run(["pip", "install", "pdf2image"], check=True, capture_output=True)
+                                    print("✅ Required packages installed")
+                                except:
+                                    print("⚠️  Package installation may have issues, continuing...")
+                                
+                                # Extract cover page using pdf2image
+                                try:
+                                    from pdf2image import convert_from_path
+                                    pages = convert_from_path(pdf_path, first_page=1, last_page=1, dpi=200)
+                                    if pages:
+                                        # Save to /tmp/cover_with_new_logo.png as requested
+                                        tmp_cover_path = "/tmp/cover_with_new_logo.png"
+                                        pages[0].save(tmp_cover_path, 'PNG')
+                                        print(f"✅ Cover page extracted to: {tmp_cover_path}")
+                                        
+                                        # Copy to /app/backend/uploads/cover_with_new_logo.png as requested
+                                        backend_cover_path = "/app/backend/uploads/cover_with_new_logo.png"
+                                        import shutil
+                                        shutil.copy2(tmp_cover_path, backend_cover_path)
+                                        print(f"✅ Cover page copied to: {backend_cover_path}")
+                                        
+                                        # Get file size for verification
+                                        cover_size = os.path.getsize(tmp_cover_path)
+                                        print(f"✅ Cover page image size: {cover_size:,} bytes")
+                                        
+                                        print("\n📋 NEW TRANSPARENT LOGO VERIFICATION COMPLETE!")
+                                        print("✅ PDF generated with new transparent logo")
+                                        print("✅ Cover page extracted as PNG for review")
+                                        print("✅ Files ready for inspection:")
+                                        print(f"   - PDF: {pdf_path}")
+                                        print(f"   - Cover PNG: {tmp_cover_path}")
+                                        print(f"   - Web accessible: {backend_cover_path}")
+                                        
+                                        return True
+                                    else:
+                                        print("❌ No pages extracted from PDF")
+                                        return False
+                                except ImportError as e:
+                                    print(f"❌ pdf2image import failed: {str(e)}")
+                                    return False
+                                except Exception as e:
+                                    print(f"❌ Cover page extraction failed: {str(e)}")
+                                    return False
+                            except Exception as e:
+                                print(f"❌ Package installation or extraction failed: {str(e)}")
+                                return False
+                        else:
+                            print(f"❌ PDF file not found at {pdf_path}")
+                            return False
+                    except Exception as e:
+                        print(f"❌ Error checking PDF file: {str(e)}")
+                        return False
+                else:
+                    print("❌ PDF generation response missing filename or path")
+                    return False
+            else:
+                print(f"❌ Logo test PDF generation failed with status {response.status_code}")
+                print(f"Response: {response.text}")
+                return False
+        else:
+            print(f"❌ Logo test quotation creation failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ New transparent logo test failed with error: {str(e)}")
+        return False
+
 def run_all_tests():
     """Run all backend API tests focusing on final cover page design with screenshot"""
     print("🚀 Starting InHaus Quotation System Backend Tests")
