@@ -1536,9 +1536,9 @@ def test_new_transparent_logo_pdf():
         return False
 
 def run_all_tests():
-    """Run all backend API tests focusing on final cover page design with screenshot"""
+    """Run all backend API tests focusing on updated cover page reference layout"""
     print("🚀 Starting InHaus Quotation System Backend Tests")
-    print("Testing Final Cover Page Design with Screenshot Extraction")
+    print("Testing Updated Cover Page Reference Layout")
     print(f"Backend URL: {BACKEND_URL}")
     print("=" * 80)
     
@@ -1546,7 +1546,10 @@ def run_all_tests():
     
     # Run tests in sequence (some depend on previous tests)
     test_results.append(("Admin Login", admin_login()))
-    test_results.append(("New Transparent Logo PDF Generation", test_new_transparent_logo_pdf()))
+    
+    # Only run the reference layout test as requested
+    if admin_token:
+        test_results.append(("Updated Cover Page Reference Layout", test_updated_cover_page_reference_layout()))
     
     # Summary
     print("\n" + "=" * 80)
@@ -1586,7 +1589,7 @@ def run_all_tests():
                 print(f"  • {test_name}")
     
     if failed == 0:
-        print("\n🎉 All tests passed! Product image upload and PDF enhancements are working correctly.")
+        print("\n🎉 All tests passed! Updated cover page reference layout is working correctly.")
         return True
     else:
         print(f"\n⚠️  {failed} test(s) failed! Please check the implementation.")
