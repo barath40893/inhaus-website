@@ -364,9 +364,10 @@ class PDFGenerator:
         """Create branded cover page with modern interior background"""
         elements = []
         
-        elements.append(Spacer(1, 100))
+        # Small top spacing to position logo in grey area
+        elements.append(Spacer(1, 30))
         
-        # Large logo centered with white background for visibility
+        # Logo at top in grey area
         logo_path = Path('/app/frontend/public/inhaus/fulllogo_transparent_nobuffer.png')
         if logo_path.exists():
             try:
@@ -374,43 +375,43 @@ class PDFGenerator:
                     pil_img = PILImage.open(str(logo_path))
                     img_width, img_height = pil_img.size
                     aspect_ratio = img_height / img_width
-                    desired_width = 4 * inch
+                    desired_width = 3.5 * inch
                     calculated_height = desired_width * aspect_ratio
                     logo = Image(str(logo_path), width=desired_width, height=calculated_height)
                 else:
-                    logo = Image(str(logo_path), width=4*inch, height=1.4*inch)
+                    logo = Image(str(logo_path), width=3.5*inch, height=1.2*inch)
                 
                 logo.hAlign = 'CENTER'
                 elements.append(logo)
-                elements.append(Spacer(1, 60))
+                elements.append(Spacer(1, 30))
             except Exception as e:
                 logging.error(f"Failed to load logo on cover: {str(e)}")
         
-        # QUOTATION heading with white color for dark background
+        # QUOTATION heading below logo with white color
         title_style = ParagraphStyle(
             'CoverTitle',
             parent=self.styles['Heading1'],
-            fontSize=42,
+            fontSize=48,
             textColor=colors.white,
             alignment=TA_CENTER,
             fontName='Helvetica-Bold',
-            leading=50,
-            spaceBefore=30,
-            spaceAfter=40
+            leading=56,
+            spaceBefore=10,
+            spaceAfter=50
         )
         
         elements.append(Paragraph("QUOTATION", title_style))
-        elements.append(Spacer(1, 60))
+        elements.append(Spacer(1, 80))
         
-        # Company tagline with white color
+        # Company tagline with white color - visible on the image
         tagline_style = ParagraphStyle(
             'CoverTagline',
             parent=self.styles['Normal'],
-            fontSize=15,
+            fontSize=16,
             textColor=colors.white,
             alignment=TA_CENTER,
-            fontName='Helvetica',
-            leading=22,
+            fontName='Helvetica-Bold',
+            leading=24,
             leftIndent=60,
             rightIndent=60
         )
@@ -423,7 +424,7 @@ class PDFGenerator:
         
         for quote in branding_quotes:
             elements.append(Paragraph(quote, tagline_style))
-            elements.append(Spacer(1, 18))
+            elements.append(Spacer(1, 20))
         
         # Push footer to bottom
         elements.append(Spacer(1, 180))
