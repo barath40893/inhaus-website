@@ -562,7 +562,7 @@ class PDFGenerator:
         return elements
     
     def generate_quotation_pdf(self, quotation_data: dict, settings_data: dict, output_path: str):
-        """Generate a professional quotation PDF with attractive first page and watermark"""
+        """Generate a professional quotation PDF with multi-page structure"""
         doc = SimpleDocTemplate(
             output_path,
             pagesize=A4,
@@ -574,49 +574,15 @@ class PDFGenerator:
         
         story = []
         
-        # ========== FIRST PAGE: COVER PAGE WITH BRANDING ==========
+        # ========== PAGE 1: COVER PAGE WITH BACKGROUND ==========
         story.extend(self._create_cover_page(quotation_data, settings_data))
         story.append(PageBreak())
         
-        # ========== SECOND PAGE: CUSTOMER + QUOTE DETAILS + PRODUCT TABLES ==========
-        story.append(Spacer(1, 15))
+        # ========== PAGE 2: CUSTOMER DETAILS + QUOTE INFO ONLY ==========
+        story.extend(self._create_customer_quote_page(quotation_data))
+        story.append(PageBreak())
         
-        # Prepared For section
-        prepared_for_style = ParagraphStyle(
-            'PreparedFor',
-            parent=self.styles['Normal'],
-            fontSize=12,
-            textColor=colors.HexColor('#1A1A1A'),
-            fontName='Helvetica-Bold',
-            alignment=TA_LEFT,
-            spaceBefore=5,
-            spaceAfter=10
-        )
-        
-        story.append(Paragraph("<b>PREPARED FOR:</b>", prepared_for_style))
-        
-        # Customer details (simple text format)
-        customer_style = ParagraphStyle(
-            'CustomerDetail',
-            parent=self.styles['Normal'],
-            fontSize=10,
-            textColor=colors.HexColor('#333333'),
-            alignment=TA_LEFT,
-            leading=14
-        )
-        
-        customer_info = f"<b>Name:</b> {quotation_data['customer_name']}<br/>"
-        customer_info += f"<b>Email:</b> {quotation_data['customer_email']}"
-        
-        if quotation_data.get('customer_phone'):
-            customer_info += f"<br/><b>Phone:</b> {quotation_data['customer_phone']}"
-        
-        story.append(Paragraph(customer_info, customer_style))
-        story.append(Spacer(1, 20))
-        
-        # Add quotation details table (Quote No, Date, etc.)
-        story.extend(self._create_quotation_details_table(quotation_data))
-        story.append(Spacer(1, 20))
+        # ========== PAGE 3+: PRODUCT TABLES, SUMMARY, TERMS ==========
         
         # Group items by room/area
         items_by_room = {}
