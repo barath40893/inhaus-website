@@ -13,20 +13,27 @@ const ProtectedRoute = ({ children, requireAdmin = true }) => {
   
   useEffect(() => {
     const checkAuth = async () => {
+      console.log('[ProtectedRoute] Starting authentication check...');
       const token = localStorage.getItem('adminToken');
       
       if (!token) {
+        console.log('[ProtectedRoute] No token found - redirecting to login');
         setAuthState({ checking: false, authenticated: false, role: null });
         return;
       }
 
+      console.log('[ProtectedRoute] Token found, validating with backend...');
       // Validate token with backend
-      const { valid, role } = await validateToken();
+      const { valid, role, user } = await validateToken();
+      
+      console.log('[ProtectedRoute] Validation result:', { valid, role });
       
       if (!valid) {
+        console.error('[ProtectedRoute] Token validation failed - redirecting to login');
         localStorage.removeItem('adminToken');
         setAuthState({ checking: false, authenticated: false, role: null });
       } else {
+        console.log('[ProtectedRoute] Authentication successful');
         setAuthState({ checking: false, authenticated: true, role });
       }
     };
