@@ -84,7 +84,10 @@ const ProtectedRoute = ({ children, requireAdmin = true }) => {
   
   return (
     <>
-      {children}
+      <AdminHeader />
+      <div className="min-h-screen bg-gray-50">
+        {children}
+      </div>
       {showWarning && (
         <InactivityWarning
           remainingTime={remainingTime}
