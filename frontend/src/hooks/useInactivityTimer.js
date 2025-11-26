@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5 minutes in milliseconds
@@ -12,20 +12,20 @@ export const useInactivityTimer = () => {
   const warningTimeoutRef = useRef(null);
   const countdownIntervalRef = useRef(null);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem('adminToken');
-    clearAllTimers();
-    navigate('/admin/login');
-  }, [navigate]);
-
-  const clearAllTimers = () => {
+  const clearAllTimers = useRef(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     if (warningTimeoutRef.current) clearTimeout(warningTimeoutRef.current);
     if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
     setShowWarning(false);
-  };
+  }).current;
 
-  const startCountdown = useCallback(() => {
+  const logout = useRef(() => {
+    localStorage.removeItem('adminToken');
+    clearAllTimers();
+    navigate('/admin/login');
+  }).current;
+
+  const startCountdown = useRef(() => {
     setRemainingTime(60);
     countdownIntervalRef.current = setInterval(() => {
       setRemainingTime((prev) => {
@@ -37,9 +37,9 @@ export const useInactivityTimer = () => {
         return prev - 1;
       });
     }, 1000);
-  }, [logout]);
+  }).current;
 
-  const resetTimer = useCallback(() => {
+  const resetTimer = useRef(() => {
     clearAllTimers();
 
     // Set warning timer (show popup 60 seconds before logout)
@@ -52,12 +52,12 @@ export const useInactivityTimer = () => {
     timeoutRef.current = setTimeout(() => {
       logout();
     }, INACTIVITY_TIMEOUT);
-  }, [logout, startCountdown]);
+  }).current;
 
-  const handleStayLoggedIn = useCallback(() => {
+  const handleStayLoggedIn = useRef(() => {
     clearAllTimers();
     resetTimer();
-  }, [resetTimer]);
+  }).current;
 
   useEffect(() => {
     // Check if user is logged in
@@ -67,7 +67,7 @@ export const useInactivityTimer = () => {
     // Events that indicate user activity
     const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
 
-    // Reset timer on any user activity
+    // Reset timer on any user activity (but not during warning)
     const handleActivity = () => {
       if (!showWarning) {
         resetTimer();
@@ -76,7 +76,7 @@ export const useInactivityTimer = () => {
 
     // Add event listeners
     events.forEach((event) => {
-      window.addEventListener(event, handleActivity);
+      window.addEventListener(event, handleActivity, { passive: true });
     });
 
     // Start initial timer
@@ -89,7 +89,7 @@ export const useInactivityTimer = () => {
       });
       clearAllTimers();
     };
-  }, [resetTimer, showWarning]);
+  }, []); // Empty dependency array - only run once
 
   return {
     showWarning,
