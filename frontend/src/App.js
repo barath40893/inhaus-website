@@ -63,6 +63,7 @@ function App() {
             <Route path="/smart-hospitality" element={<SmartHospitalityPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/terms" element={<TermsPage />} />
+            <Route path="/admin" element={<Navigate to="/admin/quotations" replace />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin/contacts" element={<ProtectedRoute><AdminContactsPage /></ProtectedRoute>} />
             <Route path="/admin/quotations" element={<ProtectedRoute><AdminQuotationsPage /></ProtectedRoute>} />
