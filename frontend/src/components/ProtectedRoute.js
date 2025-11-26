@@ -44,6 +44,9 @@ const ProtectedRoute = ({ children, requireAdmin = true }) => {
   
   const { showWarning, remainingTime, handleStayLoggedIn, logout } = useInactivityTimer();
   
+  // CRITICAL: Use immediate redirect for security - no rendering before auth check
+  // This prevents any protected content from rendering before authentication is verified
+  
   // Show loading state while checking authentication
   if (authState.checking) {
     return (
@@ -56,13 +59,18 @@ const ProtectedRoute = ({ children, requireAdmin = true }) => {
     );
   }
   
-  // Not authenticated - redirect to login
+  // Not authenticated - IMMEDIATE redirect using window.location for security
   if (!authState.authenticated) {
-    return <Navigate to="/admin/login" replace />;
+    console.error('[ProtectedRoute] Not authenticated - redirecting to login');
+    // Use window.location for immediate redirect - more secure than Navigate component
+    window.location.href = '/admin/login';
+    // Return null to prevent any rendering during redirect
+    return null;
   }
   
   // Check if admin access is required
   if (requireAdmin && authState.role !== 'admin') {
+    console.error('[ProtectedRoute] Not admin - access denied');
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center max-w-md mx-auto p-8">
@@ -81,6 +89,8 @@ const ProtectedRoute = ({ children, requireAdmin = true }) => {
       </div>
     );
   }
+  
+  console.log('[ProtectedRoute] Authentication successful - rendering protected content');
   
   return (
     <>
