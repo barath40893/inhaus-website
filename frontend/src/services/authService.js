@@ -1,22 +1,44 @@
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+// Get API URL - works for both relative and absolute paths
+const getApiUrl = () => {
+  // If REACT_APP_BACKEND_URL is set, use it (for production)
+  if (process.env.REACT_APP_BACKEND_URL) {
+    return process.env.REACT_APP_BACKEND_URL;
+  }
+  // Otherwise use relative path (works in same domain deployment)
+  return '';
+};
+
+const API_URL = getApiUrl();
 
 export const validateToken = async () => {
   try {
     const token = localStorage.getItem('adminToken');
     if (!token) {
+      console.log('[Auth] No token found');
       return { valid: false, role: null, user: null };
     }
 
+    console.log('[Auth] Validating token with backend...');
+    console.log('[Auth] API URL:', API_URL);
+
     // Call /api/auth/me to validate token and get user info
-    const response = await fetch(`${API_URL}/api/auth/me`, {
+    const url = `${API_URL}/api/auth/me`;
+    console.log('[Auth] Calling:', url);
+    
+    const response = await fetch(url, {
+      method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
-      }
+      },
+      credentials: 'include'
     });
+
+    console.log('[Auth] Response status:', response.status);
 
     if (response.ok) {
       const user = await response.json();
+      console.log('[Auth] Token valid, user:', user.email, 'role:', user.role);
       return { 
         valid: true, 
         role: user.role, 
@@ -24,13 +46,17 @@ export const validateToken = async () => {
       };
     } else if (response.status === 401 || response.status === 403) {
       // Token is invalid or expired
+      console.error('[Auth] Token invalid or expired');
       localStorage.removeItem('adminToken');
       return { valid: false, role: null, user: null };
     } else {
+      console.error('[Auth] Unexpected response:', response.status);
       return { valid: false, role: null, user: null };
     }
   } catch (error) {
-    console.error('Token validation error:', error);
+    console.error('[Auth] Token validation error:', error);
+    // If network error, don't allow access
+    localStorage.removeItem('adminToken');
     return { valid: false, role: null, user: null };
   }
 };
