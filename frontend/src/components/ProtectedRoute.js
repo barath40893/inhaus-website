@@ -18,8 +18,9 @@ const ProtectedRoute = ({ children, requireAdmin = true }) => {
       const token = localStorage.getItem('adminToken');
       
       if (!token) {
-        console.log('[ProtectedRoute] No token found - redirecting to login');
-        setAuthState({ checking: false, authenticated: false, role: null });
+        console.log('[ProtectedRoute] No token found - immediate redirect');
+        // Immediate redirect if no token - don't even set state
+        window.location.href = '/admin/login';
         return;
       }
 
@@ -30,9 +31,10 @@ const ProtectedRoute = ({ children, requireAdmin = true }) => {
       console.log('[ProtectedRoute] Validation result:', { valid, role });
       
       if (!valid) {
-        console.error('[ProtectedRoute] Token validation failed - redirecting to login');
+        console.error('[ProtectedRoute] Token validation failed - immediate redirect');
         localStorage.removeItem('adminToken');
-        setAuthState({ checking: false, authenticated: false, role: null });
+        window.location.href = '/admin/login';
+        return;
       } else {
         console.log('[ProtectedRoute] Authentication successful');
         setAuthState({ checking: false, authenticated: true, role });
