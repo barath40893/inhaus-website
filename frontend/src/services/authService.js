@@ -1,11 +1,24 @@
-// Get API URL - works for both relative and absolute paths
+// Smart API URL detection - works in both preview and production
 const getApiUrl = () => {
-  // If REACT_APP_BACKEND_URL is set, use it (for production)
-  if (process.env.REACT_APP_BACKEND_URL) {
-    return process.env.REACT_APP_BACKEND_URL;
+  const hostname = window.location.hostname;
+  
+  // If running on inhaus.co.in (production), use same domain
+  if (hostname === 'inhaus.co.in' || hostname === 'www.inhaus.co.in') {
+    return 'https://inhaus.co.in';
   }
-  // Otherwise use relative path (works in same domain deployment)
-  return '';
+  
+  // If running on preview URL, use preview backend
+  if (hostname.includes('inhaus-quote.preview.emergentagent.com')) {
+    return 'https://inhaus-quote.preview.emergentagent.com';
+  }
+  
+  // For localhost development
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:8001';
+  }
+  
+  // Fallback to environment variable or relative path
+  return process.env.REACT_APP_BACKEND_URL || '';
 };
 
 const API_URL = getApiUrl();
