@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useInactivityTimer } from '../hooks/useInactivityTimer';
 import InactivityWarning from './InactivityWarning';
+import AdminHeader from './AdminHeader';
 import { validateToken } from '../services/authService';
 
 const ProtectedRoute = ({ children, requireAdmin = true }) => {
