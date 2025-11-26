@@ -614,6 +614,36 @@ async def register_user(user_data: UserRegister):
         logger.error(f"Error registering user: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.get("/auth/me")
+async def get_current_user(payload: dict = Depends(verify_token)):
+    """Get current user information"""
+    try:
+        user_email = payload.get("sub")
+        user_id = payload.get("user_id")
+        user_role = payload.get("role", "admin")
+        
+        # Check if it's the main admin
+        if user_email == ADMIN_USERNAME:
+            return {
+                "id": "admin",
+                "email": user_email,
+                "name": "Admin",
+                "role": "admin",
+                "status": "approved"
+            }
+        
+        # Get user from database
+        user = await db.users.find_one({"id": user_id}, {"_id": 0, "password_hash": 0})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        return user
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching current user: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.get("/users", response_model=List[dict])
 async def get_users(payload: dict = Depends(verify_token)):
     """Get all users (admin only)"""
