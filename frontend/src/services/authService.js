@@ -4,11 +4,11 @@ export const validateToken = async () => {
   try {
     const token = localStorage.getItem('adminToken');
     if (!token) {
-      return { valid: false, role: null };
+      return { valid: false, role: null, user: null };
     }
 
-    // Call a protected endpoint to validate token
-    const response = await fetch(`${API_URL}/api/quotations`, {
+    // Call /api/auth/me to validate token and get user info
+    const response = await fetch(`${API_URL}/api/auth/me`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -16,20 +16,22 @@ export const validateToken = async () => {
     });
 
     if (response.ok) {
-      // Token is valid, decode to get role from response
-      // For now, we consider any valid token as admin
-      // In future, you can add a /api/me endpoint to get user details
-      return { valid: true, role: 'admin' };
+      const user = await response.json();
+      return { 
+        valid: true, 
+        role: user.role, 
+        user: user 
+      };
     } else if (response.status === 401 || response.status === 403) {
       // Token is invalid or expired
       localStorage.removeItem('adminToken');
-      return { valid: false, role: null };
+      return { valid: false, role: null, user: null };
     } else {
-      return { valid: false, role: null };
+      return { valid: false, role: null, user: null };
     }
   } catch (error) {
     console.error('Token validation error:', error);
-    return { valid: false, role: null };
+    return { valid: false, role: null, user: null };
   }
 };
 
