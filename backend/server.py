@@ -183,6 +183,7 @@ class ProductMasterUpdate(BaseModel):
 class QuotationItem(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     room_area: str  # e.g., "Hall", "Master Bedroom"
+    switchboard_name: Optional[str] = None  # e.g., "4 Modular", "6 Modular", "Main Board"
     product_id: Optional[str] = None  # Reference to product master
     model_no: str
     product_name: str
@@ -195,9 +196,11 @@ class QuotationItem(BaseModel):
     company_cost: float
     total_amount: float  # offered_price * quantity
     total_company_cost: float  # company_cost * quantity
+    is_custom: bool = False  # True if cloned and edited
 
 class QuotationItemCreate(BaseModel):
     room_area: str
+    switchboard_name: Optional[str] = None
     product_id: Optional[str] = None
     model_no: str
     product_name: str
@@ -208,6 +211,7 @@ class QuotationItemCreate(BaseModel):
     discount: float = 0
     offered_price: float
     company_cost: float
+    is_custom: bool = False
 
 class Quotation(BaseModel):
     model_config = ConfigDict(extra="ignore")
