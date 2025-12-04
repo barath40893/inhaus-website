@@ -126,8 +126,63 @@ const AdminCreateQuotationPage = () => {
       list_price: product.list_price,
       offered_price: product.list_price,
       company_cost: product.company_cost,
-      image_url: product.image_url || null
+      image_url: product.image_url || null,
+      is_custom: false
     });
+  };
+  
+  const cloneAndEditProduct = (product) => {
+    setNewItem({
+      ...newItem,
+      model_no: product.model_no + ' (Custom)',
+      product_name: product.name,
+      description: product.description,
+      list_price: product.list_price,
+      offered_price: product.list_price,
+      company_cost: product.company_cost,
+      image_url: product.image_url || null,
+      is_custom: true
+    });
+    setEditMode(true);
+  };
+  
+  const editExistingItem = (index) => {
+    const item = formData.items[index];
+    setNewItem({
+      room_area: item.room_area,
+      switchboard_name: item.switchboard_name || '',
+      model_no: item.model_no,
+      product_name: item.product_name,
+      description: item.description,
+      quantity: item.quantity,
+      list_price: item.list_price,
+      discount: item.discount,
+      offered_price: item.offered_price,
+      company_cost: item.company_cost,
+      image_url: item.image_url,
+      is_custom: item.is_custom || false
+    });
+    setEditingItemIndex(index);
+    setEditMode(true);
+  };
+  
+  const cancelEdit = () => {
+    setNewItem({
+      room_area: '',
+      switchboard_name: '',
+      model_no: '',
+      product_name: '',
+      description: '',
+      quantity: 1,
+      list_price: 0,
+      discount: 0,
+      offered_price: 0,
+      company_cost: 0,
+      image_url: null,
+      is_custom: false
+    });
+    setEditMode(false);
+    setEditingItemIndex(null);
   };
 
   const calculateTotals = () => {
