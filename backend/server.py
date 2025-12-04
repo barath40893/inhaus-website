@@ -1448,17 +1448,24 @@ async def download_invoice_pdf(invoice_id: str, payload: dict = Depends(verify_t
         if not settings:
             settings = Settings().model_dump()
         
-        # Generate PDF
-        pdf_filename = f"invoice_{invoice['invoice_number'].replace('/', '_')}.pdf"
+        # Generate PDF with timestamp to ensure uniqueness
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        pdf_filename = f"invoice_{invoice['invoice_number'].replace('/', '_')}_{timestamp}.pdf"
         pdf_path = PDF_DIR / pdf_filename
         
         # Always regenerate PDF to ensure latest data
         pdf_generator.generate_invoice_pdf(invoice, settings, str(pdf_path))
         
+        # Return with strict no-cache headers
         return FileResponse(
             path=str(pdf_path),
             media_type='application/pdf',
-            filename=pdf_filename
+            filename=f"invoice_{invoice['invoice_number'].replace('/', '_')}.pdf",
+            headers={
+                'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            }
         )
     except HTTPException:
         raise
