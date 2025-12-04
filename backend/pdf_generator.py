@@ -1291,8 +1291,18 @@ class PDFGenerator:
             leading=13
         )
         
-        for idx, (room, items) in enumerate(items_by_room.items(), 1):
-            room_total = sum(item['total_amount'] for item in items)
+        for idx, (room, switchboards) in enumerate(items_by_room.items(), 1):
+            # Handle nested switchboard structure
+            all_items_in_room = []
+            if isinstance(switchboards, dict):
+                # Flatten all items from all switchboards in this room
+                for switchboard_items in switchboards.values():
+                    all_items_in_room.extend(switchboard_items)
+            else:
+                # Fallback for flat structure (shouldn't happen but safety)
+                all_items_in_room = switchboards if isinstance(switchboards, list) else []
+            
+            room_total = sum(item['total_amount'] for item in all_items_in_room)
             
             # Highlight room name with background color
             room_text = f"Scope of Automation - <b><font color='#FF6B35'>{room}</font></b>"
