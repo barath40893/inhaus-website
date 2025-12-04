@@ -515,9 +515,22 @@ const AdminCreateQuotationPage = () => {
                           <td className="px-4 py-2 text-sm">₹{item.offered_price}</td>
                           <td className="px-4 py-2 text-sm">₹{(item.offered_price * item.quantity).toFixed(2)}</td>
                           <td className="px-4 py-2 text-sm">
-                            <button type="button" onClick={() => removeItem(idx)} className="text-red-600 hover:text-red-800">
-                              Remove
-                            </button>
+                            <div className="flex gap-2">
+                              <button 
+                                type="button" 
+                                onClick={() => editExistingItem(idx)} 
+                                className="text-blue-600 hover:text-blue-800"
+                              >
+                                Edit
+                              </button>
+                              <button 
+                                type="button" 
+                                onClick={() => removeItem(idx)} 
+                                className="text-red-600 hover:text-red-800"
+                              >
+                                Remove
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
