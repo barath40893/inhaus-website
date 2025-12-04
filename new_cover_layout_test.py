@@ -12,7 +12,7 @@ from datetime import datetime
 import uuid
 
 # Get backend URL from frontend .env file
-BACKEND_URL = "https://inhaus-quote.preview.emergentagent.com/api"
+BACKEND_URL = "https://inhaus-quotes.preview.emergentagent.com/api"
 
 # Admin credentials
 ADMIN_USERNAME = "barath40893@gmail.com"

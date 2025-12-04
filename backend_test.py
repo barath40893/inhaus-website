@@ -16,7 +16,7 @@ import io
 from PIL import Image as PILImage
 
 # Get backend URL from frontend .env file
-BACKEND_URL = "https://inhaus-quote.preview.emergentagent.com/api"
+BACKEND_URL = "https://inhaus-quotes.preview.emergentagent.com/api"
 
 # Admin credentials from environment
 ADMIN_USERNAME = "barath40893@gmail.com"
@@ -280,7 +280,7 @@ def test_static_files_access():
     # Test accessing uploaded image via static files route
     try:
         # Convert /api/uploads/products/filename to full URL
-        static_url = f"https://inhaus-quote.preview.emergentagent.com{uploaded_image_url}"
+        static_url = f"https://inhaus-quotes.preview.emergentagent.com{uploaded_image_url}"
         
         response = requests.get(static_url)
         print(f"Static File Access Status Code: {response.status_code}")
