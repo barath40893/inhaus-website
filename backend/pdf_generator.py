@@ -1321,7 +1321,7 @@ class PDFGenerator:
         
         if quotation_data.get('overall_discount', 0) > 0:
             data.append(['', Paragraph('<font color="#DC2626">Discount</font>', self.normal_style), 
-                        f"<font color='#DC2626'>- Rs.  {quotation_data['overall_discount']:,.0f}</font>"])
+                        Paragraph(f"<font color='#DC2626'>- Rs.  {quotation_data['overall_discount']:,.0f}</font>", self.normal_style)])
             data.append(['', Paragraph('<b>Net Quote</b>', self.bold_style), f"Rs.  {quotation_data['net_quote']:,.0f}"])
         
         if quotation_data.get('installation_charges', 0) > 0:
