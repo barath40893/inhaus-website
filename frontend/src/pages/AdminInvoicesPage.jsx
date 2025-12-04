@@ -64,8 +64,13 @@ const AdminInvoicesPage = () => {
         }
       });
       
+      // CRITICAL FIX: Clone response immediately to prevent "Body already consumed" error
+      // This protects against browser extensions or injected scripts consuming the response
+      const responseClone = response.clone();
+      
       if (response.ok) {
         try {
+          // Use original response for success case
           const result = await response.json();
           if (result.email_sent) {
             alert('Invoice sent successfully via email!');
@@ -80,10 +85,10 @@ const AdminInvoicesPage = () => {
         alert('Session expired. Please login again.');
         navigate('/admin/login');
       } else {
-        // Read response only once
+        // Use cloned response for error case
         let errorMessage = 'Failed to send invoice';
         try {
-          const errorText = await response.text();
+          const errorText = await responseClone.text();
           const errorJson = JSON.parse(errorText);
           errorMessage = errorJson.detail || errorMessage;
         } catch (e) {
@@ -106,10 +111,15 @@ const AdminInvoicesPage = () => {
         return;
       }
 
-      const response = await fetch(`${backendUrl}/api/invoices/${invoiceId}/download-pdf`, {
+      // Add cache-busting parameter to ensure fresh PDF is downloaded
+      const timestamp = new Date().getTime();
+      const response = await fetch(`${backendUrl}/api/invoices/${invoiceId}/download-pdf?t=${timestamp}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         }
       });
       
