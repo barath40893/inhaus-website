@@ -475,8 +475,12 @@ const AdminCreateQuotationPage = () => {
                 <input type="text" value={newItem.description} onChange={(e) => setNewItem({...newItem, description: e.target.value})} className="w-full px-4 py-2 border rounded-lg" />
               </div>
               <div className="flex items-end">
-                <button type="button" onClick={addItem} className="w-full px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600">
-                  + Add
+                <button 
+                  type="button" 
+                  onClick={addItem} 
+                  className="w-full px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+                >
+                  {editingItemIndex !== null ? '✓ Update Item' : '+ Add Item'}
                 </button>
               </div>
             </div>
