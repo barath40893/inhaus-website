@@ -406,14 +406,45 @@ const AdminCreateQuotationPage = () => {
               </div>
             </div>
 
+            {editMode && (
+              <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg flex justify-between items-center">
+                <span className="text-sm font-medium text-orange-800">
+                  {editingItemIndex !== null ? '✏️ Editing Item' : '🔧 Custom Product Mode'}
+                </span>
+                <button 
+                  type="button" 
+                  onClick={cancelEdit} 
+                  className="px-3 py-1 text-sm bg-gray-500 text-white rounded hover:bg-gray-600"
+                >
+                  Cancel Edit
+                </button>
+              </div>
+            )}
+            
             <div className="grid grid-cols-6 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Room/Area*</label>
                 <input type="text" value={newItem.room_area} onChange={(e) => setNewItem({...newItem, room_area: e.target.value})} className="w-full px-4 py-2 border rounded-lg" placeholder="Hall" />
               </div>
               <div>
+                <label className="block text-sm font-medium mb-2">Switchboard Name</label>
+                <input 
+                  type="text" 
+                  value={newItem.switchboard_name} 
+                  onChange={(e) => setNewItem({...newItem, switchboard_name: e.target.value})} 
+                  className="w-full px-4 py-2 border rounded-lg" 
+                  placeholder="4 Modular, Main Board" 
+                />
+              </div>
+              <div>
                 <label className="block text-sm font-medium mb-2">Model No*</label>
-                <input type="text" value={newItem.model_no} onChange={(e) => setNewItem({...newItem, model_no: e.target.value})} className="w-full px-4 py-2 border rounded-lg" />
+                <input 
+                  type="text" 
+                  value={newItem.model_no} 
+                  onChange={(e) => setNewItem({...newItem, model_no: e.target.value})} 
+                  className="w-full px-4 py-2 border rounded-lg" 
+                  disabled={!editMode && !newItem.is_custom}
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Product Name*</label>
