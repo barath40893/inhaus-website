@@ -94,12 +94,25 @@ const AdminCreateQuotationPage = () => {
       alert('Please fill required fields');
       return;
     }
-    setFormData({
-      ...formData,
-      items: [...formData.items, { ...newItem }]
-    });
+    if (editingItemIndex !== null) {
+      // Update existing item
+      const updatedItems = [...formData.items];
+      updatedItems[editingItemIndex] = { ...newItem };
+      setFormData({
+        ...formData,
+        items: updatedItems
+      });
+      setEditingItemIndex(null);
+    } else {
+      // Add new item
+      setFormData({
+        ...formData,
+        items: [...formData.items, { ...newItem }]
+      });
+    }
     setNewItem({
       room_area: '',
+      switchboard_name: '',
       model_no: '',
       product_name: '',
       description: '',
@@ -108,8 +121,10 @@ const AdminCreateQuotationPage = () => {
       discount: 0,
       offered_price: 0,
       company_cost: 0,
-      image_url: null
+      image_url: null,
+      is_custom: false
     });
+    setEditMode(false);
   };
 
   const removeItem = (index) => {
