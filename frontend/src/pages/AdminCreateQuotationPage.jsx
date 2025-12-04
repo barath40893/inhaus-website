@@ -372,12 +372,36 @@ const AdminCreateQuotationPage = () => {
             {/* Product Selector */}
             <div className="mb-4 p-4 bg-gray-50 rounded-lg">
               <label className="block text-sm font-medium mb-2">Quick Select from Product Master</label>
-              <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto">
+              <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
                 {products.map(p => (
-                  <button key={p.id} type="button" onClick={() => selectProduct(p)} className="p-2 text-sm border rounded hover:bg-blue-50 text-left">
-                    <div className="font-semibold">{p.model_no}</div>
-                    <div className="text-xs text-gray-600">{p.name}</div>
-                  </button>
+                  <div key={p.id} className="border rounded-lg p-3 bg-white">
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex-1">
+                        <div className="font-semibold text-sm">{p.model_no}</div>
+                        <div className="text-xs text-gray-600">{p.name}</div>
+                        <div className="text-xs text-gray-500">₹{p.list_price}</div>
+                      </div>
+                      {p.image_url && (
+                        <img src={`${process.env.REACT_APP_BACKEND_URL}${p.image_url}`} alt={p.name} className="w-12 h-12 object-cover rounded ml-2" />
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <button 
+                        type="button" 
+                        onClick={() => selectProduct(p)} 
+                        className="flex-1 px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                      >
+                        Use As-Is
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => cloneAndEditProduct(p)} 
+                        className="flex-1 px-3 py-1 text-xs bg-orange-500 text-white rounded hover:bg-orange-600"
+                      >
+                        Clone & Edit
+                      </button>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
