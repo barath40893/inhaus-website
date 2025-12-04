@@ -594,16 +594,28 @@ class PDFGenerator:
         
         # Products start on same page or flow to next page naturally
         
-        # Group items by room/area
+        # Group items by room/area and then by switchboard
         items_by_room = {}
         for item in quotation_data['items']:
             room = item['room_area']
+            switchboard = item.get('switchboard_name', None)
+            
             if room not in items_by_room:
-                items_by_room[room] = []
-            items_by_room[room].append(item)
+                items_by_room[room] = {}
+            
+            # Group by switchboard within room
+            if switchboard:
+                if switchboard not in items_by_room[room]:
+                    items_by_room[room][switchboard] = []
+                items_by_room[room][switchboard].append(item)
+            else:
+                # Items without switchboard go into a default group
+                if 'General' not in items_by_room[room]:
+                    items_by_room[room]['General'] = []
+                items_by_room[room]['General'].append(item)
         
-        # Create table for each room with enhanced section heading
-        for room, items in items_by_room.items():
+        # Create table for each room and switchboard
+        for room, switchboards in items_by_room.items():
             # Room heading with orange-highlighted area name
             room_heading = Paragraph(
                 f'<font size=14 color="#000000"><b>Scope of Automation - </b></font><font size=14 color="#FF6B35"><b>{room}</b></font>',
@@ -618,12 +630,34 @@ class PDFGenerator:
                     borderColor=self.primary_color,
                     borderWidth=0,
                     borderPadding=0,
-                    keepWithNext=True  # Keep heading with table
+                    keepWithNext=True
                 )
             )
             story.append(room_heading)
-            story.extend(self._create_items_table(items))
-            story.append(Spacer(1, 18))
+            
+            # For each switchboard in the room
+            for switchboard_name, items in switchboards.items():
+                # Only show switchboard heading if it's not "General"
+                if switchboard_name != 'General':
+                    switchboard_heading = Paragraph(
+                        f'<font size=11 color="#555555"><i>{switchboard_name}</i></font>',
+                        ParagraphStyle(
+                            'SwitchboardHeading',
+                            parent=self.normal_style,
+                            fontSize=11,
+                            textColor=colors.HexColor('#555555'),
+                            fontName='Helvetica-Oblique',
+                            spaceBefore=5,
+                            spaceAfter=5,
+                            leftIndent=15
+                        )
+                    )
+                    story.append(switchboard_heading)
+                
+                story.extend(self._create_items_table(items))
+                story.append(Spacer(1, 12))
+            
+            story.append(Spacer(1, 6))
         
         # Summary - NO PAGE BREAK, continue flowing
         story.append(Spacer(1, 30))
