@@ -490,6 +490,7 @@ const AdminCreateQuotationPage = () => {
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Room</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Switchboard</th>
                         <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Model</th>
                         <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Product</th>
                         <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Qty</th>
@@ -500,9 +501,15 @@ const AdminCreateQuotationPage = () => {
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {formData.items.map((item, idx) => (
-                        <tr key={idx}>
+                        <tr key={idx} className={item.is_custom ? 'bg-orange-50' : ''}>
                           <td className="px-4 py-2 text-sm">{item.room_area}</td>
-                          <td className="px-4 py-2 text-sm">{item.model_no}</td>
+                          <td className="px-4 py-2 text-sm text-gray-600">
+                            {item.switchboard_name || '-'}
+                          </td>
+                          <td className="px-4 py-2 text-sm">
+                            {item.model_no}
+                            {item.is_custom && <span className="ml-1 text-xs text-orange-600">✏️</span>}
+                          </td>
                           <td className="px-4 py-2 text-sm">{item.product_name}</td>
                           <td className="px-4 py-2 text-sm">{item.quantity}</td>
                           <td className="px-4 py-2 text-sm">₹{item.offered_price}</td>
