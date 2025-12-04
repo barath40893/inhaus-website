@@ -28,6 +28,7 @@ const AdminCreateQuotationPage = () => {
 
   const [newItem, setNewItem] = useState({
     room_area: '',
+    switchboard_name: '',
     model_no: '',
     product_name: '',
     description: '',
@@ -36,8 +37,12 @@ const AdminCreateQuotationPage = () => {
     discount: 0,
     offered_price: 0,
     company_cost: 0,
-    image_url: null
+    image_url: null,
+    is_custom: false
   });
+  
+  const [editMode, setEditMode] = useState(false); // For clone and edit
+  const [editingItemIndex, setEditingItemIndex] = useState(null);
 
   useEffect(() => {
     checkAuth();
