@@ -1065,14 +1065,25 @@ class PDFGenerator:
         
         # Add items with professional blue-grey styling
         for idx, item in enumerate(items, 1):
+            # CRITICAL: Validate item is a dictionary
+            if not isinstance(item, dict):
+                logging.error(f"Skipping invalid item in detailed table: {type(item)}")
+                continue
+            
             # Smart truncation for description
-            desc = item['description']
+            desc = item.get('description', '')
             if len(desc) > 70:
                 desc = desc[:70] + '...'
             
             # Product details - left aligned with hierarchy
+            product_name = item.get('product_name', 'Unknown')
+            model_no = item.get('model_no', '')
+            quantity = item.get('quantity', 0)
+            offered_price = item.get('offered_price', 0)
+            total_amount = item.get('total_amount', 0)
+            
             product_para = Paragraph(
-                f"<font size=10 color='#333333'><b>{item['product_name']}</b></font><br/>"
+                f"<font size=10 color='#333333'><b>{product_name}</b></font><br/>"
                 f"<font size=9 color='#666666'>{desc}</font>", 
                 content_style
             )
