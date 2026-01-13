@@ -1102,8 +1102,9 @@ class PDFGenerator:
                 right_style
             )
             
-            # Handle product image with rounded corners effect
-            image_cell = ''
+            # Handle product image with proper visibility
+            image_cell = Paragraph('<font size=7 color="#999999">—</font>', center_style)  # Default
+            
             if item.get('image_url'):
                 try:
                     # Convert URL path to file system path
@@ -1115,31 +1116,46 @@ class PDFGenerator:
                         image_path = Path(image_url)
                     
                     if image_path.exists():
-                        # Create image with proper sizing and aspect ratio
+                        # Create image with proper sizing - ENSURE MINIMUM VISIBLE SIZE
                         if PIL_AVAILABLE:
                             pil_img = PILImage.open(str(image_path))
                             img_width, img_height = pil_img.size
-                            aspect_ratio = img_height / img_width
                             
-                            # Set optimal dimensions for table cell
-                            desired_width = 0.65 * inch
-                            calculated_height = desired_width * aspect_ratio
+                            # Calculate aspect ratio
+                            aspect_ratio = img_height / img_width if img_width > 0 else 1
                             
-                            # Limit height to maintain table consistency
-                            max_height = 0.65 * inch
-                            if calculated_height > max_height:
-                                calculated_height = max_height
-                                desired_width = calculated_height / aspect_ratio
+                            # Set target dimensions - MINIMUM 0.5 inch to ensure visibility
+                            target_width = 0.6 * inch
+                            target_height = 0.6 * inch
                             
-                            image_cell = Image(str(image_path), width=desired_width, height=calculated_height)
+                            # Maintain aspect ratio while fitting in available space
+                            if aspect_ratio > 1:  # Portrait
+                                calculated_width = target_height / aspect_ratio
+                                calculated_height = target_height
+                            else:  # Landscape or square
+                                calculated_width = target_width
+                                calculated_height = target_width * aspect_ratio
+                            
+                            # Ensure minimum dimensions for visibility
+                            min_size = 0.45 * inch
+                            if calculated_width < min_size:
+                                calculated_width = min_size
+                            if calculated_height < min_size:
+                                calculated_height = min_size
+                            
+                            # Create the image with calculated dimensions
+                            image_cell = Image(str(image_path), width=calculated_width, height=calculated_height)
+                            logging.info(f"Product image loaded: {image_url} ({img_width}x{img_height}px -> {calculated_width}x{calculated_height} in PDF)")
                         else:
-                            # Fallback without PIL
-                            image_cell = Image(str(image_path), width=0.65*inch, height=0.65*inch)
+                            # Fallback without PIL - use fixed size
+                            image_cell = Image(str(image_path), width=0.6*inch, height=0.6*inch)
+                            logging.info(f"Product image loaded (no PIL): {image_url}")
+                    else:
+                        logging.warning(f"Product image file not found: {image_path}")
+                        image_cell = Paragraph('<font size=7 color="#999999">No Image</font>', center_style)
                 except Exception as e:
-                    logging.error(f"Failed to load product image: {str(e)}")
-                    image_cell = Paragraph('<font size=7 color="#999999">No Image</font>', center_style)
-            else:
-                image_cell = Paragraph('<font size=7 color="#999999">—</font>', center_style)
+                    logging.error(f"Failed to load product image {item.get('image_url')}: {str(e)}")
+                    image_cell = Paragraph('<font size=7 color="#999999">Image Error</font>', center_style)
             
             # Append row with all cells properly aligned
             data.append([
