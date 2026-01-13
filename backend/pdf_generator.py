@@ -597,7 +597,12 @@ class PDFGenerator:
         # Group items by room/area and then by switchboard
         items_by_room = {}
         for item in quotation_data['items']:
-            room = item['room_area']
+            # Validate item is a dictionary
+            if not isinstance(item, dict):
+                logging.error(f"Invalid item type in quotation: {type(item)}. Expected dict, got: {item}")
+                continue  # Skip invalid items
+            
+            room = item.get('room_area', 'Unspecified')
             switchboard = item.get('switchboard_name', None)
             
             if room not in items_by_room:
