@@ -1102,7 +1102,7 @@ class PDFGenerator:
                 right_style
             )
             
-            # Handle product image with proper visibility
+            # Handle product image with proper aspect ratio and visibility
             image_cell = Paragraph('<font size=7 color="#999999">—</font>', center_style)  # Default
             
             if item.get('image_url'):
@@ -1116,27 +1116,62 @@ class PDFGenerator:
                         image_path = Path(image_url)
                     
                     if image_path.exists():
-                        # Create image with FIXED VISIBLE SIZE - no aspect ratio issues
-                        # Use a consistent, visible size for all product images
-                        image_width = 0.55 * inch  # Fixed width
-                        image_height = 0.55 * inch  # Fixed height (square for consistency)
+                        # Calculate proper dimensions maintaining aspect ratio
+                        # Maximum space available in table cell
+                        max_width = 0.7 * inch  # Max width for image column
+                        max_height = 0.7 * inch  # Max height to keep table rows reasonable
                         
                         if PIL_AVAILABLE:
                             try:
-                                # Verify it's a valid image
+                                # Get actual image dimensions
                                 pil_img = PILImage.open(str(image_path))
                                 img_width, img_height = pil_img.size
                                 
-                                # Create image with FIXED size (no complex aspect ratio math)
-                                image_cell = Image(str(image_path), width=image_width, height=image_height)
-                                logging.info(f"Product image loaded: {image_url} ({img_width}x{img_height}px -> {image_width}x{image_height} inches)")
+                                # Calculate aspect ratio
+                                aspect_ratio = img_width / img_height
+                                
+                                # Calculate dimensions that fit in available space while maintaining aspect ratio
+                                if img_width > img_height:
+                                    # Landscape - fit by width
+                                    calculated_width = max_width
+                                    calculated_height = max_width / aspect_ratio
+                                    
+                                    # If height exceeds max, scale down
+                                    if calculated_height > max_height:
+                                        calculated_height = max_height
+                                        calculated_width = max_height * aspect_ratio
+                                else:
+                                    # Portrait or square - fit by height
+                                    calculated_height = max_height
+                                    calculated_width = max_height * aspect_ratio
+                                    
+                                    # If width exceeds max, scale down
+                                    if calculated_width > max_width:
+                                        calculated_width = max_width
+                                        calculated_height = max_width / aspect_ratio
+                                
+                                # Ensure minimum visibility (images shouldn't be too tiny)
+                                min_dimension = 0.4 * inch
+                                if calculated_width < min_dimension and calculated_height < min_dimension:
+                                    # Scale up to minimum while maintaining aspect ratio
+                                    if aspect_ratio > 1:
+                                        calculated_width = min_dimension
+                                        calculated_height = min_dimension / aspect_ratio
+                                    else:
+                                        calculated_height = min_dimension
+                                        calculated_width = min_dimension * aspect_ratio
+                                
+                                # Create the image with calculated dimensions
+                                image_cell = Image(str(image_path), width=calculated_width, height=calculated_height)
+                                logging.info(f"Product image: {image_url} ({img_width}x{img_height}px) -> {calculated_width:.2f}x{calculated_height:.2f} inches in PDF")
+                                
                             except Exception as e:
                                 logging.error(f"PIL error for {image_url}: {str(e)}")
-                                # Fallback to fixed size without PIL validation
-                                image_cell = Image(str(image_path), width=image_width, height=image_height)
+                                # Fallback to fixed size if PIL fails
+                                image_cell = Image(str(image_path), width=0.6*inch, height=0.6*inch)
                         else:
-                            # No PIL - use fixed size
-                            image_cell = Image(str(image_path), width=image_width, height=image_height)
+                            # No PIL - use reasonable default size
+                            image_cell = Image(str(image_path), width=0.6*inch, height=0.6*inch)
                             logging.info(f"Product image loaded (no PIL): {image_url}")
                     else:
                         logging.warning(f"Product image file not found: {image_path}")
