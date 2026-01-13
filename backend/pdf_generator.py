@@ -1090,7 +1090,7 @@ class PDFGenerator:
             
             # Model number - centered
             model_para = Paragraph(
-                f"<font size=10 color='#333333'>{item['model_no']}</font>",
+                f"<font size=10 color='#333333'>{model_no}</font>",
                 center_style
             )
             
@@ -1102,19 +1102,19 @@ class PDFGenerator:
             
             # Quantity - right aligned
             qty_para = Paragraph(
-                f"<font size=10 color='#333333'>{str(item['quantity'])}</font>",
+                f"<font size=10 color='#333333'>{str(quantity)}</font>",
                 right_style
             )
             
             # Prices - right aligned
             price_para = Paragraph(
-                f"<font size=10 color='#333333'>Rs. {item['offered_price']:,.0f}</font>",
+                f"<font size=10 color='#333333'>Rs. {offered_price:,.0f}</font>",
                 right_style
             )
             
             # Total amount - right aligned and bold
             amount_para = Paragraph(
-                f"<font size=10 color='#333333'><b>Rs. {item['total_amount']:,.0f}</b></font>",
+                f"<font size=10 color='#333333'><b>Rs. {total_amount:,.0f}</b></font>",
                 right_style
             )
             
