@@ -1732,4 +1732,276 @@ logger = logging.getLogger(__name__)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
+
+
+# ============= E-COMMERCE MODELS =============
+
+class CartItem(BaseModel):
+    product_id: str
+    product_name: str
+    model_no: str
+    image_url: Optional[str] = None
+    price: float
+    quantity: int
+    total: float
+
+class OrderItem(BaseModel):
+    product_id: str
+    product_name: str
+    model_no: str
+    image_url: Optional[str] = None
+    list_price: float
+    company_cost: float
+    quantity: int
+    total_price: float
+    total_cost: float
+
+class CustomerInfo(BaseModel):
+    name: str
+    email: EmailStr
+    phone: str
+    address: str
+    city: str
+    state: str
+    pincode: str
+
+class Order(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    order_number: str
+    customer: CustomerInfo
+    items: List[OrderItem]
+    subtotal: float
+    tax_percentage: float = 18.0
+    tax_amount: float
+    total: float
+    profit_margin: float
+    total_cost: float
+    payment_method: str  # 'razorpay', 'cod', 'manual'
+    payment_status: str = 'pending'  # 'pending', 'paid', 'failed'
+    payment_id: Optional[str] = None
+    order_status: str = 'pending'  # 'pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CheckoutRequest(BaseModel):
+    customer: CustomerInfo
+    items: List[CartItem]
+    payment_method: str
+
+# ============= E-COMMERCE / SHOP ENDPOINTS (PUBLIC) =============
+
+@api_router.get("/shop/products")
+async def get_shop_products():
+    """Get all products for shop - PUBLIC endpoint (no profit/cost data)"""
+    try:
+        products = await db.products.find(
+            {},
+            {
+                "_id": 0,
+                "id": 1,
+                "name": 1,
+                "model_no": 1,
+                "description": 1,
+                "category": 1,
+                "image_url": 1,
+                "list_price": 1,  # Only show selling price, not cost
+                "created_at": 1
+            }
+        ).to_list(1000)
+        
+        return products
+    except Exception as e:
+        logger.error(f"Error fetching shop products: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.post("/shop/checkout")
+async def create_order(checkout: CheckoutRequest):
+    """Create new order from shop checkout - PUBLIC endpoint"""
+    try:
+        # Generate order number
+        order_count = await db.orders.count_documents({})
+        order_number = f"ORD-{datetime.now().year}-{order_count + 1:04d}"
+        
+        # Calculate order totals and profit
+        order_items = []
+        subtotal = 0
+        total_cost = 0
+        
+        for cart_item in checkout.items:
+            # Get full product details including cost
+            product = await db.products.find_one({"id": cart_item.product_id}, {"_id": 0})
+            
+            if not product:
+                raise HTTPException(status_code=404, detail=f"Product {cart_item.product_id} not found")
+            
+            item_total = product['list_price'] * cart_item.quantity
+            item_cost = product['company_cost'] * cart_item.quantity
+            
+            order_item = OrderItem(
+                product_id=cart_item.product_id,
+                product_name=product['name'],
+                model_no=product['model_no'],
+                image_url=product.get('image_url'),
+                list_price=product['list_price'],
+                company_cost=product['company_cost'],
+                quantity=cart_item.quantity,
+                total_price=item_total,
+                total_cost=item_cost
+            )
+            
+            order_items.append(order_item)
+            subtotal += item_total
+            total_cost += item_cost
+        
+        # Calculate tax and total
+        tax_amount = subtotal * 0.18  # 18% GST
+        total = subtotal + tax_amount
+        profit_margin = total - total_cost - tax_amount
+        
+        # Create order
+        order = Order(
+            order_number=order_number,
+            customer=checkout.customer,
+            items=order_items,
+            subtotal=subtotal,
+            tax_amount=tax_amount,
+            total=total,
+            profit_margin=profit_margin,
+            total_cost=total_cost,
+            payment_method=checkout.payment_method,
+            payment_status='pending' if checkout.payment_method == 'razorpay' else 'pending',
+            order_status='pending'
+        )
+        
+        # Save to database
+        await db.orders.insert_one(order.model_dump())
+        
+        logger.info(f"Order created: {order_number} for customer: {checkout.customer.email}")
+        
+        return {
+            "success": True,
+            "order_id": order.id,
+            "order_number": order_number,
+            "total": total,
+            "message": "Order created successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating order: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ============= ADMIN ORDERS ENDPOINTS (WITH PROFIT DATA) =============
+
+@api_router.get("/admin/orders")
+async def get_admin_orders(payload: dict = Depends(verify_token)):
+    """Get all orders with profit data - ADMIN ONLY"""
+    try:
+        orders = await db.orders.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+        
+        # Convert datetime to ISO format
+        for order in orders:
+            if isinstance(order.get('created_at'), datetime):
+                order['created_at'] = order['created_at'].isoformat()
+            if isinstance(order.get('updated_at'), datetime):
+                order['updated_at'] = order['updated_at'].isoformat()
+        
+        return orders
+    except Exception as e:
+        logger.error(f"Error fetching orders: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.get("/admin/orders/{order_id}")
+async def get_order_details(order_id: str, payload: dict = Depends(verify_token)):
+    """Get order details with profit - ADMIN ONLY"""
+    try:
+        order = await db.orders.find_one({"id": order_id}, {"_id": 0})
+        
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        # Convert datetime to ISO format
+        if isinstance(order.get('created_at'), datetime):
+            order['created_at'] = order['created_at'].isoformat()
+        if isinstance(order.get('updated_at'), datetime):
+            order['updated_at'] = order['updated_at'].isoformat()
+        
+        return order
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching order: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.put("/admin/orders/{order_id}/status")
+async def update_order_status(
+    order_id: str,
+    status: dict,
+    payload: dict = Depends(verify_token)
+):
+    """Update order status - ADMIN ONLY"""
+    try:
+        result = await db.orders.update_one(
+            {"id": order_id},
+            {
+                "$set": {
+                    "order_status": status.get('order_status'),
+                    "payment_status": status.get('payment_status', None),
+                    "updated_at": datetime.now(timezone.utc)
+                }
+            }
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        return {"message": "Order status updated successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating order status: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.get("/admin/orders/{order_id}/download-invoice")
+async def download_order_invoice(order_id: str, payload: dict = Depends(verify_token)):
+    """Download invoice PDF for an order - ADMIN ONLY"""
+    try:
+        # Get order
+        order = await db.orders.find_one({"id": order_id}, {"_id": 0})
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        # Get settings
+        settings = await db.settings.find_one({"id": "company_settings"}, {"_id": 0})
+        if not settings:
+            settings = Settings().model_dump()
+        
+        # Generate invoice PDF
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        pdf_filename = f"invoice_{order['order_number'].replace('/', '_')}_{timestamp}.pdf"
+        pdf_path = PDF_DIR / pdf_filename
+        
+        # Use invoice generator (we'll create this)
+        pdf_generator.generate_order_invoice(order, settings, str(pdf_path))
+        
+        # Return with no-cache headers
+        return FileResponse(
+            path=str(pdf_path),
+            media_type='application/pdf',
+            filename=f"invoice_{order['order_number'].replace('/', '_')}.pdf",
+            headers={
+                'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            }
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error downloading invoice: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
     client.close()
