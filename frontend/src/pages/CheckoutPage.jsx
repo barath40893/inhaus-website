@@ -1,271 +1,292 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { useCart } from '../context/CartContext';
-import { Trash2, Plus, Minus, CreditCard, ShoppingBag } from 'lucide-react';
-import { useToast } from '../hooks/use-toast';
+import { motion } from 'framer-motion';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
-  const { cartItems, updateQuantity, removeFromCart, getCartTotal, clearCart } = useCart();
-  const { toast } = useToast();
+  const [cart, setCart] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: '',
+    name: '',
     email: '',
     phone: '',
     address: '',
     city: '',
     state: '',
     pincode: '',
+    payment_method: 'cod'
   });
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
-  const handleInputChange = (e) => {
+  useEffect(() => {
+    loadCart();
+  }, []);
+
+  const loadCart = () => {
+    const savedCart = localStorage.getItem('shopping_cart');
+    if (savedCart) {
+      const parsedCart = JSON.parse(savedCart);
+      if (parsedCart.length === 0) {
+        navigate('/shop');
+      }
+      setCart(parsedCart);
+    } else {
+      navigate('/shop');
+    }
+  };
+
+  const getSubtotal = () => {
+    return cart.reduce((sum, item) => sum + item.total, 0);
+  };
+
+  const getTax = () => {
+    return getSubtotal() * 0.18;
+  };
+
+  const getTotal = () => {
+    return getSubtotal() + getTax();
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${backendUrl}/api/shop/checkout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          customer: {
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            address: formData.address,
+            city: formData.city,
+            state: formData.state,
+            pincode: formData.pincode
+          },
+          items: cart,
+          payment_method: formData.payment_method
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        
+        // Clear cart
+        localStorage.removeItem('shopping_cart');
+        
+        // Show success message
+        alert(`Order placed successfully!\n\nOrder Number: ${result.order_number}\nTotal: ₹${result.total.toLocaleString()}\n\nThank you for your order!`);
+        
+        // Redirect to shop
+        navigate('/shop');
+      } else {
+        const error = await response.json();
+        alert(`Order failed: ${error.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Failed to place order. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value
     });
   };
-
-  const handlePlaceOrder = (e) => {
-    e.preventDefault();
-    
-    // Validate cart
-    if (cartItems.length === 0) {
-      toast({
-        title: 'Cart is Empty',
-        description: 'Please add items to cart before placing order.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    // Here you would typically send order to backend
-    toast({
-      title: 'Order Placed Successfully! 🎉',
-      description: `Your order of ₹${getCartTotal()} has been confirmed. We'll send you updates via email.`,
-    });
-
-    // Clear cart and redirect
-    clearCart();
-    setTimeout(() => {
-      navigate('/');
-    }, 2000);
-  };
-
-  if (cartItems.length === 0) {
-    return (
-      <div className="min-h-screen bg-white">
-        <Navbar />
-        <section className="pt-32 pb-20">
-          <div className="container mx-auto px-4 lg:px-8 text-center">
-            <ShoppingBag size={80} className="text-gray-300 mx-auto mb-6" />
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Your Cart is Empty</h2>
-            <p className="text-xl text-gray-600 mb-8">Add some products to get started!</p>
-            <Button
-              onClick={() => navigate('/products')}
-              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-6 text-lg rounded-2xl"
-            >
-              Browse Products
-            </Button>
-          </div>
-        </section>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
+      
+      <div className="max-w-7xl mx-auto px-4 py-8 mt-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h1 className="text-4xl font-bold text-gray-900 mb-8">Checkout</h1>
 
-      <section className="pt-32 pb-20 bg-gradient-to-br from-orange-50 via-white to-red-50">
-        <div className="container mx-auto px-4 lg:px-8">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4 text-center">
-            Checkout
-          </h1>
-          <p className="text-xl text-gray-600 text-center">Complete your purchase</p>
-        </div>
-      </section>
-
-      <section className="py-16">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Checkout Form */}
             <div className="lg:col-span-2">
-              <div className="premium-card gradient-border p-8 rounded-2xl">
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">Shipping Information</h2>
-                <form onSubmit={handlePlaceOrder} className="space-y-6">
+              <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Customer Details</h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Full Name *</label>
-                    <Input
-                      name="fullName"
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
                       required
-                      value={formData.fullName}
-                      onChange={handleInputChange}
-                      className="bg-white border-gray-300"
-                      placeholder="John Doe"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                     />
                   </div>
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-900 mb-2">Email *</label>
-                      <Input
-                        name="email"
-                        type="email"
-                        required
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        className="bg-white border-gray-300"
-                        placeholder="john@example.com"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-900 mb-2">Phone *</label>
-                      <Input
-                        name="phone"
-                        type="tel"
-                        required
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        className="bg-white border-gray-300"
-                        placeholder="+91 98765 43210"
-                      />
-                    </div>
-                  </div>
-
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Address *</label>
-                    <Input
-                      name="address"
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
                       required
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      className="bg-white border-gray-300"
-                      placeholder="Street address, apartment, suite, etc."
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                     />
                   </div>
+                </div>
 
-                  <div className="grid md:grid-cols-3 gap-6">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-900 mb-2">City *</label>
-                      <Input
-                        name="city"
-                        required
-                        value={formData.city}
-                        onChange={handleInputChange}
-                        className="bg-white border-gray-300"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-900 mb-2">State *</label>
-                      <Input
-                        name="state"
-                        required
-                        value={formData.state}
-                        onChange={handleInputChange}
-                        className="bg-white border-gray-300"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-900 mb-2">Pincode *</label>
-                      <Input
-                        name="pincode"
-                        required
-                        value={formData.pincode}
-                        onChange={handleInputChange}
-                        className="bg-white border-gray-300"
-                        placeholder="123456"
-                      />
-                    </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone *</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Address *</label>
+                  <textarea
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    required
+                    rows={3}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                    <input
+                      type="text"
+                      name="city"
+                      value={formData.city}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">State *</label>
+                    <input
+                      type="text"
+                      name="state"
+                      value={formData.state}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Pincode *</label>
+                    <input
+                      type="text"
+                      name="pincode"
+                      value={formData.pincode}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
+                  </div>
+                </div>
 
-                  <Button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-lg py-7 rounded-2xl shadow-xl animate-pulse-glow"
-                  >
-                    <CreditCard className="mr-2" size={24} />
-                    Place Order - ₹{getCartTotal()}
-                  </Button>
-                </form>
-              </div>
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Payment Method *</label>
+                  <div className="space-y-2">
+                    <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                      <input
+                        type="radio"
+                        name="payment_method"
+                        value="cod"
+                        checked={formData.payment_method === 'cod'}
+                        onChange={handleChange}
+                        className="mr-3"
+                      />
+                      <div>
+                        <div className="font-semibold">Cash on Delivery</div>
+                        <div className="text-sm text-gray-600">Pay when you receive the order</div>
+                      </div>
+                    </label>
+                    <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                      <input
+                        type="radio"
+                        name="payment_method"
+                        value="manual"
+                        checked={formData.payment_method === 'manual'}
+                        onChange={handleChange}
+                        className="mr-3"
+                      />
+                      <div>
+                        <div className="font-semibold">Bank Transfer</div>
+                        <div className="text-sm text-gray-600">Pay via bank transfer (details in invoice)</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-semibold disabled:bg-gray-400"
+                >
+                  {loading ? 'Processing...' : 'Place Order'}
+                </button>
+              </form>
             </div>
 
             {/* Order Summary */}
             <div>
-              <div className="premium-card gradient-border p-8 rounded-2xl sticky top-24">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Order Summary</h2>
+              <div className="bg-white rounded-lg shadow p-6 sticky top-24">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Order Summary</h2>
                 
-                <div className="space-y-4 mb-6">
-                  {cartItems.map((item) => (
-                    <div key={item.id} className="flex gap-4 pb-4 border-b border-gray-200">
-                      <img
-                        src={item.images[0]}
-                        alt={item.name}
-                        className="w-20 h-20 object-cover rounded-lg"
-                      />
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 mb-1">{item.name}</h3>
-                        <p className="text-sm text-gray-600 mb-2">₹{item.price}</p>
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="w-7 h-7 flex items-center justify-center rounded bg-gray-100 hover:bg-gray-200"
-                          >
-                            <Minus size={14} />
-                          </button>
-                          <span className="text-sm font-semibold">{item.quantity}</span>
-                          <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="w-7 h-7 flex items-center justify-center rounded bg-gray-100 hover:bg-gray-200"
-                          >
-                            <Plus size={14} />
-                          </button>
-                          <button
-                            onClick={() => removeFromCart(item.id)}
-                            className="ml-auto text-red-500 hover:text-red-700"
-                          >
-                            <Trash2 size={18} />
-                          </button>
-                        </div>
-                      </div>
+                <div className="space-y-3 mb-4">
+                  {cart.map((item) => (
+                    <div key={item.product_id} className="flex justify-between text-sm">
+                      <span className="text-gray-600">{item.product_name} x {item.quantity}</span>
+                      <span className="font-semibold">₹{item.total.toLocaleString()}</span>
                     </div>
                   ))}
                 </div>
 
-                <div className="space-y-3 mb-6">
-                  <div className="flex justify-between text-gray-700">
-                    <span>Subtotal</span>
-                    <span>₹{getCartTotal()}</span>
+                <div className="border-t pt-3 space-y-2 mb-4">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Subtotal</span>
+                    <span className="font-semibold">₹{getSubtotal().toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-gray-700">
-                    <span>Shipping</span>
-                    <span className="text-green-600 font-semibold">FREE</span>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">GST (18%)</span>
+                    <span className="font-semibold">₹{getTax().toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-gray-700">
-                    <span>Tax (18%)</span>
-                    <span>₹{Math.round(getCartTotal() * 0.18)}</span>
+                  <div className="border-t pt-2">
+                    <div className="flex justify-between">
+                      <span className="text-lg font-bold">Total</span>
+                      <span className="text-lg font-bold text-orange-600">₹{getTotal().toLocaleString()}</span>
+                    </div>
                   </div>
-                  <div className="border-t-2 border-gray-300 pt-3 flex justify-between text-xl font-bold text-gray-900">
-                    <span>Total</span>
-                    <span className="gradient-text">₹{Math.round(getCartTotal() * 1.18)}</span>
-                  </div>
-                </div>
-
-                <div className="bg-gradient-to-r from-orange-100 to-red-100 p-4 rounded-xl">
-                  <p className="text-sm text-gray-700 text-center">
-                    🎉 Free shipping on all orders!
-                  </p>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
+        </motion.div>
+      </div>
+      
       <Footer />
     </div>
   );
