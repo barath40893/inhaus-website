@@ -21,6 +21,9 @@ import AdminInvoicesPage from './pages/AdminInvoicesPage';
 import AdminCreateInvoicePage from './pages/AdminCreateInvoicePage';
 import AdminProductsPage from './pages/AdminProductsPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
+import AdminOrdersPage from './pages/AdminOrdersPage';
+import ShopPage from './pages/ShopPage';
+import CartPage from './pages/CartPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Toaster } from './components/ui/toaster';
 import WhatsAppButton from './components/WhatsAppButton';
@@ -57,6 +60,8 @@ function App() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/product/:productId" element={<ProductDetailPage />} />
+            <Route path="/shop" element={<ShopPage />} />
+            <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/smart-homes" element={<SmartHomesPage />} />
             <Route path="/smart-commercial" element={<SmartCommercialPage />} />
@@ -72,6 +77,7 @@ function App() {
             <Route path="/admin/invoices" element={<ProtectedRoute><AdminInvoicesPage /></ProtectedRoute>} />
             <Route path="/admin/invoices/new" element={<ProtectedRoute><AdminCreateInvoicePage /></ProtectedRoute>} />
             <Route path="/admin/invoices/edit/:id" element={<ProtectedRoute><AdminCreateInvoicePage /></ProtectedRoute>} />
+            <Route path="/admin/orders" element={<ProtectedRoute><AdminOrdersPage /></ProtectedRoute>} />
             <Route path="/admin/products" element={<ProtectedRoute><AdminProductsPage /></ProtectedRoute>} />
             <Route path="/admin/settings" element={<ProtectedRoute><AdminSettingsPage /></ProtectedRoute>} />
           </Routes>
