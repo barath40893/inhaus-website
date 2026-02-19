@@ -1,129 +1,168 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { Target, Users, Award, Lightbulb } from 'lucide-react';
 
 const AboutPage = () => {
   const values = [
-    {
-      icon: Target,
-      title: 'Our Mission',
-      description: 'To empower brands worldwide with cutting-edge IoT solutions that transform everyday devices into intelligent, connected experiences.',
-    },
-    {
-      icon: Lightbulb,
-      title: 'Innovation',
-      description: 'We continuously push the boundaries of technology to deliver innovative solutions that meet the evolving needs of our clients.',
-    },
-    {
-      icon: Users,
-      title: 'Customer First',
-      description: 'Our customers are at the heart of everything we do. We build solutions that truly make a difference in their lives.',
-    },
-    {
-      icon: Award,
-      title: 'Excellence',
-      description: 'We are committed to delivering enterprise-grade solutions with uncompromising quality and reliability.',
-    },
+    { icon: '🎯', title: 'Innovation', desc: 'Constantly pushing boundaries with cutting-edge technology' },
+    { icon: '👥', title: 'Customer First', desc: 'Your satisfaction is our top priority' },
+    { icon: '✨', title: 'Quality', desc: 'Premium products that stand the test of time' },
+    { icon: '🌱', title: 'Sustainability', desc: 'Eco-friendly solutions for a better tomorrow' }
+  ];
+
+  const milestones = [
+    { year: '2015', title: 'Founded', desc: 'Started our journey in smart automation' },
+    { year: '2018', title: '100+ Projects', desc: 'Reached major milestone' },
+    { year: '2021', title: 'Enterprise Solutions', desc: 'Launched commercial products' },
+    { year: '2025', title: '1000+ Customers', desc: 'Trusted by thousands' }
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
-
+      
       {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-br from-orange-50 via-white to-red-50">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-              About <span className="bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text">InHaus</span>
-            </h1>
-            <p className="text-xl text-gray-600">
-              Building the future of smart living, one device at a time
+      <section className="relative bg-gradient-to-br from-gray-900 to-orange-900 text-white py-32 mt-16">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h1 className="text-5xl md:text-6xl font-bold mb-6">About InHaus</h1>
+            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
+              Leading the smart automation revolution in India with innovative, reliable, and sustainable solutions.
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Story Section */}
       <section className="py-20 bg-white">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">Our Story</h2>
-            <div className="space-y-6 text-lg text-gray-600">
-              <p>
-                InHaus was founded with a simple yet powerful vision: to make smart home technology accessible and affordable for everyone. We believe that everyone deserves to experience the comfort, convenience, and security that comes with a truly intelligent home.
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl font-bold text-gray-900 mb-6">Our Story</h2>
+              <p className="text-lg text-gray-600 mb-4">
+                Founded in 2015, InHaus Smart Automation was born from a vision to make smart living accessible to everyone. We started with a simple mission: transform ordinary spaces into intelligent environments that enhance comfort, security, and efficiency.
               </p>
-              <p>
-                Today, we're proud to serve thousands of homes across the country, transforming ordinary houses into extraordinary smart homes. Our products are designed with you in mind—easy to install, simple to use, and built to last. Whether you're looking to save on energy bills, enhance your home security, or simply enjoy the convenience of voice-controlled lighting, we have the perfect solution.
+              <p className="text-lg text-gray-600 mb-4">
+                Today, we've grown into one of India's most trusted smart automation brands, serving over 1000+ satisfied customers across homes, offices, and hotels. Our commitment to innovation and quality has made us the go-to choice for those seeking reliable automation solutions.
               </p>
-              <p>
-                What sets us apart is our commitment to quality and customer satisfaction. We don't just sell products; we create experiences. Our devices work seamlessly together, our app is intuitive and reliable, and our customer support team is always here to help. With InHaus, you're not just buying smart devices—you're investing in a smarter way of living.
+              <p className="text-lg text-gray-600">
+                Every product we offer is carefully selected and tested to ensure it meets our high standards. We don't just sell products; we deliver complete solutions backed by expert consultation and 24/7 support.
               </p>
-            </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="aspect-w-16 aspect-h-9 bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl shadow-2xl flex items-center justify-center">
+                <div className="text-white text-center p-8">
+                  <div className="text-6xl mb-4">🏠</div>
+                  <div className="text-3xl font-bold">1000+</div>
+                  <div className="text-xl">Happy Customers</div>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* Values Section */}
-      <section className="py-20 bg-gradient-to-br from-orange-50 to-red-50">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-16">
+      <section className="py-20 bg-gradient-to-br from-gray-50 to-orange-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Our Values</h2>
-            <p className="text-xl text-gray-600">The principles that guide everything we do</p>
-          </div>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">The principles that guide everything we do</p>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {values.map((value, index) => (
-              <div
+              <motion.div
                 key={index}
-                className="bg-white p-8 rounded-2xl border-2 border-orange-200 hover:border-orange-400 transition-all duration-300 hover:shadow-xl"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all text-center"
               >
-                <div className="mb-4">
-                  <value.icon size={40} className="text-orange-500" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">{value.title}</h3>
-                <p className="text-gray-600">{value.description}</p>
-              </div>
+                <div className="text-5xl mb-4">{value.icon}</div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">{value.title}</h3>
+                <p className="text-gray-600">{value.desc}</p>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Team Section */}
+      {/* Milestones */}
       <section className="py-20 bg-white">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">Our Team</h2>
-            <p className="text-xl text-gray-600 mb-12">
-              We're a passionate team of engineers, designers, and smart home enthusiasts dedicated to making your life easier and more comfortable. With years of experience in home automation and customer service, we're here to help you every step of the way.
-            </p>
-          </div>
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Our Journey</h2>
+            <p className="text-xl text-gray-600">Key milestones that shaped InHaus</p>
+          </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto mt-12">
-            <div className="text-center">
-              <div className="text-5xl font-bold bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text mb-2">
-                5000+
-              </div>
-              <div className="text-lg text-gray-600">Happy Customers</div>
-            </div>
-            <div className="text-center">
-              <div className="text-5xl font-bold bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text mb-2">
-                8+
-              </div>
-              <div className="text-lg text-gray-600">Years in Business</div>
-            </div>
-            <div className="text-center">
-              <div className="text-5xl font-bold bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text mb-2">
-                24/7
-              </div>
-              <div className="text-lg text-gray-600">Customer Support</div>
-            </div>
-            <div className="text-center">
-              <div className="text-5xl font-bold bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text mb-2">
-                4.8★
-              </div>
-              <div className="text-lg text-gray-600">Customer Rating</div>
+          <div className="relative">
+            {/* Timeline line */}
+            <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-orange-400 to-orange-600"></div>
+            
+            <div className="space-y-12">
+              {milestones.map((milestone, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6 }}
+                  viewport={{ once: true }}
+                  className={`flex flex-col md:flex-row items-center gap-8 ${index % 2 === 0 ? 'md:flex-row-reverse' : ''}`}
+                >
+                  <div className="flex-1 text-center md:text-right">
+                    {index % 2 === 0 && (
+                      <div className="bg-white rounded-xl p-6 shadow-lg">
+                        <div className="text-3xl font-bold text-orange-600 mb-2">{milestone.year}</div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">{milestone.title}</h3>
+                        <p className="text-gray-600">{milestone.desc}</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="relative z-10 flex-shrink-0">
+                    <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                      {index + 1}
+                    </div>
+                  </div>
+                  <div className="flex-1 text-center md:text-left">
+                    {index % 2 !== 0 && (
+                      <div className="bg-white rounded-xl p-6 shadow-lg">
+                        <div className="text-3xl font-bold text-orange-600 mb-2">{milestone.year}</div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">{milestone.title}</h3>
+                        <p className="text-gray-600">{milestone.desc}</p>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
             </div>
           </div>
         </div>

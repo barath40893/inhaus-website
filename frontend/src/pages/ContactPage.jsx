@@ -1,242 +1,259 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Textarea } from '../components/ui/textarea';
-import { useToast } from '../hooks/use-toast';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
-import axios from 'axios';
-import { motion } from 'framer-motion';
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
 
 const ContactPage = () => {
-  const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 40 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.6, ease: 'easeOut' }
-    }
-  };
-
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2
-      }
-    }
-  };
-
-  const scaleIn = {
-    hidden: { opacity: 0, scale: 0.9 },
-    visible: { 
-      opacity: 1, 
-      scale: 1,
-      transition: { duration: 0.5, ease: 'easeOut' }
-    }
-  };
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    message: '',
+    subject: '',
+    message: ''
   });
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const [submitted, setSubmitted] = useState(false);
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
+    
     try {
-      const response = await axios.post(`${API}/contact`, formData);
-      
-      toast({
-        title: 'Success!',
-        description: 'Your message has been sent. We\'ll get back to you soon!',
+      const response = await fetch(`${backendUrl}/api/contacts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
       });
 
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        message: '',
-      });
+      if (response.ok) {
+        setSubmitted(true);
+        setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+        setTimeout(() => setSubmitted(false), 5000);
+      }
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Something went wrong. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsSubmitting(false);
+      console.error('Error submitting form:', error);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-white">
-      <Navbar />
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-br from-orange-50 via-white to-red-50">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-              Get in <span className="bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text">Touch</span>
-            </h1>
-            <p className="text-xl text-gray-600">
-              We'd love to hear from you and help you create your perfect smart home
+  const contactMethods = [
+    {
+      icon: '📞',
+      title: 'Phone',
+      details: '+91 98765 43210',
+      action: 'Call us',
+      link: 'tel:+919876543210'
+    },
+    {
+      icon: '✉️',
+      title: 'Email',
+      details: 'info@inhaus.co.in',
+      action: 'Email us',
+      link: 'mailto:info@inhaus.co.in'
+    },
+    {
+      icon: '📍',
+      title: 'Address',
+      details: 'Mumbai, Maharashtra, India',
+      action: 'Get directions',
+      link: '#'
+    },
+    {
+      icon: '💬',
+      title: 'WhatsApp',
+      details: '+91 98765 43210',
+      action: 'Chat now',
+      link: 'https://wa.me/919876543210'
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      
+      {/* Hero */}
+      <section className="relative bg-gradient-to-br from-gray-900 to-orange-900 text-white py-32 mt-16">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h1 className="text-5xl md:text-6xl font-bold mb-6">Get In Touch</h1>
+            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
+              Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Contact Form Section */}
+      {/* Contact Methods */}
       <section className="py-20 bg-white">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
-            {/* Contact Information */}
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">Contact Information</h2>
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+            {contactMethods.map((method, index) => (
+              <motion.a
+                key={index}
+                href={method.link}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -5 }}
+                className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-6 shadow-md hover:shadow-xl transition-all border border-gray-100 text-center"
+              >
+                <div className="text-5xl mb-4">{method.icon}</div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{method.title}</h3>
+                <p className="text-gray-600 mb-3">{method.details}</p>
+                <span className="text-orange-600 font-semibold text-sm">{method.action} →</span>
+              </motion.a>
+            ))}
+          </div>
+
+          {/* Contact Form */}
+          <div className="grid md:grid-cols-2 gap-12">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl font-bold text-gray-900 mb-6">Send Us a Message</h2>
               <p className="text-lg text-gray-600 mb-8">
-                Have questions about our smart home products? Ready to transform your home? We're here to help! Reach out to us and let's get started.
+                Fill out the form and our team will get back to you within 24 hours.
               </p>
 
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl">
-                    <Mail className="text-orange-600" size={24} />
-                  </div>
-                  <div>
-                    <h3 className="text-gray-900 font-semibold mb-1">Email</h3>
-                    <p className="text-gray-600">support@inhaus.co.in</p>
-                  </div>
+              {submitted && (
+                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
+                  ✔️ Thank you! Your message has been sent successfully.
                 </div>
+              )}
 
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl">
-                    <Phone className="text-orange-600" size={24} />
-                  </div>
-                  <div>
-                    <h3 className="text-gray-900 font-semibold mb-1">Phone</h3>
-                    <p className="text-gray-600">+91 7416925607</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl">
-                    <MapPin className="text-orange-600" size={24} />
-                  </div>
-                  <div>
-                    <h3 className="text-gray-900 font-semibold mb-1">InHaus Experience Center</h3>
-                    <p className="text-gray-600">
-                      Shop no - 207, 1st Floor<br />
-                      Kokapet Terminal, Radha Spaces<br />
-                      Gandipet, Hyderabad - 500075<br />
-                      Telangana, India
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-12">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Business Hours</h3>
-                <div className="space-y-2 text-gray-600">
-                  <p>Everyday: 10:00 AM - 8:00 PM</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Contact Form */}
-            <div className="bg-gradient-to-br from-orange-50 to-red-50 p-8 rounded-2xl border-2 border-orange-200">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Send us a Message</h2>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                    Full Name *
-                  </label>
-                  <Input
-                    id="name"
-                    name="name"
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Name *</label>
+                  <input
                     type="text"
-                    required
+                    name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="bg-white border-gray-300 text-gray-900"
-                    placeholder="John Doe"
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address *
-                  </label>
-                  <Input
-                    id="email"
-                    name="email"
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                  <input
                     type="email"
-                    required
+                    name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="bg-white border-gray-300 text-gray-900"
-                    placeholder="john@example.com"
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number
-                  </label>
-                  <Input
-                    id="phone"
-                    name="phone"
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                  <input
                     type="tel"
+                    name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="bg-white border-gray-300 text-gray-900"
-                    placeholder="+1 (555) 123-4567"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                    Message *
-                  </label>
-                  <Textarea
-                    id="message"
-                    name="message"
-                    required
-                    value={formData.message}
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Subject *</label>
+                  <input
+                    type="text"
+                    name="subject"
+                    value={formData.subject}
                     onChange={handleChange}
-                    rows={5}
-                    className="bg-white border-gray-300 text-gray-900"
-                    placeholder="Tell us about your project..."
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
 
-                <Button
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Message *</label>
+                  <textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
+                    rows={5}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  ></textarea>
+                </div>
+
+                <button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-6"
+                  className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg"
                 >
-                  {isSubmitting ? 'Sending...' : 'Send Message'}
-                  <Send className="ml-2" size={18} />
-                </Button>
+                  Send Message
+                </button>
               </form>
-            </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="space-y-8"
+            >
+              <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-8 text-white shadow-xl">
+                <h3 className="text-2xl font-bold mb-4">Office Hours</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span>Monday - Friday</span>
+                    <span className="font-semibold">9:00 AM - 6:00 PM</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Saturday</span>
+                    <span className="font-semibold">10:00 AM - 4:00 PM</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Sunday</span>
+                    <span className="font-semibold">Closed</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Quick Response</h3>
+                <p className="text-gray-600 mb-4">
+                  Need immediate assistance? Our support team is available 24/7 to help you.
+                </p>
+                <div className="space-y-3">
+                  <div className="flex items-center text-gray-700">
+                    <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    Response within 24 hours
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    Expert consultation
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    Free quote provided
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
