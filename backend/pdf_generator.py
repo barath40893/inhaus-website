@@ -1524,3 +1524,195 @@ class PDFGenerator:
         elements.append(Paragraph(footer_text, self.small_style))
         
         return elements
+
+    
+    def generate_order_invoice(self, order_data: dict, settings_data: dict, output_path: str):
+        """Generate a professional invoice PDF for shop orders"""
+        doc = SimpleDocTemplate(
+            output_path,
+            pagesize=letter,
+            rightMargin=40,
+            leftMargin=40,
+            topMargin=60,
+            bottomMargin=40,
+            title=f"Invoice {order_data.get('order_number', 'N/A')}"
+        )
+        
+        story = []
+        
+        # PAGE 1: Invoice Header and Details
+        story.extend(self._create_invoice_header(order_data, settings_data))
+        story.append(Spacer(1, 20))
+        
+        # Customer and Order Info
+        story.extend(self._create_order_info_section(order_data))
+        story.append(Spacer(1, 20))
+        
+        # Order Items Table
+        story.extend(self._create_order_items_table(order_data))
+        story.append(Spacer(1, 20))
+        
+        # Payment Summary
+        story.extend(self._create_payment_summary(order_data))
+        story.append(Spacer(1, 30))
+        
+        # Footer
+        story.extend(self._create_thank_you_footer(settings_data, include_bank=True))
+        
+        # Build PDF
+        doc.build(story)
+        logging.info(f"Order invoice PDF generated: {output_path}")
+    
+    def _create_invoice_header(self, order_data: dict, settings_data: dict):
+        """Create invoice header with company details and invoice info"""
+        elements = []
+        
+        # Company name and logo section
+        company_name = settings_data.get('company_name', 'InHaus Smart Automation')
+        invoice_number = order_data.get('order_number', 'N/A')
+        
+        header_text = f"""
+        <para align=center>
+        <font size=20 color="#FF6B35"><b>{company_name}</b></font><br/>
+        <font size=12 color="#333333"><b>INVOICE</b></font><br/>
+        <font size=10 color="#666666">Invoice No: {invoice_number}</font>
+        </para>
+        """
+        
+        elements.append(Paragraph(header_text, self.styles['Normal']))
+        elements.append(Spacer(1, 10))
+        
+        # Company details
+        company_details = f"""
+        <para align=center>
+        <font size=9 color="#666666">
+        {settings_data.get('address', '')}<br/>
+        {settings_data.get('city', '')}, {settings_data.get('state', '')} - {settings_data.get('pincode', '')}<br/>
+        Phone: {settings_data.get('phone', '')} | Email: {settings_data.get('email', '')}
+        """
+        
+        if settings_data.get('gstin'):
+            company_details += f"<br/>GSTIN: {settings_data['gstin']}"
+        
+        company_details += "</font></para>"
+        
+        elements.append(Paragraph(company_details, self.styles['Normal']))
+        
+        return elements
+    
+    def _create_order_info_section(self, order_data: dict):
+        """Create customer and order information section"""
+        elements = []
+        
+        customer = order_data.get('customer', {})
+        
+        # Create two-column layout for customer and order details
+        data = [
+            [
+                Paragraph('<b>Bill To:</b>', self.bold_style),
+                Paragraph('<b>Order Details:</b>', self.bold_style)
+            ],
+            [
+                Paragraph(
+                    f"{customer.get('name', '')}<br/>"
+                    f"{customer.get('address', '')}<br/>"
+                    f"{customer.get('city', '')}, {customer.get('state', '')} - {customer.get('pincode', '')}<br/>"
+                    f"Phone: {customer.get('phone', '')}<br/>"
+                    f"Email: {customer.get('email', '')}",
+                    self.normal_style
+                ),
+                Paragraph(
+                    f"Order No: {order_data.get('order_number', 'N/A')}<br/>"
+                    f"Order Date: {datetime.fromisoformat(order_data['created_at']).strftime('%d %B %Y') if isinstance(order_data.get('created_at'), str) else datetime.now().strftime('%d %B %Y')}<br/>"
+                    f"Payment Method: {order_data.get('payment_method', 'N/A').upper()}<br/>"
+                    f"Payment Status: {order_data.get('payment_status', 'pending').upper()}<br/>"
+                    f"Order Status: {order_data.get('order_status', 'pending').upper()}",
+                    self.normal_style
+                )
+            ]
+        ]
+        
+        table = Table(data, colWidths=[3.5*inch, 3.5*inch])
+        table.setStyle(TableStyle([
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 0),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+        ]))
+        
+        elements.append(table)
+        
+        return elements
+    
+    def _create_order_items_table(self, order_data: dict):
+        """Create order items table"""
+        elements = []
+        
+        # Title
+        elements.append(Paragraph('<b>Order Items</b>', self.heading_style))
+        elements.append(Spacer(1, 10))
+        
+        # Table header
+        data = [[
+            Paragraph('<b>S.No</b>', self.bold_style),
+            Paragraph('<b>Product</b>', self.bold_style),
+            Paragraph('<b>Model</b>', self.bold_style),
+            Paragraph('<b>Quantity</b>', self.bold_style),
+            Paragraph('<b>Unit Price</b>', self.bold_style),
+            Paragraph('<b>Total</b>', self.bold_style)
+        ]]
+        
+        # Add items
+        for idx, item in enumerate(order_data.get('items', []), 1):
+            if not isinstance(item, dict):
+                continue
+                
+            data.append([
+                Paragraph(str(idx), self.normal_style),
+                Paragraph(item.get('product_name', ''), self.normal_style),
+                Paragraph(item.get('model_no', ''), self.normal_style),
+                Paragraph(str(item.get('quantity', 0)), self.normal_style),
+                Paragraph(f"₹ {item.get('list_price', 0):,.0f}", self.normal_style),
+                Paragraph(f"₹ {item.get('total_price', 0):,.0f}", self.normal_style)
+            ])
+        
+        # Create table
+        table = Table(data, colWidths=[0.5*inch, 2.5*inch, 1.2*inch, 0.8*inch, 1*inch, 1*inch])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#F3F4F6')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#1F2937')),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('ALIGN', (1, 1), (1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('TOPPADDING', (0, 0), (-1, 0), 12),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#E5E7EB')),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ]))
+        
+        elements.append(table)
+        
+        return elements
+    
+    def _create_payment_summary(self, order_data: dict):
+        """Create payment summary section"""
+        elements = []
+        
+        # Create summary table
+        data = [
+            ['', Paragraph('<b>Subtotal</b>', self.bold_style), f"₹ {order_data.get('subtotal', 0):,.0f}"],
+            ['', Paragraph(f"GST ({order_data.get('tax_percentage', 18)}%)", self.normal_style), f"₹ {order_data.get('tax_amount', 0):,.0f}"],
+            ['', Paragraph('<b>Total Amount</b>', self.bold_style), Paragraph(f"<b>₹ {order_data.get('total', 0):,.0f}</b>", self.bold_style)]
+        ]
+        
+        table = Table(data, colWidths=[3*inch, 2*inch, 2*inch])
+        table.setStyle(TableStyle([
+            ('ALIGN', (1, 0), (-1, -1), 'RIGHT'),
+            ('LINEABOVE', (1, -1), (-1, -1), 2, colors.HexColor('#FF6B35')),
+            ('FONTSIZE', (0, 0), (-1, -1), 11),
+        ]))
+        
+        elements.append(table)
+        
+        return elements
+
