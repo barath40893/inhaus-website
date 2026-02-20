@@ -202,6 +202,82 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* Works With Section */}
+      <section className="py-16" data-testid="partners-section">
+        <div className="container mx-auto px-4 md:px-8 lg:px-12">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center mb-10"
+          >
+            <p className="text-sm text-neutral-500 uppercase tracking-widest mb-2">Works Seamlessly With</p>
+          </motion.div>
+          
+          <div className="flex flex-wrap items-center justify-center gap-12 md:gap-16">
+            {/* Amazon Alexa */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="flex items-center gap-3 text-neutral-400 hover:text-white transition-colors"
+            >
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Amazon_Alexa_App_Logo.png" 
+                alt="Amazon Alexa" 
+                className="w-10 h-10 object-contain opacity-60"
+              />
+              <span className="font-medium">Amazon Alexa</span>
+            </motion.div>
+            
+            {/* Google Home */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="flex items-center gap-3 text-neutral-400 hover:text-white transition-colors"
+            >
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Google_Assistant_logo.png" 
+                alt="Google Home" 
+                className="w-10 h-10 object-contain opacity-60"
+              />
+              <span className="font-medium">Google Home</span>
+            </motion.div>
+            
+            {/* Apple HomeKit */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="flex items-center gap-3 text-neutral-400 hover:text-white transition-colors"
+            >
+              <svg className="w-10 h-10 opacity-60" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+              </svg>
+              <span className="font-medium">Apple HomeKit</span>
+            </motion.div>
+
+            {/* Matter */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+              className="flex items-center gap-3 text-neutral-400 hover:text-white transition-colors"
+            >
+              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                <span className="text-lg font-bold text-orange-500">M</span>
+              </div>
+              <span className="font-medium">Matter</span>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="py-24 md:py-32" data-testid="features-section">
         <div className="container mx-auto px-4 md:px-8 lg:px-12">
