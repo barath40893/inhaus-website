@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AdminLayout from '../components/AdminLayout';
+import AdminHeader from '../components/AdminHeader';
 import { Button } from '../components/ui/button';
 import { 
   ShoppingBag, 
