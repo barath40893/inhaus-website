@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown } from 'lucide-react';
-import { Button } from './ui/button';
+import { Menu, X, ShoppingCart, User } from 'lucide-react';
+import { useCustomerAuth } from '../context/CustomerAuthProvider';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [solutionsOpen, setSolutionsOpen] = useState(false);
   const location = useLocation();
+  const { customer, cart } = useCustomerAuth();
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -19,139 +19,160 @@ const Navbar = () => {
 
   const navLinks = [
     { name: 'Home', path: '/' },
-    { name: 'About Us', path: '/about' },
-    { 
-      name: 'Solutions', 
-      submenu: [
-        { name: 'Smart Homes', path: '/smart-homes' },
-        { name: 'Smart Commercial', path: '/smart-commercial' },
-        { name: 'Smart Hospitality', path: '/smart-hospitality' },
-      ]
-    },
     { name: 'Products', path: '/products' },
+    { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },
   ];
 
-  return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled 
-          ? 'glass-dark shadow-2xl border-b border-white/10' 
-          : 'bg-gradient-to-r from-white/90 via-white/95 to-white/90 backdrop-blur-xl'
-      }`}
-    >
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="flex items-center justify-between h-24">
-          <Link to="/" className="flex items-center space-x-2 group">
-            <img
-              src="/inhaus/grayscale_logo.png"
-              alt="InHaus"
-              className="h-28 w-auto transition-transform duration-300 group-hover:scale-105"
-            />
-          </Link>
+  const cartItemCount = cart?.rooms?.reduce((total, room) => total + room.items.length, 0) || 0;
 
-          <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              link.submenu ? (
-                <div key={link.name} className="relative group">
-                  <button className="text-sm font-medium text-gray-700 hover:text-orange-500 transition-colors duration-300 flex items-center gap-1">
-                    {link.name}
-                    <ChevronDown size={16} />
-                  </button>
-                  <div className="absolute top-full left-0 mt-2 w-48 bg-white shadow-lg rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-                    {link.submenu.map((sublink) => (
-                      <Link
-                        key={sublink.path}
-                        to={sublink.path}
-                        className="block px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-500 transition-colors duration-300 first:rounded-t-lg last:rounded-b-lg"
-                      >
-                        {sublink.name}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              ) : (
+  return (
+    <>
+      {/* Floating Navbar */}
+      <nav
+        className={`fixed top-6 left-1/2 -translate-x-1/2 w-[92%] max-w-5xl z-50 transition-all duration-500 ${
+          isScrolled 
+            ? 'bg-black/80 shadow-[0_8px_32px_rgba(0,0,0,0.4)]' 
+            : 'bg-black/60'
+        } backdrop-blur-xl rounded-full border border-white/10`}
+        data-testid="navbar"
+      >
+        <div className="px-6 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <Link to="/" className="flex items-center group" data-testid="nav-logo">
+              <span className="text-2xl font-bold text-white tracking-tight">
+                In<span className="text-orange-500">Haus</span>
+              </span>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-1">
+              {navLinks.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`text-sm font-medium transition-colors duration-300 hover:text-orange-500 ${
+                  data-testid={`nav-link-${link.name.toLowerCase()}`}
+                  className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 ${
                     location.pathname === link.path
-                      ? 'text-orange-500'
-                      : 'text-gray-700'
+                      ? 'text-orange-500 bg-orange-500/10'
+                      : 'text-neutral-300 hover:text-white hover:bg-white/5'
                   }`}
                 >
                   {link.name}
                 </Link>
-              )
-            ))}
-            <Link to="/contact">
-              <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-6 py-2 rounded-full transition-all duration-300 shadow-md hover:shadow-lg">
-                Get Started
-              </Button>
-            </Link>
+              ))}
+            </div>
+
+            {/* Right Side Actions */}
+            <div className="hidden md:flex items-center gap-3">
+              {/* Cart */}
+              <Link 
+                to="/cart" 
+                className="relative p-2 rounded-full text-neutral-300 hover:text-white hover:bg-white/5 transition-all duration-300"
+                data-testid="nav-cart"
+              >
+                <ShoppingCart size={20} />
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                    {cartItemCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* User / Login */}
+              {customer ? (
+                <Link
+                  to="/account"
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm font-medium hover:bg-white/10 transition-all duration-300"
+                  data-testid="nav-account"
+                >
+                  <User size={16} />
+                  <span className="max-w-[100px] truncate">{customer.name?.split(' ')[0]}</span>
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  className="px-5 py-2 rounded-full bg-orange-500 text-white text-sm font-medium hover:bg-orange-600 transition-all duration-300 shadow-[0_0_20px_rgba(249,115,22,0.3)] hover:shadow-[0_0_30px_rgba(249,115,22,0.5)]"
+                  data-testid="nav-login"
+                >
+                  Sign In
+                </Link>
+              )}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden p-2 text-white rounded-full hover:bg-white/10 transition-colors"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              data-testid="mobile-menu-toggle"
+            >
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
           </div>
-
-          <button
-            className="md:hidden text-gray-700 p-2"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
         </div>
+      </nav>
 
-        {isMobileMenuOpen && (
-          <div className="md:hidden pb-4">
-            <div className="flex flex-col space-y-4">
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-40 md:hidden">
+          <div 
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          <div className="absolute top-24 left-4 right-4 bg-neutral-900/95 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-2xl">
+            <div className="flex flex-col gap-2">
               {navLinks.map((link) => (
-                link.submenu ? (
-                  <div key={link.name}>
-                    <button 
-                      onClick={() => setSolutionsOpen(!solutionsOpen)}
-                      className="text-sm font-medium text-gray-700 w-full text-left flex items-center justify-between"
-                    >
-                      {link.name}
-                      <ChevronDown size={16} className={`transform transition-transform ${solutionsOpen ? 'rotate-180' : ''}`} />
-                    </button>
-                    {solutionsOpen && (
-                      <div className="mt-2 pl-4 space-y-2">
-                        {link.submenu.map((sublink) => (
-                          <Link
-                            key={sublink.path}
-                            to={sublink.path}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="block py-2 text-sm text-gray-600 hover:text-orange-500 transition-colors duration-300"
-                          >
-                            {sublink.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`px-4 py-3 rounded-xl text-base font-medium transition-all duration-300 ${
+                    location.pathname === link.path
+                      ? 'text-orange-500 bg-orange-500/10'
+                      : 'text-neutral-300 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              ))}
+              
+              <div className="h-px bg-white/10 my-3" />
+              
+              <div className="flex items-center gap-3">
+                <Link 
+                  to="/cart"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/5 text-white font-medium"
+                >
+                  <ShoppingCart size={18} />
+                  Cart {cartItemCount > 0 && `(${cartItemCount})`}
+                </Link>
+                
+                {customer ? (
+                  <Link
+                    to="/account"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-orange-500 text-white font-medium"
+                  >
+                    <User size={18} />
+                    Account
+                  </Link>
                 ) : (
                   <Link
-                    key={link.path}
-                    to={link.path}
+                    to="/login"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`text-sm font-medium transition-colors duration-300 hover:text-orange-500 ${
-                      location.pathname === link.path
-                        ? 'text-orange-500'
-                        : 'text-gray-700'
-                    }`}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-orange-500 text-white font-medium"
                   >
-                    {link.name}
+                    Sign In
                   </Link>
-                )
-              ))}
-              <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white">
-                  Get Started
-                </Button>
-              </Link>
+                )}
+              </div>
             </div>
           </div>
-        )}
-      </div>
-    </nav>
+        </div>
+      )}
+    </>
   );
 };
 
