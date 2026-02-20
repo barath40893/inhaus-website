@@ -414,16 +414,16 @@ class TestAdminCustomerManagement:
 class TestAdminOrders:
     """Admin order management tests"""
     
-    def test_get_all_shop_orders(self):
+    def test_get_all_customer_orders(self):
         if "admin_token" not in session_data:
             pytest.skip("No admin token available")
         
         response = requests.get(
-            f"{BASE_URL}/api/admin/shop-orders",
+            f"{BASE_URL}/api/admin/customer-orders",
             headers={"Authorization": f"Bearer {session_data['admin_token']}"}
         )
         
-        assert response.status_code == 200, f"Get shop orders failed: {response.text}"
+        assert response.status_code == 200, f"Get customer orders failed: {response.text}"
         data = response.json()
         assert isinstance(data, list)
         
@@ -432,7 +432,7 @@ class TestAdminOrders:
             order = data[0]
             assert "profit_margin" in order or "total" in order
         
-        print(f"✓ Admin retrieved {len(data)} shop orders")
+        print(f"✓ Admin retrieved {len(data)} customer orders")
 
 
 class TestCustomerLogout:
