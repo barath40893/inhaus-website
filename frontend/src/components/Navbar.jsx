@@ -41,9 +41,11 @@ const Navbar = () => {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center group" data-testid="nav-logo">
-              <span className="text-2xl font-bold text-white tracking-tight">
-                In<span className="text-orange-500">Haus</span>
-              </span>
+              <img 
+                src="/inhaus/fulllogo_transparent.png" 
+                alt="InHaus" 
+                className="h-10 w-auto brightness-0 invert"
+              />
             </Link>
 
             {/* Desktop Navigation */}
