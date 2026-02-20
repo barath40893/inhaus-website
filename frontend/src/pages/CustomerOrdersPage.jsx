@@ -151,7 +151,7 @@ const CustomerOrdersPage = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
       </div>
     );
@@ -162,34 +162,34 @@ const CustomerOrdersPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#0A0A0A] text-white">
       <Navbar />
 
-      <div className="max-w-4xl mx-auto px-4 py-8 mt-20">
+      <div className="max-w-4xl mx-auto px-4 py-8 pt-32">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
           <Package className="h-8 w-8 text-orange-500" />
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
-            <p className="text-gray-600">View and manage your orders</p>
+            <h1 className="text-3xl font-bold text-white">My Orders</h1>
+            <p className="text-neutral-400">View and manage your orders</p>
           </div>
         </div>
 
         {loading ? (
           <div className="text-center py-12">
             <Loader2 className="h-12 w-12 animate-spin text-orange-500 mx-auto mb-4" />
-            <p className="text-gray-600">Loading orders...</p>
+            <p className="text-neutral-400">Loading orders...</p>
           </div>
         ) : orders.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-sm p-12 text-center">
-            <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">No orders yet</h2>
-            <p className="text-gray-500 mb-6">Start shopping to see your orders here</p>
+          <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-12 text-center">
+            <Package className="h-16 w-16 text-neutral-600 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-white mb-2">No orders yet</h2>
+            <p className="text-neutral-500 mb-6">Start shopping to see your orders here</p>
             <Button
-              onClick={() => navigate('/catalog')}
-              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+              onClick={() => navigate('/products')}
+              className="bg-orange-500 hover:bg-orange-600 text-white"
             >
-              Browse Catalog
+              Browse Products
             </Button>
           </div>
         ) : (
