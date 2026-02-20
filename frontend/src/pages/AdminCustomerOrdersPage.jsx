@@ -691,7 +691,6 @@ const AdminCustomerOrdersPage = () => {
           </div>
         )}
       </div>
-    </div>
   );
 };
 
