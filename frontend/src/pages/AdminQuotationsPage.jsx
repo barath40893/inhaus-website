@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AdminHeader from '../components/AdminHeader';
 import { motion } from 'framer-motion';
 
 const AdminQuotationsPage = () => {

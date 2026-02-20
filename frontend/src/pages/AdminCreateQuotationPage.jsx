@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import AdminHeader from '../components/AdminHeader';
 
 const AdminCreateQuotationPage = () => {
   const navigate = useNavigate();
