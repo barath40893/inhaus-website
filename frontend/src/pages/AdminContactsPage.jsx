@@ -138,11 +138,6 @@ const AdminContactsPage = () => {
     a.click();
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminToken');
-    navigate('/admin/login');
-  };
-
   const getStatusColor = (status) => {
     switch (status) {
       case 'new': return 'bg-blue-100 text-blue-800';
