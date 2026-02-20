@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Textarea } from '../components/ui/textarea';
 import { useToast } from '../hooks/use-toast';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, ArrowRight, Loader2 } from 'lucide-react';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -37,8 +35,8 @@ const ContactPage = () => {
       const response = await axios.post(`${API}/contact`, formData);
       
       toast({
-        title: 'Success!',
-        description: 'Your message has been sent. We\'ll get back to you soon!',
+        title: 'Message Sent!',
+        description: 'We\'ll get back to you within 24 hours.',
       });
 
       setFormData({
@@ -59,175 +57,249 @@ const ContactPage = () => {
     }
   };
 
+  const contactInfo = [
+    {
+      icon: Mail,
+      title: 'Email',
+      value: 'support@inhaus.co.in',
+      href: 'mailto:support@inhaus.co.in',
+    },
+    {
+      icon: Phone,
+      title: 'Phone',
+      value: '+91 7416925607',
+      href: 'tel:+917416925607',
+    },
+    {
+      icon: MapPin,
+      title: 'Office',
+      value: 'Hyderabad, Telangana, India',
+      href: '#',
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#0A0A0A] text-white">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-br from-orange-50 via-white to-red-50">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-              Get in <span className="bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text">Touch</span>
-            </h1>
-            <p className="text-xl text-gray-600">
-              We'd love to hear from you and help you create your perfect smart home
-            </p>
+      <section className="pt-32 pb-16 relative overflow-hidden" data-testid="contact-hero">
+        <div className="absolute inset-0 bg-gradient-to-b from-orange-500/5 via-transparent to-transparent" />
+        <div className="container mx-auto px-4 md:px-8 lg:px-12 relative z-10">
+          <div className="max-w-4xl">
+            <motion.span 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-block px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-500 text-sm font-medium mb-6"
+            >
+              Get in Touch
+            </motion.span>
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-5xl md:text-7xl font-bold mb-6 leading-tight"
+            >
+              Let's Build Your
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-400">
+                Smart Home
+              </span>
+            </motion.h1>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-lg md:text-xl text-neutral-400 max-w-2xl leading-relaxed"
+            >
+              Have questions about our products? Ready to transform your space? 
+              Our team is here to help you every step of the way.
+            </motion.p>
           </div>
         </div>
       </section>
 
-      {/* Contact Form Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+      {/* Contact Section */}
+      <section className="py-20" data-testid="contact-form-section">
+        <div className="container mx-auto px-4 md:px-8 lg:px-12">
+          <div className="grid lg:grid-cols-5 gap-12 max-w-7xl mx-auto">
             {/* Contact Information */}
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">Contact Information</h2>
-              <p className="text-lg text-gray-600 mb-8">
-                Have questions about our smart home products? Ready to transform your home? We're here to help! Reach out to us and let's get started.
-              </p>
+            <motion.div 
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="lg:col-span-2"
+            >
+              <h2 className="text-2xl font-bold mb-8">Contact Information</h2>
+              
+              <div className="space-y-6 mb-12">
+                {contactInfo.map((item, index) => (
+                  <a
+                    key={index}
+                    href={item.href}
+                    className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-orange-500/30 transition-all duration-300 group"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center group-hover:bg-orange-500/20 transition-colors">
+                      <item.icon size={20} className="text-orange-500" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm text-neutral-500 uppercase tracking-wider mb-1">{item.title}</h3>
+                      <p className="text-white font-medium">{item.value}</p>
+                    </div>
+                  </a>
+                ))}
+              </div>
 
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl">
-                    <Mail className="text-orange-600" size={24} />
+              {/* Hours */}
+              <div className="p-6 rounded-2xl bg-neutral-900/50 border border-white/5">
+                <h3 className="text-lg font-semibold mb-4">Business Hours</h3>
+                <div className="space-y-2 text-neutral-400">
+                  <div className="flex justify-between">
+                    <span>Monday - Friday</span>
+                    <span className="text-white">9:00 AM - 6:00 PM</span>
                   </div>
-                  <div>
-                    <h3 className="text-gray-900 font-semibold mb-1">Email</h3>
-                    <p className="text-gray-600">support@inhaus.co.in</p>
+                  <div className="flex justify-between">
+                    <span>Saturday</span>
+                    <span className="text-white">10:00 AM - 4:00 PM</span>
                   </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl">
-                    <Phone className="text-orange-600" size={24} />
-                  </div>
-                  <div>
-                    <h3 className="text-gray-900 font-semibold mb-1">Phone</h3>
-                    <p className="text-gray-600">+91 7416925607</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl">
-                    <MapPin className="text-orange-600" size={24} />
-                  </div>
-                  <div>
-                    <h3 className="text-gray-900 font-semibold mb-1">InHaus Experience Center</h3>
-                    <p className="text-gray-600">
-                      Shop no - 207, 1st Floor<br />
-                      Kokapet Terminal, Radha Spaces<br />
-                      Gandipet, Hyderabad - 500075<br />
-                      Telangana, India
-                    </p>
+                  <div className="flex justify-between">
+                    <span>Sunday</span>
+                    <span className="text-neutral-500">Closed</span>
                   </div>
                 </div>
               </div>
-
-              <div className="mt-12">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Business Hours</h3>
-                <div className="space-y-2 text-gray-600">
-                  <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                  <p>Saturday: 10:00 AM - 4:00 PM</p>
-                  <p>Sunday: Closed</p>
-                </div>
-              </div>
-            </div>
+            </motion.div>
 
             {/* Contact Form */}
-            <div className="bg-gradient-to-br from-orange-50 to-red-50 p-8 rounded-2xl border-2 border-orange-200">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Send us a Message</h2>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                    Full Name *
-                  </label>
-                  <Input
-                    id="name"
-                    name="name"
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="bg-white border-gray-300 text-gray-900"
-                    placeholder="John Doe"
-                  />
-                </div>
+            <motion.div 
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="lg:col-span-3"
+            >
+              <div className="bg-neutral-900/50 border border-white/5 rounded-3xl p-8 md:p-10">
+                <h2 className="text-2xl font-bold mb-2">Send us a Message</h2>
+                <p className="text-neutral-400 mb-8">Fill out the form and we'll get back to you within 24 hours.</p>
 
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address *
-                  </label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="bg-white border-gray-300 text-gray-900"
-                    placeholder="john@example.com"
-                  />
-                </div>
+                <form onSubmit={handleSubmit} className="space-y-6" data-testid="contact-form">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm text-neutral-400 mb-2">Full Name *</label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-neutral-500 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all"
+                        placeholder="John Doe"
+                        data-testid="contact-name"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-neutral-400 mb-2">Email Address *</label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-neutral-500 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all"
+                        placeholder="john@example.com"
+                        data-testid="contact-email"
+                      />
+                    </div>
+                  </div>
 
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number
-                  </label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="bg-white border-gray-300 text-gray-900"
-                    placeholder="+1 (555) 123-4567"
-                  />
-                </div>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm text-neutral-400 mb-2">Phone Number</label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-neutral-500 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all"
+                        placeholder="+91 98765 43210"
+                        data-testid="contact-phone"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-neutral-400 mb-2">Company</label>
+                      <input
+                        type="text"
+                        name="company"
+                        value={formData.company}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-neutral-500 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all"
+                        placeholder="Your Company"
+                        data-testid="contact-company"
+                      />
+                    </div>
+                  </div>
 
-                <div>
-                  <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
-                    Company Name
-                  </label>
-                  <Input
-                    id="company"
-                    name="company"
-                    type="text"
-                    value={formData.company}
-                    onChange={handleChange}
-                    className="bg-white border-gray-300 text-gray-900"
-                    placeholder="Your Company"
-                  />
-                </div>
+                  <div>
+                    <label className="block text-sm text-neutral-400 mb-2">Message *</label>
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
+                      rows={5}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-neutral-500 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all resize-none"
+                      placeholder="Tell us about your project or ask us anything..."
+                      data-testid="contact-message"
+                    />
+                  </div>
 
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                    Message *
-                  </label>
-                  <Textarea
-                    id="message"
-                    name="message"
-                    required
-                    value={formData.message}
-                    onChange={handleChange}
-                    rows={5}
-                    className="bg-white border-gray-300 text-gray-900"
-                    placeholder="Tell us about your project..."
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-6"
-                >
-                  {isSubmitting ? 'Sending...' : 'Send Message'}
-                  <Send className="ml-2" size={18} />
-                </Button>
-              </form>
-            </div>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full flex items-center justify-center gap-3 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-8 py-4 rounded-xl font-medium transition-all duration-300 shadow-[0_0_20px_rgba(249,115,22,0.3)] hover:shadow-[0_0_30px_rgba(249,115,22,0.5)]"
+                    data-testid="contact-submit"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="h-5 w-5" />
+                        Send Message
+                      </>
+                    )}
+                  </button>
+                </form>
+              </div>
+            </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-transparent to-orange-500/10" />
+        <div className="container mx-auto px-4 md:px-8 lg:px-12 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="max-w-3xl mx-auto text-center"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Prefer to Browse First?
+            </h2>
+            <p className="text-neutral-400 text-lg mb-8">
+              Explore our range of smart home products and find the perfect solution for your needs.
+            </p>
+            <a href="/products">
+              <button className="group flex items-center justify-center gap-3 mx-auto bg-white/5 hover:bg-white/10 border border-white/10 hover:border-orange-500/30 text-white px-8 py-4 rounded-full font-medium transition-all duration-300">
+                View Products
+                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+            </a>
+          </motion.div>
         </div>
       </section>
 
