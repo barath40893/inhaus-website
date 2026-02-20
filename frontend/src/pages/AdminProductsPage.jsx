@@ -238,7 +238,8 @@ const AdminProductsPage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <>
+      <div className="max-w-7xl mx-auto px-4 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -249,29 +250,15 @@ const AdminProductsPage = () => {
               <h1 className="text-3xl font-bold text-gray-900">Product Master</h1>
               <p className="text-gray-600 mt-2">Manage your product catalog</p>
             </div>
-            <div className="flex gap-4">
-              <button
-                onClick={() => navigate('/admin/quotations')}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Quotations
-              </button>
-              <button
-                onClick={() => navigate('/admin/invoices')}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Invoices
-              </button>
-              <button
-                onClick={() => {
-                  resetForm();
-                  setShowModal(true);
-                }}
-                className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
-              >
-                + Add Product
-              </button>
-            </div>
+            <button
+              onClick={() => {
+                resetForm();
+                setShowModal(true);
+              }}
+              className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+            >
+              + Add Product
+            </button>
           </div>
 
           {loading ? (
