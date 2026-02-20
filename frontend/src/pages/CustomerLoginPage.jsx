@@ -4,7 +4,6 @@ import { useCustomerAuth } from '../context/CustomerAuthContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
 import { Mail, Lock, User, Phone, ArrowRight, Loader2 } from 'lucide-react';
 
 const CustomerLoginPage = () => {
@@ -25,7 +24,7 @@ const CustomerLoginPage = () => {
 
   // Get redirect URL from query params
   const searchParams = new URLSearchParams(location.search);
-  const redirectUrl = searchParams.get('redirect') || '/catalog';
+  const redirectUrl = searchParams.get('redirect') || '/products';
 
   useEffect(() => {
     if (isAuthenticated && !authLoading) {
@@ -74,24 +73,24 @@ const CustomerLoginPage = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50">
+    <div className="min-h-screen bg-[#0A0A0A] text-white">
       <Navbar />
       
-      <div className="flex items-center justify-center min-h-screen pt-20 pb-12 px-4">
+      <div className="flex items-center justify-center min-h-screen pt-32 pb-12 px-4">
         <div className="max-w-md w-full">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-white mb-2">
               {isLogin ? 'Welcome Back' : 'Create Account'}
             </h1>
-            <p className="text-gray-600">
+            <p className="text-neutral-400">
               {isLogin 
                 ? 'Sign in to view products and place orders' 
                 : 'Sign up to start shopping with InHaus'}
@@ -99,11 +98,11 @@ const CustomerLoginPage = () => {
           </div>
 
           {/* Card */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 border border-orange-100">
+          <div className="bg-neutral-900/50 backdrop-blur-sm rounded-2xl border border-white/10 p-8">
             {/* Google Sign In */}
             <button
               onClick={handleGoogleLogin}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-colors mb-6"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors mb-6"
               data-testid="google-signin-btn"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -124,22 +123,22 @@ const CustomerLoginPage = () => {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
               </svg>
-              <span className="font-medium text-gray-700">Continue with Google</span>
+              <span className="font-medium text-white">Continue with Google</span>
             </button>
 
             {/* Divider */}
             <div className="relative mb-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200"></div>
+                <div className="w-full border-t border-white/10"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-gray-500">or continue with email</span>
+                <span className="px-4 bg-neutral-900/50 text-neutral-500">or continue with email</span>
               </div>
             </div>
 
             {/* Error */}
             {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
                 {error}
               </div>
             )}
@@ -148,16 +147,16 @@ const CustomerLoginPage = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {!isLogin && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                  <label className="block text-sm font-medium text-neutral-400 mb-2">Full Name</label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                    <Input
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500 h-5 w-5" />
+                    <input
                       type="text"
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
                       required={!isLogin}
-                      className="pl-10"
+                      className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-neutral-500 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all"
                       placeholder="John Doe"
                       data-testid="register-name-input"
                     />
@@ -166,16 +165,16 @@ const CustomerLoginPage = () => {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <label className="block text-sm font-medium text-neutral-400 mb-2">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  <Input
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500 h-5 w-5" />
+                  <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="pl-10"
+                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-neutral-500 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all"
                     placeholder="you@example.com"
                     data-testid="email-input"
                   />
@@ -183,16 +182,16 @@ const CustomerLoginPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <label className="block text-sm font-medium text-neutral-400 mb-2">Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  <Input
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500 h-5 w-5" />
+                  <input
                     type="password"
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    className="pl-10"
+                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-neutral-500 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all"
                     placeholder="••••••••"
                     data-testid="password-input"
                   />
@@ -201,15 +200,15 @@ const CustomerLoginPage = () => {
 
               {!isLogin && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone (Optional)</label>
+                  <label className="block text-sm font-medium text-neutral-400 mb-2">Phone (Optional)</label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                    <Input
+                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500 h-5 w-5" />
+                    <input
                       type="tel"
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="pl-10"
+                      className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-neutral-500 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all"
                       placeholder="+91 9876543210"
                       data-testid="register-phone-input"
                     />
@@ -217,10 +216,10 @@ const CustomerLoginPage = () => {
                 </div>
               )}
 
-              <Button
+              <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-6"
+                className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white py-4 rounded-xl font-medium transition-all duration-300 shadow-[0_0_20px_rgba(249,115,22,0.3)] hover:shadow-[0_0_30px_rgba(249,115,22,0.5)]"
                 data-testid="submit-btn"
               >
                 {loading ? (
@@ -228,22 +227,22 @@ const CustomerLoginPage = () => {
                 ) : (
                   <>
                     {isLogin ? 'Sign In' : 'Create Account'}
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <ArrowRight className="h-5 w-5" />
                   </>
                 )}
-              </Button>
+              </button>
             </form>
 
             {/* Toggle */}
             <div className="mt-6 text-center">
-              <p className="text-gray-600">
+              <p className="text-neutral-400">
                 {isLogin ? "Don't have an account?" : "Already have an account?"}
                 <button
                   onClick={() => {
                     setIsLogin(!isLogin);
                     setError('');
                   }}
-                  className="ml-2 text-orange-600 hover:text-orange-700 font-medium"
+                  className="ml-2 text-orange-500 hover:text-orange-400 font-medium"
                   data-testid="toggle-auth-mode"
                 >
                   {isLogin ? 'Sign Up' : 'Sign In'}
