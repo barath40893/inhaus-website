@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { ArrowRight, Zap, Shield, Smartphone, Mic, Clock, TrendingUp, ChevronRight, Play } from 'lucide-react';
+import { ArrowRight, Zap, Shield, Smartphone, Mic, Clock, TrendingUp, ChevronRight, Play, CheckCircle } from 'lucide-react';
 
 const HomePage = () => {
   const [activeFeature, setActiveFeature] = useState(0);
@@ -46,6 +46,12 @@ const HomePage = () => {
     { value: '50K+', label: 'Devices Active' },
     { value: '30%', label: 'Energy Saved' },
     { value: '24/7', label: 'Support' },
+  ];
+
+  const partners = [
+    { name: 'Amazon Alexa', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/cc/Amazon_Alexa_App_Logo.png' },
+    { name: 'Google Home', logo: 'https://upload.wikimedia.org/wikipedia/commons/5/5a/Google_Assistant_logo.png' },
+    { name: 'Apple HomeKit', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/ab/Apple-logo.png' },
   ];
 
   const fadeInUp = {
