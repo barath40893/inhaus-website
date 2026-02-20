@@ -82,6 +82,7 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
 - [x] **Updated startup animation** - Dark theme welcome screen with animated grid and glowing effects
 - [x] **Added trust indicators** - Free Installation, 2-Year Warranty, 24/7 Support badges on hero
 - [x] **Dark theme for CustomerOrdersPage** - Updated order cards and status badges for dark mode
+- [x] **P0 Fixed: Blank /login page** - Added redirect from `/login` to `/customer/login` in App.js (Feb 2026)
 
 ---
 
