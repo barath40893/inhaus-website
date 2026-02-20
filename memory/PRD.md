@@ -83,6 +83,7 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
 - [x] **Added trust indicators** - Free Installation, 2-Year Warranty, 24/7 Support badges on hero
 - [x] **Dark theme for CustomerOrdersPage** - Updated order cards and status badges for dark mode
 - [x] **P0 Fixed: Blank /login page** - Added redirect from `/login` to `/customer/login` in App.js (Feb 2026)
+- [x] **P0 Fixed: Quotations not saving/loading** - Fixed `convert_order_to_quotation` endpoint creating wrong schema (used `quotation_number`/`customer`/`rooms` instead of `quote_number`/`customer_name`/`items`). Added legacy data migration in GET endpoint. (Feb 2026)
 
 ---
 
