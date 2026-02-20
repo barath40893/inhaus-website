@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import AdminHeader from '../components/AdminHeader';
 
 const AdminCreateQuotationPage = () => {
   const navigate = useNavigate();

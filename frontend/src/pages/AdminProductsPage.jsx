@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import AdminHeader from '../components/AdminHeader';
 import { motion } from 'framer-motion';
 
 const AdminProductsPage = () => {
