@@ -65,6 +65,7 @@ function AppRouter() {
       <Route path="/terms" element={<TermsPage />} />
       
       {/* Customer Routes */}
+      <Route path="/login" element={<Navigate to="/customer/login" replace />} />
       <Route path="/customer/login" element={<CustomerLoginPage />} />
       <Route path="/auth/callback" element={<CustomerAuthCallback />} />
       <Route path="/catalog" element={<Navigate to="/products" replace />} />
