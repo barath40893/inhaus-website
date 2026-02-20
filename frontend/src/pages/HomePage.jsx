@@ -1,425 +1,354 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { Link } from 'react-router-dom';
-import { Button } from '../components/ui/button';
-import { ArrowRight, CheckCircle, Zap, Shield, Star, Smartphone, Home, Lock, Lightbulb, Clock, TrendingUp, Mic } from 'lucide-react';
-import { Card, CardContent } from '../components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { ArrowRight, Zap, Shield, Smartphone, Mic, Clock, TrendingUp, ChevronRight, Play } from 'lucide-react';
 
 const HomePage = () => {
-  const [activeTab, setActiveTab] = useState('home');
-  const videoRefs = useRef([]);
-
-  useEffect(() => {
-    // Force play all videos
-    videoRefs.current.forEach(video => {
-      if (video) {
-        video.play().catch(err => console.log('Video play failed:', err));
-      }
-    });
-  }, []);
+  const [activeFeature, setActiveFeature] = useState(0);
 
   const features = [
     {
       icon: Zap,
-      title: 'Comfort & Convenience',
-      description: 'Control all your devices from anywhere. Experience true convenience at your fingertips.',
-      image: 'https://images.unsplash.com/photo-1758523417185-5d46089b870a?w=800&q=80',
+      title: 'Instant Control',
+      description: 'Command your entire home with a single tap. Lights, climate, security—all at your fingertips.',
     },
     {
       icon: Shield,
-      title: 'Secure & Safe',
-      description: 'Enterprise-grade security with real-time monitoring and instant alerts.',
-      image: 'https://images.unsplash.com/photo-1708807472445-d33589e6b090?w=800&q=80',
+      title: 'Advanced Security',
+      description: 'Enterprise-grade protection with real-time monitoring, smart locks, and instant alerts.',
     },
     {
       icon: TrendingUp,
-      title: 'Energy Efficient',
-      description: 'Save up to 30% on electricity bills with smart energy tracking.',
-      image: 'https://images.unsplash.com/photo-1747224317348-887f7ed01d34?w=800&q=80',
-    },
-    {
-      icon: Smartphone,
-      title: 'Easy Control',
-      description: 'Intuitive mobile app for seamless control of your entire home.',
-      image: 'https://images.unsplash.com/photo-1650682009477-52fd77302b78?w=800&q=80',
+      title: 'Energy Intelligence',
+      description: 'AI-powered optimization that learns your habits and reduces energy costs by up to 30%.',
     },
     {
       icon: Mic,
-      title: 'Voice Commands',
-      description: 'Works with Alexa, Google Home, and Siri for hands-free control.',
-      image: 'https://images.unsplash.com/photo-1752955471067-294a5de5bf48?w=800&q=80',
+      title: 'Voice Activated',
+      description: 'Seamless integration with Alexa, Google Home, and Siri for hands-free living.',
+    },
+    {
+      icon: Smartphone,
+      title: 'Remote Access',
+      description: 'Monitor and control your home from anywhere in the world through our intuitive app.',
     },
     {
       icon: Clock,
       title: 'Smart Automation',
-      description: 'Set schedules and automations for a truly intelligent home.',
-      image: 'https://images.unsplash.com/photo-1746596912830-18970b9e2c89?w=800&q=80',
-    },
-  ];
-
-  const testimonials = [
-    {
-      name: 'Sarah Williams',
-      role: 'Homeowner, Mumbai',
-      rating: 5,
-      text: 'InHaus transformed my home! The installation was quick, and the app is incredibly easy to use. Love the voice control feature!',
-      avatar: 'https://i.pravatar.cc/150?img=1',
-    },
-    {
-      name: 'Rajesh Kumar',
-      role: 'Tech Professional, Bangalore',
-      rating: 5,
-      text: 'Amazing product! The energy monitoring helped me save significantly on my electricity bills. Highly recommended!',
-      avatar: 'https://i.pravatar.cc/150?img=13',
-    },
-    {
-      name: 'Priya Sharma',
-      role: 'Interior Designer, Delhi',
-      rating: 5,
-      text: 'I recommend InHaus to all my clients. The switches are elegant and the smart features are impressive.',
-      avatar: 'https://i.pravatar.cc/150?img=5',
+      description: 'Set intelligent schedules and scenes that adapt to your lifestyle automatically.',
     },
   ];
 
   const stats = [
-    { label: 'Happy Homes', value: '5000+' },
-    { label: 'Devices Installed', value: '50K+' },
-    { label: 'Active Users', value: '15K+' },
-    { label: 'Smart Products', value: '30+' },
+    { value: '5000+', label: 'Smart Homes' },
+    { value: '50K+', label: 'Devices Active' },
+    { value: '30%', label: 'Energy Saved' },
+    { value: '24/7', label: 'Support' },
   ];
 
-  const intelligentLiving = [
-    {
-      id: 'home',
-      title: 'For Home',
-      subtitle: 'Seamless Smart Home control,',
-      subtitle2: 'anytime, anywhere',
-      image: 'https://images.unsplash.com/photo-1751945965597-71171ec7a458',
-      link: '/smart-homes',
-    },
-    {
-      id: 'commercial',
-      title: 'For Commercial Space',
-      subtitle: 'Enterprise-Grade Intelligence',
-      subtitle2: 'for Optimized Operations',
-      image: 'https://images.unsplash.com/photo-1750768145651-86374acaff4e',
-      link: '/smart-commercial',
-    },
-    {
-      id: 'hospitality',
-      title: 'For Hospitality',
-      subtitle: 'Elevating Guest Experiences',
-      subtitle2: 'with Intelligent Luxury',
-      image: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461',
-      link: '/smart-hospitality',
-    },
-  ];
+  const fadeInUp = {
+    initial: { opacity: 0, y: 40 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.6, ease: "easeOut" }
+  };
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-[#0A0A0A] text-white overflow-x-hidden">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white">
-        <div className="container mx-auto px-4 lg:px-8 relative z-10 pt-20">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              {/* Left Content */}
-              <div className="text-left">
-                <div className="inline-block mb-4 px-4 py-2 bg-gradient-to-r from-orange-100 to-red-100 rounded-full">
-                  <span className="text-sm font-semibold gradient-text">The Future of Smart Living</span>
-                </div>
-                
-                <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-                  Transform Your Home with
-                  <span className="block mt-2 gradient-text">
-                    InHaus
-                  </span>
-                </h1>
-                
-                <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                  Experience seamless home automation with voice control, energy monitoring, and complete security—all from your smartphone.
-                </p>
-                
-                <div className="flex flex-col sm:flex-row gap-4 mb-12">
-                  <Link to="/contact">
-                    <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
-                      Get Started <ArrowRight className="ml-2" size={20} />
-                    </Button>
-                  </Link>
-                  <Link to="/products">
-                    <Button variant="outline" className="border-2 border-orange-500 text-orange-600 hover:bg-orange-50 px-8 py-6 text-lg rounded-xl transition-all duration-300">
-                      View Products
-                    </Button>
-                  </Link>
-                </div>
-                
-                {/* Trust indicators */}
-                <div className="flex items-center gap-6 text-sm text-gray-600">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="text-green-500" size={20} />
-                    <span>Free Installation</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="text-green-500" size={20} />
-                    <span>2-Year Warranty</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="text-green-500" size={20} />
-                    <span>24/7 Support</span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Right Image */}
-              <div className="relative">
-                <div className="relative z-10">
-                  <img
-                    src="https://images.unsplash.com/photo-1564078516393-cf04bd966897?w=800&q=80"
-                    alt="Premium Luxury Smart Home Interior with Ambient Lighting"
-                    className="w-full rounded-3xl shadow-2xl object-cover"
-                  />
-                </div>
-                <div className="absolute -bottom-6 -right-6 w-full h-full bg-gradient-to-br from-orange-200 to-red-200 rounded-3xl -z-10"></div>
-              </div>
-            </div>
+      <section className="relative min-h-screen flex items-center pt-32 pb-20" data-testid="hero-section">
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src="https://images.pexels.com/photos/30441226/pexels-photo-30441226.jpeg?auto=compress&cs=tinysrgb&w=1920"
+            alt="Modern smart home interior"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A]/70 via-[#0A0A0A]/80 to-[#0A0A0A]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A]/90 via-transparent to-[#0A0A0A]/50" />
+        </div>
+
+        <div className="container mx-auto px-4 md:px-8 lg:px-12 relative z-10">
+          <div className="max-w-4xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-6"
+            >
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-500 text-sm font-medium">
+                <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
+                The Future of Smart Living
+              </span>
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-5xl md:text-7xl lg:text-8xl font-bold leading-none mb-8"
+              data-testid="hero-title"
+            >
+              Your Home,
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-400">
+                Reimagined.
+              </span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-lg md:text-xl text-neutral-400 max-w-2xl mb-10 leading-relaxed"
+            >
+              Experience the next generation of home automation. Seamless control, 
+              intelligent energy management, and uncompromising security—all unified 
+              in one elegant ecosystem.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex flex-col sm:flex-row gap-4"
+            >
+              <Link to="/products" data-testid="hero-cta-primary">
+                <button className="group flex items-center justify-center gap-3 bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-full font-medium transition-all duration-300 shadow-[0_0_30px_rgba(249,115,22,0.3)] hover:shadow-[0_0_40px_rgba(249,115,22,0.5)] hover:scale-105">
+                  Explore Products
+                  <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+              </Link>
+              <Link to="/contact" data-testid="hero-cta-secondary">
+                <button className="flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white px-8 py-4 rounded-full font-medium transition-all duration-300 backdrop-blur-sm">
+                  <Play size={18} className="text-orange-500" />
+                  Get a Free Quote
+                </button>
+              </Link>
+            </motion.div>
           </div>
         </div>
-      </section>
 
-      {/* How It Works */}
-      <section className="py-32 bg-gradient-to-br from-slate-50 via-white to-orange-50 relative overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-orange-200 to-red-200 rounded-full blur-3xl opacity-20"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-br from-red-200 to-orange-200 rounded-full blur-3xl opacity-20"></div>
-        
-        <div className="container mx-auto px-4 lg:px-8 relative z-10">
-          <div className="text-center mb-20">
-            <div className="inline-block mb-4 px-6 py-2 glass rounded-full border border-orange-500/30">
-              <span className="text-sm font-semibold gradient-text">Simple Process</span>
-            </div>
-            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">How It Works</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">Get started with your smart home in three simple steps</p>
+        {/* Scroll Indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 1 }}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        >
+          <span className="text-xs text-neutral-500 uppercase tracking-widest">Scroll</span>
+          <div className="w-6 h-10 rounded-full border-2 border-neutral-600 flex justify-center p-2">
+            <motion.div
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="w-1 h-1 bg-orange-500 rounded-full"
+            />
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto">
-            {/* Step 1 */}
-            <div className="relative group">
-              <div className="premium-card gradient-border p-10 rounded-3xl h-full relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500 to-red-500 rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
-                <div className="relative z-10">
-                  <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-4xl font-bold text-white mb-6 shadow-xl group-hover:scale-110 transition-transform duration-500">
-                    1
-                  </div>
-                  <h3 className="text-3xl font-bold text-gray-900 mb-4 group-hover:gradient-text transition-all duration-300">Choose Your Devices</h3>
-                  <p className="text-gray-600 leading-relaxed">Select from our range of smart lights, switches, sensors, and appliances that fit your needs.</p>
-                </div>
-              </div>
-              <div className="hidden md:block absolute top-1/2 -right-6 transform -translate-y-1/2 text-orange-500 z-20">
-                <ArrowRight size={40} className="animate-pulse" />
-              </div>
-            </div>
-
-            {/* Step 2 */}
-            <div className="relative group">
-              <div className="premium-card gradient-border p-10 rounded-3xl h-full relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-red-500 to-orange-500 rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
-                <div className="relative z-10">
-                  <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-orange-500 rounded-2xl flex items-center justify-center text-4xl font-bold text-white mb-6 shadow-xl group-hover:scale-110 transition-transform duration-500">
-                    2
-                  </div>
-                  <h3 className="text-3xl font-bold text-gray-900 mb-4 group-hover:gradient-text transition-all duration-300">Easy Installation</h3>
-                  <p className="text-gray-600 leading-relaxed">Simple DIY setup or professional installation. Connect devices to your Wi-Fi in minutes.</p>
-                </div>
-              </div>
-              <div className="hidden md:block absolute top-1/2 -right-6 transform -translate-y-1/2 text-red-500 z-20">
-                <ArrowRight size={40} className="animate-pulse" />
-              </div>
-            </div>
-
-            {/* Step 3 */}
-            <div className="relative group">
-              <div className="premium-card gradient-border p-10 rounded-3xl h-full relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-600 to-red-600 rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
-                <div className="relative z-10">
-                  <div className="w-20 h-20 bg-gradient-to-br from-orange-600 to-red-600 rounded-2xl flex items-center justify-center text-4xl font-bold text-white mb-6 shadow-xl group-hover:scale-110 transition-transform duration-500">
-                    3
-                  </div>
-                  <h3 className="text-3xl font-bold text-gray-900 mb-4 group-hover:gradient-text transition-all duration-300">Control Everything</h3>
-                  <p className="text-gray-600 leading-relaxed">Use your smartphone or voice commands to control your entire home from anywhere.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Why InHaus */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-orange-50">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Why InHaus?</h2>
-          </div>
-
-          <div className="space-y-24">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12`}
-              >
-                <div className="lg:w-1/2">
-                  <img
-                    src={feature.image}
-                    alt={feature.title}
-                    className="w-full h-96 object-cover rounded-2xl shadow-2xl"
-                  />
-                </div>
-                <div className="lg:w-1/2">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="p-4 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl">
-                      <feature.icon size={32} className="text-orange-600" />
-                    </div>
-                  </div>
-                  <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{feature.title}</h3>
-                  <p className="text-lg text-gray-600">{feature.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-gradient-to-r from-orange-500 to-red-500">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Trusted by Thousands of Happy Homes
-            </h2>
-            <p className="text-xl text-white/90">Join the Smart Home Revolution</p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
+      <section className="py-20 border-y border-white/5" data-testid="stats-section">
+        <div className="container mx-auto px-4 md:px-8 lg:px-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4">
             {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-5xl md:text-6xl font-bold text-white mb-2">
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="text-center"
+              >
+                <div className="text-4xl md:text-5xl font-bold text-white mb-2">
                   {stat.value}
                 </div>
-                <div className="text-lg text-white/90">{stat.label}</div>
-              </div>
+                <div className="text-sm text-neutral-500 uppercase tracking-wider">
+                  {stat.label}
+                </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Intelligent Living */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Intelligent Living, Tailored for any space
+      {/* Features Section */}
+      <section className="py-24 md:py-32" data-testid="features-section">
+        <div className="container mx-auto px-4 md:px-8 lg:px-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <span className="text-sm text-orange-500 uppercase tracking-widest font-medium mb-4 block">
+              Why InHaus
+            </span>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+              Intelligence Meets
+              <br />
+              <span className="text-neutral-500">Elegance</span>
             </h2>
-          </div>
+            <p className="text-neutral-400 text-lg max-w-2xl mx-auto">
+              Every feature designed to simplify your life while elevating your home experience.
+            </p>
+          </motion.div>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="max-w-6xl mx-auto">
-            <TabsList className="grid w-full grid-cols-3 mb-8 bg-gray-100">
-              {intelligentLiving.map((item) => (
-                <TabsTrigger key={item.id} value={item.id} className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white">
-                  {item.title}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            {intelligentLiving.map((item) => (
-              <TabsContent key={item.id} value={item.id}>
-                <Card className="bg-white border-gray-200 overflow-hidden shadow-xl">
-                  <CardContent className="p-0">
-                    <div className="grid md:grid-cols-2 gap-0">
-                      <div className="p-12 flex flex-col justify-center bg-gradient-to-br from-orange-50 to-red-50">
-                        <h3 className="text-3xl font-bold text-gray-900 mb-4">{item.subtitle}</h3>
-                        <p className="text-2xl text-gray-700 mb-8">{item.subtitle2}</p>
-                        <Link to={item.link}>
-                          <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white w-fit">
-                            Explore More <ArrowRight className="ml-2" />
-                          </Button>
-                        </Link>
-                      </div>
-                      <div className="h-96 md:h-full">
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                onMouseEnter={() => setActiveFeature(index)}
+                className={`group relative p-8 rounded-3xl border transition-all duration-500 cursor-pointer ${
+                  activeFeature === index
+                    ? 'bg-neutral-900/60 border-orange-500/30 shadow-[0_0_40px_rgba(249,115,22,0.1)]'
+                    : 'bg-neutral-900/20 border-white/5 hover:bg-neutral-900/40 hover:border-white/10'
+                }`}
+                data-testid={`feature-card-${index}`}
+              >
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 ${
+                  activeFeature === index
+                    ? 'bg-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.4)]'
+                    : 'bg-white/5 group-hover:bg-white/10'
+                }`}>
+                  <feature.icon size={24} className={activeFeature === index ? 'text-white' : 'text-orange-500'} />
+                </div>
+                <h3 className="text-xl font-semibold mb-3 text-white">{feature.title}</h3>
+                <p className="text-neutral-400 leading-relaxed">{feature.description}</p>
+                
+                {/* Hover glow effect */}
+                <div className={`absolute inset-0 rounded-3xl transition-opacity duration-500 pointer-events-none ${
+                  activeFeature === index ? 'opacity-100' : 'opacity-0'
+                }`}>
+                  <div className="absolute -inset-px bg-gradient-to-r from-orange-500/20 via-transparent to-orange-500/20 rounded-3xl blur-sm" />
+                </div>
+              </motion.div>
             ))}
-          </Tabs>
+          </div>
         </div>
       </section>
 
-      {/* Integration Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-orange-50">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Seamlessly Connect to Your Smart Devices
+      {/* Product Showcase Section */}
+      <section className="py-24 md:py-32 relative overflow-hidden" data-testid="showcase-section">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-orange-500/5 to-transparent" />
+        
+        <div className="container mx-auto px-4 md:px-8 lg:px-12 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <span className="text-sm text-orange-500 uppercase tracking-widest font-medium mb-4 block">
+                Our Products
+              </span>
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                Premium Smart Devices
+                <br />
+                <span className="text-neutral-500">Built for Modern Living</span>
               </h2>
-              <p className="text-xl text-gray-600 mb-8">
-                Control all your smart home devices from one intuitive mobile application. Experience seamless integration with endless possibilities.
+              <p className="text-neutral-400 text-lg mb-8 leading-relaxed">
+                From intelligent lighting to advanced security systems, our curated collection 
+                transforms ordinary spaces into extraordinary smart environments.
               </p>
-              <ul className="space-y-4">
-                <li className="flex items-center gap-3 text-gray-700">
-                  <CheckCircle className="text-orange-500" size={24} />
-                  <span>Easy device pairing and setup</span>
-                </li>
-                <li className="flex items-center gap-3 text-gray-700">
-                  <CheckCircle className="text-orange-500" size={24} />
-                  <span>Voice control integration</span>
-                </li>
-                <li className="flex items-center gap-3 text-gray-700">
-                  <CheckCircle className="text-orange-500" size={24} />
-                  <span>Real-time monitoring and alerts</span>
-                </li>
-                <li className="flex items-center gap-3 text-gray-700">
-                  <CheckCircle className="text-orange-500" size={24} />
-                  <span>Schedule and automation</span>
-                </li>
-              </ul>
-            </div>
-            <div className="relative">
-              <div className="relative z-10 w-full max-w-md mx-auto">
-                <img
-                  src="https://images.unsplash.com/photo-1553624495-5a4561343a52?w=800&q=80"
-                  alt="Premium Smart Home Control Dashboard - Elegant Interface"
-                  className="w-full rounded-2xl shadow-2xl"
-                />
+              
+              <div className="space-y-4 mb-10">
+                {['Smart Switches & Dimmers', 'Security Cameras & Locks', 'Climate Control Systems', 'Voice-Activated Hubs'].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 text-neutral-300">
+                    <div className="w-8 h-8 rounded-full bg-orange-500/10 flex items-center justify-center">
+                      <ChevronRight size={16} className="text-orange-500" />
+                    </div>
+                    {item}
+                  </div>
+                ))}
               </div>
-              <div className="absolute -bottom-6 -right-6 w-64 h-64 bg-gradient-to-br from-orange-300 to-red-300 rounded-full blur-3xl opacity-30 -z-10"></div>
-            </div>
+
+              <Link to="/products">
+                <button className="group flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-orange-500/30 text-white px-8 py-4 rounded-full font-medium transition-all duration-300">
+                  Browse All Products
+                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+              </Link>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="relative"
+            >
+              <div className="relative rounded-3xl overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1642610956697-99ead57cec7b?w=800&q=80"
+                  alt="Smart home devices showcase"
+                  className="w-full aspect-[4/3] object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent" />
+              </div>
+              
+              {/* Floating card */}
+              <div className="absolute -bottom-6 -left-6 bg-neutral-900/90 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center">
+                    <Zap className="text-orange-500" size={24} />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-white">30%</div>
+                    <div className="text-sm text-neutral-400">Energy Savings</div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-orange-500 to-red-500">
-        <div className="container mx-auto px-4 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready to Make Your Home Smart?
-          </h2>
-          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Join thousands of happy homeowners. Get started with InHaus today and experience the future of living.
-          </p>
-          <Link to="/contact">
-            <Button className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-6 text-lg rounded-full transition-all duration-300 shadow-lg">
-              Get Started Now <ArrowRight className="ml-2" />
-            </Button>
-          </Link>
+      <section className="py-24 md:py-32 relative" data-testid="cta-section">
+        <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-transparent to-orange-500/10" />
+        
+        <div className="container mx-auto px-4 md:px-8 lg:px-12 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="max-w-4xl mx-auto text-center"
+          >
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+              Ready to Transform
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-400">
+                Your Living Space?
+              </span>
+            </h2>
+            <p className="text-neutral-400 text-lg mb-10 max-w-2xl mx-auto">
+              Join thousands of homeowners who have already made the switch to intelligent living. 
+              Get a free consultation and personalized quote today.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/contact">
+                <button className="group flex items-center justify-center gap-3 bg-orange-500 hover:bg-orange-600 text-white px-10 py-5 rounded-full font-medium text-lg transition-all duration-300 shadow-[0_0_30px_rgba(249,115,22,0.3)] hover:shadow-[0_0_50px_rgba(249,115,22,0.5)] hover:scale-105">
+                  Get Free Consultation
+                  <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+              </Link>
+              <Link to="/products">
+                <button className="flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white px-10 py-5 rounded-full font-medium text-lg transition-all duration-300">
+                  View Products
+                </button>
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
 
