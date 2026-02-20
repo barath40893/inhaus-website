@@ -83,7 +83,7 @@ const Navbar = () => {
               {/* User / Login */}
               {customer ? (
                 <Link
-                  to="/account"
+                  to="/customer/orders"
                   className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm font-medium hover:bg-white/10 transition-all duration-300"
                   data-testid="nav-account"
                 >
