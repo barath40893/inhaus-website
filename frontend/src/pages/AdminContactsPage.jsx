@@ -158,12 +158,15 @@ const AdminContactsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AdminHeader />
+    <div className="max-w-7xl mx-auto px-4 py-6">
+      {/* Page Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Contact Submissions</h1>
+        <p className="text-sm text-gray-600">Manage customer inquiries</p>
+      </div>
 
-      {/* Filters and Stats */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
