@@ -23,7 +23,7 @@ const WelcomeScreen = ({ onComplete }) => {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.8, ease: 'easeInOut' }}
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-white"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#0A0A0A]"
           style={{ pointerEvents: 'none' }}
         >
           {/* Animated Background Pattern */}
@@ -31,7 +31,7 @@ const WelcomeScreen = ({ onComplete }) => {
             {/* Grid Lines */}
             <motion.div
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.03 }}
+              animate={{ opacity: 0.05 }}
               transition={{ duration: 1 }}
               className="absolute inset-0"
               style={{
@@ -46,9 +46,17 @@ const WelcomeScreen = ({ onComplete }) => {
             {/* Animated Gradient Circles */}
             <motion.div
               initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 2, opacity: 0.1 }}
+              animate={{ scale: 2, opacity: 0.15 }}
               transition={{ duration: 2, ease: 'easeOut' }}
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-gradient-to-br from-orange-500 to-red-500 blur-3xl"
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 blur-3xl"
+            />
+            
+            {/* Second glow */}
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1.5, opacity: 0.1 }}
+              transition={{ duration: 2.5, ease: 'easeOut', delay: 0.3 }}
+              className="absolute top-1/3 left-1/3 w-64 h-64 rounded-full bg-orange-500 blur-3xl"
             />
           </div>
 
@@ -82,10 +90,10 @@ const WelcomeScreen = ({ onComplete }) => {
               }}
               className="text-center"
             >
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl font-bold text-white mb-2">
                 Welcome to InHaus
               </h1>
-              <p className="text-gray-600">
+              <p className="text-neutral-400">
                 Smart Home Solutions
               </p>
             </motion.div>
@@ -99,7 +107,7 @@ const WelcomeScreen = ({ onComplete }) => {
                 ease: 'easeInOut',
                 delay: 0.5 
               }}
-              className="mt-8 h-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-full"
+              className="mt-8 h-1 bg-gradient-to-r from-orange-500 to-orange-400 rounded-full shadow-[0_0_20px_rgba(249,115,22,0.5)]"
             />
 
             {/* Animated Dots */}
@@ -118,7 +126,7 @@ const WelcomeScreen = ({ onComplete }) => {
                     repeat: Infinity,
                     repeatDelay: 0.8
                   }}
-                  className="w-2 h-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500"
+                  className="w-2 h-2 rounded-full bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.6)]"
                 />
               ))}
             </div>
@@ -134,7 +142,7 @@ const WelcomeScreen = ({ onComplete }) => {
               ease: [0.76, 0, 0.24, 1],
               delay: 2.5
             }}
-            className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-orange-500 to-red-500 origin-left"
+            className="absolute top-0 left-0 w-full h-full bg-[#0A0A0A] origin-left"
             style={{ 
               transformOrigin: 'left',
               zIndex: 10
