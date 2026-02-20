@@ -38,7 +38,7 @@ const AdminCustomersPage = () => {
 
   const fetchCustomers = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('adminToken');
       const response = await fetch(`${backendUrl}/api/admin/customers`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -62,7 +62,7 @@ const AdminCustomersPage = () => {
     setError('');
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('adminToken');
       const response = await fetch(`${backendUrl}/api/admin/customers`, {
         method: 'POST',
         headers: {
