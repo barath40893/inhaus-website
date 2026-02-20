@@ -55,7 +55,7 @@ function AppRouter() {
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/products" element={<ProductsPage />} />
       <Route path="/product/:productId" element={<ProductDetailPage />} />
-      <Route path="/shop" element={<ShopPage />} />
+      <Route path="/shop" element={<Navigate to="/products" replace />} />
       <Route path="/cart" element={<CartPage />} />
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/smart-homes" element={<SmartHomesPage />} />
