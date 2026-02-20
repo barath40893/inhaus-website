@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminHeader from '../components/AdminHeader';
 import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
 import { 
   ShoppingBag, 
   Search, 
@@ -15,7 +16,12 @@ import {
   Loader2,
   ChevronDown,
   ChevronUp,
-  IndianRupee
+  IndianRupee,
+  Edit,
+  FileText,
+  X,
+  Percent,
+  Save
 } from 'lucide-react';
 
 const statusOptions = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
@@ -36,6 +42,9 @@ const AdminCustomerOrdersPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedOrder, setExpandedOrder] = useState(null);
+  const [editingOrder, setEditingOrder] = useState(null);
+  const [editData, setEditData] = useState(null);
+  const [saving, setSaving] = useState(false);
   const [stats, setStats] = useState({
     totalOrders: 0,
     totalRevenue: 0,
@@ -51,7 +60,7 @@ const AdminCustomerOrdersPage = () => {
 
   const fetchOrders = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('adminToken');
       const response = await fetch(`${backendUrl}/api/admin/customer-orders`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -81,7 +90,7 @@ const AdminCustomerOrdersPage = () => {
 
   const updateOrderStatus = async (orderId, field, value) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('adminToken');
       const response = await fetch(`${backendUrl}/api/admin/customer-orders/${orderId}/status`, {
         method: 'PUT',
         headers: {
@@ -96,6 +105,134 @@ const AdminCustomerOrdersPage = () => {
       }
     } catch (error) {
       console.error('Error updating order:', error);
+    }
+  };
+
+  const startEditing = (order) => {
+    setEditingOrder(order.id);
+    setEditData({
+      items: order.items.map(item => ({ ...item })),
+      discount_type: order.discount_type || 'fixed',
+      discount_value: order.discount_value || 0,
+      include_gst: order.include_gst !== false,
+      gst_percentage: order.tax_percentage || 18
+    });
+  };
+
+  const updateItemPrice = (index, newPrice) => {
+    const updatedItems = [...editData.items];
+    updatedItems[index].list_price = parseFloat(newPrice) || 0;
+    updatedItems[index].total_price = updatedItems[index].list_price * updatedItems[index].quantity;
+    setEditData({ ...editData, items: updatedItems });
+  };
+
+  const updateItemQuantity = (index, newQty) => {
+    const updatedItems = [...editData.items];
+    updatedItems[index].quantity = parseInt(newQty) || 1;
+    updatedItems[index].total_price = updatedItems[index].list_price * updatedItems[index].quantity;
+    setEditData({ ...editData, items: updatedItems });
+  };
+
+  const calculateEditTotals = () => {
+    if (!editData) return { subtotal: 0, discount: 0, tax: 0, total: 0 };
+    
+    const subtotal = editData.items.reduce((sum, item) => sum + (item.list_price * item.quantity), 0);
+    
+    let discount = 0;
+    if (editData.discount_type === 'percentage') {
+      discount = subtotal * (editData.discount_value / 100);
+    } else {
+      discount = editData.discount_value || 0;
+    }
+    
+    const netAmount = subtotal - discount;
+    const tax = editData.include_gst ? netAmount * (editData.gst_percentage / 100) : 0;
+    const total = netAmount + tax;
+    
+    return { subtotal, discount, tax, total };
+  };
+
+  const saveOrderEdit = async () => {
+    setSaving(true);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch(`${backendUrl}/api/admin/customer-orders/${editingOrder}/edit`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(editData)
+      });
+
+      if (response.ok) {
+        alert('Order updated successfully!');
+        setEditingOrder(null);
+        setEditData(null);
+        fetchOrders();
+      } else {
+        const err = await response.json();
+        alert(`Error: ${err.detail || 'Failed to save'}`);
+      }
+    } catch (error) {
+      console.error('Error saving order:', error);
+      alert('Failed to save order');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const convertToQuotation = async (orderId) => {
+    if (!confirm('Convert this order to a quotation? This will create a new quotation that you can edit.')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch(`${backendUrl}/api/admin/customer-orders/${orderId}/convert-to-quotation`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert(`Order converted! Quotation: ${result.quotation_number}`);
+        navigate(`/admin/quotations/edit/${result.quotation_id}`);
+      } else {
+        const err = await response.json();
+        alert(`Error: ${err.detail || 'Failed to convert'}`);
+      }
+    } catch (error) {
+      console.error('Error converting order:', error);
+      alert('Failed to convert order');
+    }
+  };
+
+  const downloadInvoice = async (orderId, orderNumber) => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch(`${backendUrl}/api/admin/customer-orders/${orderId}/invoice`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `invoice_${orderNumber}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      alert('Failed to download invoice');
     }
   };
 
@@ -119,6 +256,8 @@ const AdminCustomerOrdersPage = () => {
     order.customer_email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const editTotals = calculateEditTotals();
+
   return (
     <div className="min-h-screen bg-gray-50">
       <AdminHeader />
@@ -128,7 +267,7 @@ const AdminCustomerOrdersPage = () => {
           <ShoppingBag className="h-8 w-8 text-orange-500" />
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Customer Orders</h1>
-            <p className="text-gray-600">Manage and track customer orders</p>
+            <p className="text-gray-600">Manage orders, apply discounts, and generate invoices</p>
           </div>
         </div>
 
@@ -153,7 +292,7 @@ const AdminCustomerOrdersPage = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-500">Total Revenue</p>
-                <p className="text-2xl font-bold text-green-600">₹{stats.totalRevenue.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-green-600">Rs. {stats.totalRevenue.toLocaleString()}</p>
               </div>
             </div>
           </div>
@@ -165,7 +304,7 @@ const AdminCustomerOrdersPage = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-500">Total Profit</p>
-                <p className="text-2xl font-bold text-orange-600">₹{stats.totalProfit.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-orange-600">Rs. {stats.totalProfit.toLocaleString()}</p>
               </div>
             </div>
           </div>
@@ -212,6 +351,7 @@ const AdminCustomerOrdersPage = () => {
               const status = statusConfig[order.order_status] || statusConfig.pending;
               const StatusIcon = status.icon;
               const isExpanded = expandedOrder === order.id;
+              const isEditing = editingOrder === order.id;
 
               return (
                 <div 
@@ -221,7 +361,7 @@ const AdminCustomerOrdersPage = () => {
                   {/* Order Header */}
                   <div 
                     className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                    onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
+                    onClick={() => !isEditing && setExpandedOrder(isExpanded ? null : order.id)}
                   >
                     <div className="flex flex-wrap items-center justify-between gap-4">
                       <div className="flex items-center gap-4">
@@ -236,8 +376,8 @@ const AdminCustomerOrdersPage = () => {
                       
                       <div className="flex items-center gap-6">
                         <div className="text-right">
-                          <p className="font-bold text-gray-900">₹{order.total?.toLocaleString()}</p>
-                          <p className="text-sm text-green-600">Profit: ₹{order.profit_margin?.toLocaleString()}</p>
+                          <p className="font-bold text-gray-900">Rs. {order.total?.toLocaleString()}</p>
+                          <p className="text-sm text-green-600">Profit: Rs. {order.profit_margin?.toLocaleString()}</p>
                         </div>
                         
                         <div className="flex items-center gap-2">
@@ -278,70 +418,274 @@ const AdminCustomerOrdersPage = () => {
 
                   {/* Expanded Details */}
                   {isExpanded && (
-                    <div className="border-t border-gray-100 p-4 bg-gray-50">
-                      {/* Items */}
-                      <div className="mb-4">
-                        <h4 className="font-medium text-gray-900 mb-2">Order Items</h4>
-                        <div className="space-y-2">
-                          {order.items?.map((item, idx) => (
-                            <div key={idx} className="flex items-center gap-4 p-3 bg-white rounded-lg">
-                              <div className="w-12 h-12 bg-gray-200 rounded flex-shrink-0 overflow-hidden">
-                                {item.image_url && (
-                                  <img src={`${backendUrl}${item.image_url}`} alt={item.product_name} className="w-full h-full object-cover" />
-                                )}
-                              </div>
-                              <div className="flex-1">
-                                <p className="font-medium text-gray-900">{item.product_name}</p>
-                                <p className="text-sm text-gray-500">
-                                  {item.room_name} • {item.model_no} × {item.quantity}
-                                </p>
-                              </div>
-                              <div className="text-right">
-                                <p className="font-medium">₹{item.total_price?.toLocaleString()}</p>
-                                <p className="text-xs text-green-600">Cost: ₹{item.total_cost?.toLocaleString()}</p>
+                    <div className="border-t border-gray-100">
+                      {/* Edit Mode */}
+                      {isEditing && editData ? (
+                        <div className="p-6 bg-orange-50">
+                          <div className="flex items-center justify-between mb-4">
+                            <h4 className="font-bold text-gray-900 flex items-center gap-2">
+                              <Edit className="h-5 w-5 text-orange-500" />
+                              Edit Order
+                            </h4>
+                            <button
+                              onClick={() => {
+                                setEditingOrder(null);
+                                setEditData(null);
+                              }}
+                              className="text-gray-500 hover:text-gray-700"
+                            >
+                              <X className="h-5 w-5" />
+                            </button>
+                          </div>
+
+                          {/* Edit Items */}
+                          <div className="bg-white rounded-lg p-4 mb-4">
+                            <h5 className="font-medium text-gray-900 mb-3">Product Prices</h5>
+                            <div className="space-y-3">
+                              {editData.items.map((item, idx) => (
+                                <div key={idx} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+                                  <div className="flex-1">
+                                    <p className="font-medium text-gray-900">{item.product_name}</p>
+                                    <p className="text-sm text-gray-500">{item.room_name}</p>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-sm text-gray-500">Qty:</span>
+                                    <Input
+                                      type="number"
+                                      value={item.quantity}
+                                      onChange={(e) => updateItemQuantity(idx, e.target.value)}
+                                      className="w-20"
+                                      min="1"
+                                    />
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-sm text-gray-500">Price:</span>
+                                    <Input
+                                      type="number"
+                                      value={item.list_price}
+                                      onChange={(e) => updateItemPrice(idx, e.target.value)}
+                                      className="w-28"
+                                    />
+                                  </div>
+                                  <div className="w-28 text-right font-medium">
+                                    Rs. {(item.list_price * item.quantity).toLocaleString()}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Discount & GST */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            {/* Discount */}
+                            <div className="bg-white rounded-lg p-4">
+                              <h5 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+                                <Percent className="h-4 w-4" />
+                                Discount
+                              </h5>
+                              <div className="flex gap-3">
+                                <select
+                                  value={editData.discount_type}
+                                  onChange={(e) => setEditData({ ...editData, discount_type: e.target.value })}
+                                  className="border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                >
+                                  <option value="fixed">Fixed Amount (Rs.)</option>
+                                  <option value="percentage">Percentage (%)</option>
+                                </select>
+                                <Input
+                                  type="number"
+                                  value={editData.discount_value}
+                                  onChange={(e) => setEditData({ ...editData, discount_value: parseFloat(e.target.value) || 0 })}
+                                  placeholder={editData.discount_type === 'percentage' ? 'e.g., 10' : 'e.g., 500'}
+                                  className="flex-1"
+                                />
                               </div>
                             </div>
-                          ))}
-                        </div>
-                      </div>
 
-                      {/* Addresses */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div className="bg-white rounded-lg p-3">
-                          <p className="font-medium text-gray-900 mb-1">Shipping Address</p>
-                          <p className="text-sm text-gray-600">{order.shipping_address}</p>
-                        </div>
-                        <div className="bg-white rounded-lg p-3">
-                          <p className="font-medium text-gray-900 mb-1">Billing Address</p>
-                          <p className="text-sm text-gray-600">{order.billing_address}</p>
-                        </div>
-                      </div>
+                            {/* GST */}
+                            <div className="bg-white rounded-lg p-4">
+                              <h5 className="font-medium text-gray-900 mb-3">GST Settings</h5>
+                              <div className="flex gap-3 items-center">
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    checked={editData.include_gst}
+                                    onChange={(e) => setEditData({ ...editData, include_gst: e.target.checked })}
+                                    className="w-4 h-4 text-orange-500 rounded border-gray-300 focus:ring-orange-500"
+                                  />
+                                  <span className="text-sm text-gray-700">Include GST</span>
+                                </label>
+                                {editData.include_gst && (
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-sm text-gray-500">Rate:</span>
+                                    <Input
+                                      type="number"
+                                      value={editData.gst_percentage}
+                                      onChange={(e) => setEditData({ ...editData, gst_percentage: parseFloat(e.target.value) || 0 })}
+                                      className="w-20"
+                                    />
+                                    <span className="text-sm text-gray-500">%</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
 
-                      {/* Financial Summary */}
-                      <div className="bg-white rounded-lg p-3">
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
-                          <div>
-                            <p className="text-xs text-gray-500">Subtotal</p>
-                            <p className="font-medium">₹{order.subtotal?.toLocaleString()}</p>
+                          {/* Preview Totals */}
+                          <div className="bg-white rounded-lg p-4 mb-4">
+                            <h5 className="font-medium text-gray-900 mb-3">Updated Totals</h5>
+                            <div className="grid grid-cols-4 gap-4 text-center">
+                              <div>
+                                <p className="text-sm text-gray-500">Subtotal</p>
+                                <p className="font-semibold">Rs. {editTotals.subtotal.toLocaleString()}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-500">Discount</p>
+                                <p className="font-semibold text-red-600">- Rs. {editTotals.discount.toLocaleString()}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-500">GST ({editData.include_gst ? editData.gst_percentage : 0}%)</p>
+                                <p className="font-semibold">Rs. {editTotals.tax.toLocaleString()}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-500">Total</p>
+                                <p className="font-bold text-orange-600 text-lg">Rs. {editTotals.total.toLocaleString()}</p>
+                              </div>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-xs text-gray-500">Tax ({order.tax_percentage}%)</p>
-                            <p className="font-medium">₹{order.tax_amount?.toLocaleString()}</p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-gray-500">Total</p>
-                            <p className="font-bold text-orange-600">₹{order.total?.toLocaleString()}</p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-gray-500">Cost</p>
-                            <p className="font-medium text-red-600">₹{order.total_cost?.toLocaleString()}</p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-gray-500">Profit</p>
-                            <p className="font-bold text-green-600">₹{order.profit_margin?.toLocaleString()}</p>
+
+                          {/* Save Button */}
+                          <div className="flex gap-3">
+                            <Button
+                              onClick={saveOrderEdit}
+                              disabled={saving}
+                              className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                            >
+                              {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
+                              Save Changes
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => {
+                                setEditingOrder(null);
+                                setEditData(null);
+                              }}
+                            >
+                              Cancel
+                            </Button>
                           </div>
                         </div>
-                      </div>
+                      ) : (
+                        <>
+                          {/* View Mode - Items */}
+                          <div className="p-6">
+                            <h4 className="font-medium text-gray-900 mb-2">Order Items</h4>
+                            <div className="space-y-2">
+                              {order.items?.map((item, idx) => (
+                                <div key={idx} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+                                  <div className="w-12 h-12 bg-gray-200 rounded flex-shrink-0 overflow-hidden">
+                                    {item.image_url && (
+                                      <img src={`${backendUrl}${item.image_url}`} alt={item.product_name} className="w-full h-full object-cover" />
+                                    )}
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className="font-medium text-gray-900">{item.product_name}</p>
+                                    <p className="text-sm text-gray-500">
+                                      {item.room_name} • {item.model_no} × {item.quantity}
+                                    </p>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="font-medium">Rs. {item.total_price?.toLocaleString()}</p>
+                                    <p className="text-xs text-green-600">Cost: Rs. {item.total_cost?.toLocaleString()}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Addresses */}
+                          <div className="px-6 pb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="bg-gray-50 rounded-lg p-3">
+                              <p className="font-medium text-gray-900 mb-1">Shipping Address</p>
+                              <p className="text-sm text-gray-600">{order.shipping_address}</p>
+                            </div>
+                            <div className="bg-gray-50 rounded-lg p-3">
+                              <p className="font-medium text-gray-900 mb-1">Billing Address</p>
+                              <p className="text-sm text-gray-600">{order.billing_address}</p>
+                            </div>
+                          </div>
+
+                          {/* Financial Summary */}
+                          <div className="px-6 pb-4">
+                            <div className="bg-gray-50 rounded-lg p-3">
+                              <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-center">
+                                <div>
+                                  <p className="text-xs text-gray-500">Subtotal</p>
+                                  <p className="font-medium">Rs. {order.subtotal?.toLocaleString()}</p>
+                                </div>
+                                {order.discount_amount > 0 && (
+                                  <div>
+                                    <p className="text-xs text-gray-500">Discount</p>
+                                    <p className="font-medium text-red-600">- Rs. {order.discount_amount?.toLocaleString()}</p>
+                                  </div>
+                                )}
+                                <div>
+                                  <p className="text-xs text-gray-500">Tax ({order.tax_percentage}%)</p>
+                                  <p className="font-medium">Rs. {order.tax_amount?.toLocaleString()}</p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-gray-500">Total</p>
+                                  <p className="font-bold text-orange-600">Rs. {order.total?.toLocaleString()}</p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-gray-500">Cost</p>
+                                  <p className="font-medium text-red-600">Rs. {order.total_cost?.toLocaleString()}</p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-gray-500">Profit</p>
+                                  <p className="font-bold text-green-600">Rs. {order.profit_margin?.toLocaleString()}</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="px-6 pb-6 flex flex-wrap gap-3">
+                            <Button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                startEditing(order);
+                              }}
+                              variant="outline"
+                              className="flex-1 border-orange-500 text-orange-600 hover:bg-orange-50"
+                            >
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit Order
+                            </Button>
+                            <Button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                convertToQuotation(order.id);
+                              }}
+                              variant="outline"
+                              className="flex-1"
+                            >
+                              <FileText className="h-4 w-4 mr-2" />
+                              Convert to Quotation
+                            </Button>
+                            <Button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                downloadInvoice(order.id, order.order_number);
+                              }}
+                              className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                            >
+                              <Download className="h-4 w-4 mr-2" />
+                              Download Invoice
+                            </Button>
+                          </div>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
