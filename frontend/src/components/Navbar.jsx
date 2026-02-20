@@ -37,7 +37,7 @@ const Navbar = () => {
         } backdrop-blur-xl rounded-full border border-white/10`}
         data-testid="navbar"
       >
-        <div className="px-6 py-4">
+        <div className="px-6 py-2">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center group" data-testid="nav-logo">
