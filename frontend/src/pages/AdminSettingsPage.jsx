@@ -120,17 +120,9 @@ const AdminSettingsPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Company Settings</h1>
-              <p className="text-gray-600 mt-2">Manage company information for quotations and invoices</p>
-            </div>
-            <button
-              onClick={() => navigate('/admin/quotations')}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-            >
-              Back to Quotations
-            </button>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">Company Settings</h1>
+            <p className="text-gray-600 mt-2">Manage company information for quotations and invoices</p>
           </div>
 
           {loading ? (
