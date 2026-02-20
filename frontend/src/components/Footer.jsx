@@ -34,9 +34,11 @@ const Footer = () => {
             {/* Brand Column */}
             <div className="lg:col-span-1">
               <Link to="/" className="inline-block mb-6">
-                <span className="text-3xl font-bold text-white tracking-tight">
-                  In<span className="text-orange-500">Haus</span>
-                </span>
+                <img 
+                  src="/inhaus/fulllogo_transparent.png" 
+                  alt="InHaus" 
+                  className="h-16 w-auto brightness-0 invert"
+                />
               </Link>
               <p className="text-neutral-500 text-sm leading-relaxed mb-6">
                 Transform your home with intelligent automation. Experience comfort, security, and convenience like never before.
