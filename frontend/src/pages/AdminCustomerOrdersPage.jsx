@@ -258,19 +258,17 @@ const AdminCustomerOrdersPage = () => {
   const editTotals = calculateEditTotals();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AdminHeader />
-      <div className="p-6">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <ShoppingBag className="h-8 w-8 text-orange-500" />
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Customer Orders</h1>
-            <p className="text-gray-600">Manage orders, apply discounts, and generate invoices</p>
-          </div>
+    <div className="p-6">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-6">
+        <ShoppingBag className="h-8 w-8 text-orange-500" />
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Customer Orders</h1>
+          <p className="text-gray-600">Manage orders, apply discounts, and generate invoices</p>
         </div>
+      </div>
 
-        {/* Stats Cards */}
+      {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
             <div className="flex items-center gap-3">
