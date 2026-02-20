@@ -30,6 +30,8 @@ const AdminHeader = () => {
     { path: '/admin/quotations', label: 'Quotations' },
     { path: '/admin/invoices', label: 'Invoices' },
     { path: '/admin/products', label: 'Products' },
+    { path: '/admin/customers', label: 'Customers' },
+    { path: '/admin/customer-orders', label: 'Shop Orders' },
     { path: '/admin/contacts', label: 'Contacts' },
     { path: '/admin/settings', label: 'Settings' },
   ];
