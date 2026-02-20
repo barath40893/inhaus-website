@@ -37,14 +37,14 @@ const Navbar = () => {
         } backdrop-blur-xl rounded-full border border-white/10`}
         data-testid="navbar"
       >
-        <div className="px-6 py-2">
+        <div className="px-6 py-3">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center group" data-testid="nav-logo">
               <img 
                 src="/inhaus/fulllogo_transparent.png" 
                 alt="InHaus" 
-                className="h-24 w-auto brightness-0 invert"
+                className="h-12 w-auto brightness-0 invert"
               />
             </Link>
 
