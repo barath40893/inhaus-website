@@ -23,6 +23,8 @@ import AdminCreateInvoicePage from './pages/AdminCreateInvoicePage';
 import AdminProductsPage from './pages/AdminProductsPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
 import AdminOrdersPage from './pages/AdminOrdersPage';
+import AdminCustomersPage from './pages/AdminCustomersPage';
+import AdminCustomerOrdersPage from './pages/AdminCustomerOrdersPage';
 import ShopPage from './pages/ShopPage';
 import CartPage from './pages/CartPage';
 import CustomerLoginPage from './pages/CustomerLoginPage';
