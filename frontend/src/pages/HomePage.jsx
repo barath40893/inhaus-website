@@ -109,7 +109,7 @@ const HomePage = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg md:text-xl text-neutral-400 max-w-2xl mb-10 leading-relaxed"
+              className="text-lg md:text-xl text-neutral-400 max-w-2xl mb-8 leading-relaxed"
             >
               Experience the next generation of home automation. Seamless control, 
               intelligent energy management, and uncompromising security—all unified 
@@ -120,7 +120,7 @@ const HomePage = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-col sm:flex-row gap-4"
+              className="flex flex-col sm:flex-row gap-4 mb-8"
             >
               <Link to="/products" data-testid="hero-cta-primary">
                 <button className="group flex items-center justify-center gap-3 bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-full font-medium transition-all duration-300 shadow-[0_0_30px_rgba(249,115,22,0.3)] hover:shadow-[0_0_40px_rgba(249,115,22,0.5)] hover:scale-105">
@@ -134,6 +134,27 @@ const HomePage = () => {
                   Get a Free Quote
                 </button>
               </Link>
+            </motion.div>
+
+            {/* Trust Indicators */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="flex flex-wrap items-center gap-6 text-sm text-neutral-400"
+            >
+              <div className="flex items-center gap-2">
+                <CheckCircle className="text-green-500" size={18} />
+                <span>Free Installation</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="text-green-500" size={18} />
+                <span>2-Year Warranty</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="text-green-500" size={18} />
+                <span>24/7 Support</span>
+              </div>
             </motion.div>
           </div>
         </div>
