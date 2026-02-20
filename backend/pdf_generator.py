@@ -1963,6 +1963,10 @@ class PDFGenerator:
         elements = []
         
         subtotal = order_data.get('subtotal', 0)
+        discount_amount = order_data.get('discount_amount', 0)
+        discount_type = order_data.get('discount_type', '')
+        discount_value = order_data.get('discount_value', 0)
+        include_gst = order_data.get('include_gst', True)
         tax_percentage = order_data.get('tax_percentage', 18)
         tax_amount = order_data.get('tax_amount', 0)
         total = order_data.get('total', 0)
@@ -1970,10 +1974,26 @@ class PDFGenerator:
         # Summary table aligned right
         data = [
             ['', Paragraph('<b>Subtotal</b>', self.bold_style), Paragraph(f"Rs. {subtotal:,.2f}", self.normal_style)],
-            ['', Paragraph(f"GST ({tax_percentage}%)", self.normal_style), Paragraph(f"Rs. {tax_amount:,.2f}", self.normal_style)],
-            ['', Paragraph('<font size=12><b>TOTAL</b></font>', self.bold_style), 
-             Paragraph(f"<font size=12 color='#FF6B35'><b>Rs. {total:,.2f}</b></font>", self.bold_style)]
         ]
+        
+        # Add discount row if applicable
+        if discount_amount > 0:
+            if discount_type == 'percentage':
+                discount_label = f"Discount ({discount_value}%)"
+            else:
+                discount_label = "Discount"
+            data.append(['', Paragraph(f"<font color='#DC2626'>{discount_label}</font>", self.normal_style), 
+                        Paragraph(f"<font color='#DC2626'>- Rs. {discount_amount:,.2f}</font>", self.normal_style)])
+        
+        # Add GST row if included
+        if include_gst and tax_amount > 0:
+            data.append(['', Paragraph(f"GST ({tax_percentage}%)", self.normal_style), Paragraph(f"Rs. {tax_amount:,.2f}", self.normal_style)])
+        elif not include_gst:
+            data.append(['', Paragraph("GST", self.normal_style), Paragraph("Not Applicable", self.normal_style)])
+        
+        # Total row
+        data.append(['', Paragraph('<font size=12><b>TOTAL</b></font>', self.bold_style), 
+             Paragraph(f"<font size=12 color='#FF6B35'><b>Rs. {total:,.2f}</b></font>", self.bold_style)])
         
         table = Table(data, colWidths=[3*inch, 2*inch, 1.7*inch])
         table.setStyle(TableStyle([
