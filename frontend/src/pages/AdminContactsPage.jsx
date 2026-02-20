@@ -436,7 +436,7 @@ const AdminContactsPage = () => {
           </Card>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
