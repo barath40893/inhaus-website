@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AdminHeader from '../components/AdminHeader';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { 
