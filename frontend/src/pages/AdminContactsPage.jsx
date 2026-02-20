@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AdminHeader from '../components/AdminHeader';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent } from '../components/ui/card';
 import { useToast } from '../hooks/use-toast';
-import { LogOut, Search, Download, Mail, Phone, Calendar, Filter, Eye, CheckCircle, Clock } from 'lucide-react';
+import { Search, Download, Mail, Phone, Calendar, Filter, Eye, CheckCircle, Clock } from 'lucide-react';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -164,23 +165,7 @@ const AdminContactsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Contact Submissions</h1>
-            <p className="text-sm text-gray-600">Manage customer inquiries</p>
-          </div>
-          <Button
-            onClick={handleLogout}
-            variant="outline"
-            className="flex items-center gap-2"
-          >
-            <LogOut size={16} />
-            Logout
-          </Button>
-        </div>
-      </div>
+      <AdminHeader />
 
       {/* Filters and Stats */}
       <div className="max-w-7xl mx-auto px-4 py-6">
