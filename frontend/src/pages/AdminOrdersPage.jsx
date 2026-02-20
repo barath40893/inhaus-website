@@ -134,15 +134,9 @@ const AdminOrdersPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Shop Orders</h1>
-              <p className="text-gray-600 mt-2">Manage orders with profit tracking</p>
-            </div>
-            <div className="flex gap-4">
-              <button onClick={() => navigate('/admin/quotations')} className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Quotations</button>
-              <button onClick={() => navigate('/admin/products')} className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Products</button>
-            </div>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">Shop Orders</h1>
+            <p className="text-gray-600 mt-2">Manage orders with profit tracking</p>
           </div>
 
           <div className="bg-white rounded-lg shadow p-4 mb-6">
