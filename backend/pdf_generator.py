@@ -1751,7 +1751,7 @@ class PDFGenerator:
         story.append(Spacer(1, 25))
         
         # ===== FOOTER =====
-        story.extend(self._create_thank_you_footer(settings_data, include_bank=True))
+        story.extend(self._create_footer(settings_data, include_bank=True))
         
         # Build PDF
         doc.build(story)
