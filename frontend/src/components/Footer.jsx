@@ -37,7 +37,7 @@ const Footer = () => {
                 <img 
                   src="/inhaus/fulllogo_transparent.png" 
                   alt="InHaus" 
-                  className="h-16 w-auto brightness-0 invert"
+                  className="h-24 w-auto brightness-0 invert"
                 />
               </Link>
               <p className="text-neutral-500 text-sm leading-relaxed mb-6">
