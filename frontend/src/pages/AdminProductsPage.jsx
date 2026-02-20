@@ -445,7 +445,7 @@ const AdminProductsPage = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
