@@ -185,8 +185,8 @@ const AdminOrdersPage = () => {
               </table>
             </div>
           )}
+        </motion.div>
       </div>
-    </motion.div>
   );
 };
 
