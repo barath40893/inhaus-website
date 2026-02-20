@@ -178,9 +178,9 @@ const AdminCreateInvoicePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      <AdminHeader />
       
-      <div className="max-w-7xl mx-auto px-4 py-8 mt-20">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">{id ? 'Edit Invoice' : 'New Invoice'}</h1>
           <button onClick={() => navigate('/admin/invoices')} className="px-4 py-2 border rounded-lg hover:bg-gray-50">
@@ -369,8 +369,6 @@ const AdminCreateInvoicePage = () => {
           </div>
         </form>
       </div>
-      
-      <Footer />
     </div>
   );
 };
