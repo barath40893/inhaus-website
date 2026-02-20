@@ -73,6 +73,8 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
 - [x] Fixed product image rendering in PDFs
 - [x] Fixed PDF invoice generation (_create_footer method)
 - [x] Reverted website redesign (HomePage, AboutPage, ContactPage)
+- [x] **P0 Fixed: Admin navigation bug** - All admin pages now use AdminHeader component with Customers and Shop Orders links
+- [x] Fixed AdminCustomersPage token bug - was using 'token' instead of 'adminToken'
 
 ---
 
@@ -189,7 +191,7 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
 
 ### P1 - High Priority
 - [ ] Payment gateway integration (Razorpay/Stripe)
-- [ ] Product deletion bug fix (frontend issue in AdminProductsPage)
+- [x] Product deletion button works correctly (verified in testing)
 - [ ] Product image upload improvements
 
 ### P2 - Medium Priority
@@ -218,4 +220,9 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
 
 ## Known Issues
 - Products show "No Image" placeholder - need to upload product images via admin
-- Product deletion frontend bug (redirects to login)
+
+---
+
+## Test Reports
+- `/app/test_reports/iteration_1.json` - E-commerce backend tests
+- `/app/test_reports/iteration_2.json` - Admin navigation fix verification
