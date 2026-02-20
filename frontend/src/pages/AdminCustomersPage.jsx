@@ -324,7 +324,7 @@ const AdminCustomersPage = () => {
           </div>
         </div>
       )}
-    </AdminLayout>
+    </div>
   );
 };
 
