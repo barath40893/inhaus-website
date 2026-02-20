@@ -38,11 +38,24 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
   - InHaus logo/address on left
   - Customer details on right
   - Room-wise product listing with images
-  - Tax calculation (18% GST)
+  - Tax calculation (GST)
+  - Discount display
 - [x] Invoice download and email sending
 - [x] Customer orders history page
 - [x] Admin customer management (manual user creation)
 - [x] Admin shop orders with profit margins
+
+#### Admin Order Editing (NEW - Completed)
+- [x] Edit individual product prices in orders
+- [x] Edit product quantities
+- [x] Apply percentage discount (e.g., 10% off)
+- [x] Apply fixed amount discount (e.g., Rs. 500 off)
+- [x] Toggle GST inclusion (on/off)
+- [x] Change GST percentage (default 18%)
+- [x] Live preview of updated totals
+- [x] Convert customer orders to quotations
+- [x] Download invoice with applied discounts
+- [x] Changed Rs symbol from ₹ to Rs. for PDF compatibility
 
 #### Core Features (Completed)
 - [x] Admin authentication (JWT-based)
