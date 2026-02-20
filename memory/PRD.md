@@ -75,6 +75,7 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
 - [x] Reverted website redesign (HomePage, AboutPage, ContactPage)
 - [x] **P0 Fixed: Admin navigation bug** - All admin pages now use AdminHeader component with Customers and Shop Orders links
 - [x] Fixed AdminCustomersPage token bug - was using 'token' instead of 'adminToken'
+- [x] **Fixed duplicate headers** - Removed duplicate AdminHeader from individual pages (ProtectedRoute handles it)
 
 ---
 
