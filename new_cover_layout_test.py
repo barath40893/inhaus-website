@@ -12,7 +12,7 @@ from datetime import datetime
 import uuid
 
 # Get backend URL from frontend .env file
-BACKEND_URL = "https://inhaus-shop-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://room-cart-checkout.preview.emergentagent.com/api"
 
 # Admin credentials
 ADMIN_USERNAME = "barath40893@gmail.com"

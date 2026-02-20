@@ -9,7 +9,7 @@ const getApiUrl = () => {
   
   // If running on preview URL, use preview backend
   if (hostname.includes('inhaus-quote.preview.emergentagent.com')) {
-    return 'https://inhaus-shop-1.preview.emergentagent.com';
+    return 'https://room-cart-checkout.preview.emergentagent.com';
   }
   
   // For localhost development
