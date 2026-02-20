@@ -2823,72 +2823,77 @@ async def convert_order_to_quotation(order_id: str, payload: dict = Depends(veri
         if not order:
             raise HTTPException(status_code=404, detail="Order not found")
         
-        # Get next quotation number
-        last_quotation = await db.quotations.find_one(
-            sort=[("quotation_number", -1)]
-        )
+        # Get next quotation number using the correct field name
+        count = await db.quotations.count_documents({})
+        quotation_number = f"QT-{datetime.now().year}-{(count + 1):04d}"
         
-        if last_quotation and last_quotation.get("quotation_number"):
-            try:
-                last_num = int(last_quotation["quotation_number"].split("-")[-1])
-                next_num = last_num + 1
-            except:
-                next_num = 1
-        else:
-            next_num = 1
-        
-        quotation_number = f"QT-{datetime.now().year}-{next_num:04d}"
-        
-        # Create quotation from order
+        # Create quotation from order using the correct Quotation schema
         quotation_id = str(uuid.uuid4())
+        now = datetime.now(timezone.utc)
         
-        # Convert order items to quotation format (grouped by room)
-        rooms = {}
+        # Convert order items to flat QuotationItem format
+        quotation_items = []
         for item in order.get('items', []):
-            room_name = item.get('room_name', 'General')
-            if room_name not in rooms:
-                rooms[room_name] = {
-                    "name": room_name,
-                    "items": []
-                }
-            
-            rooms[room_name]["items"].append({
+            list_price = item.get('list_price', 0)
+            quantity = item.get('quantity', 1)
+            company_cost = item.get('company_cost', 0)
+            offered_price = item.get('offered_price', list_price)
+            quotation_items.append({
+                "id": str(uuid.uuid4()),
+                "room_area": item.get('room_name', 'General'),
+                "switchboard_name": None,
                 "product_id": item.get('product_id'),
-                "name": item.get('product_name'),
-                "model_no": item.get('model_no'),
-                "image_url": item.get('image_url'),
+                "model_no": item.get('model_no', ''),
+                "product_name": item.get('product_name', ''),
                 "description": item.get('description', ''),
-                "list_price": item.get('list_price', 0),
-                "offered_price": item.get('list_price', 0),  # Admin can adjust
-                "quantity": item.get('quantity', 1),
-                "discount_percentage": 0,
-                "total_amount": item.get('total_price', 0)
+                "image_url": item.get('image_url'),
+                "quantity": quantity,
+                "list_price": list_price,
+                "discount": 0,
+                "offered_price": offered_price,
+                "company_cost": company_cost,
+                "total_amount": offered_price * quantity,
+                "total_company_cost": company_cost * quantity,
+                "is_custom": False
             })
+        
+        subtotal = sum(i["total_amount"] for i in quotation_items)
+        overall_discount = order.get('discount_amount', 0)
+        net_quote = subtotal - overall_discount
+        gst_percentage = order.get('tax_percentage', 18)
+        gst_amount = (net_quote * gst_percentage) / 100
+        total = net_quote + gst_amount
+        total_company_cost = sum(i["total_company_cost"] for i in quotation_items)
         
         quotation = {
             "id": quotation_id,
-            "quotation_number": quotation_number,
-            "converted_from_order": order_id,
-            "original_order_number": order.get('order_number'),
-            "customer": {
-                "name": order.get('customer_name'),
-                "email": order.get('customer_email'),
-                "phone": order.get('customer_phone', ''),
-                "address": order.get('billing_address', '')
-            },
-            "rooms": list(rooms.values()),
-            "subtotal": order.get('subtotal', 0),
-            "overall_discount": order.get('discount_amount', 0),
-            "net_quote": order.get('subtotal', 0) - order.get('discount_amount', 0),
+            "quote_number": quotation_number,
+            "revision_no": 0,
+            "customer_name": order.get('customer_name', ''),
+            "customer_email": order.get('customer_email', ''),
+            "customer_phone": order.get('customer_phone', ''),
+            "customer_address": order.get('billing_address', ''),
+            "architect_name": None,
+            "site_location": None,
+            "items": quotation_items,
+            "subtotal": subtotal,
+            "overall_discount": overall_discount,
+            "net_quote": net_quote,
             "installation_charges": 0,
-            "gst_percentage": order.get('tax_percentage', 18),
-            "gst_amount": order.get('tax_amount', 0),
-            "total": order.get('total', 0),
+            "gst_percentage": gst_percentage,
+            "gst_amount": gst_amount,
+            "total": total,
+            "total_company_cost": total_company_cost,
+            "profit_margin": total - total_company_cost - gst_amount,
             "validity_days": 30,
-            "notes": f"Converted from Order {order.get('order_number')}",
+            "payment_terms": "50% advance, 50% before dispatch",
+            "terms_conditions": f"Converted from Order {order.get('order_number')}",
             "status": "draft",
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "created_by": payload.get("user_id"),
+            "assigned_to": [],
+            "created_at": now,
+            "updated_at": now,
+            "sent_at": None
         }
         
         await db.quotations.insert_one(quotation)
@@ -2899,7 +2904,7 @@ async def convert_order_to_quotation(order_id: str, payload: dict = Depends(veri
             {"$set": {
                 "converted_to_quotation": quotation_id,
                 "quotation_number": quotation_number,
-                "updated_at": datetime.now(timezone.utc).isoformat()
+                "updated_at": now.isoformat()
             }}
         )
         
