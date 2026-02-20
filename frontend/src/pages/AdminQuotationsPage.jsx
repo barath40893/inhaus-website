@@ -348,8 +348,8 @@ const AdminQuotationsPage = () => {
               </table>
             </div>
           )}
+        </motion.div>
       </div>
-    </motion.div>
   );
 };
 
