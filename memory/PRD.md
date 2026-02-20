@@ -77,6 +77,11 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
 - [x] Fixed AdminCustomersPage token bug - was using 'token' instead of 'adminToken'
 - [x] **Fixed duplicate headers** - Removed duplicate AdminHeader from individual pages (ProtectedRoute handles it)
 - [x] **UI/UX Redesign** - Complete dark theme redesign of public pages (Home, Products, About, Contact)
+- [x] **Fixed account page link** - Changed /account to /customer/orders in Navbar
+- [x] **Added partner logos** - Added "Works Seamlessly With" section (Amazon Alexa, Google Home, Apple HomeKit, Matter)
+- [x] **Updated startup animation** - Dark theme welcome screen with animated grid and glowing effects
+- [x] **Added trust indicators** - Free Installation, 2-Year Warranty, 24/7 Support badges on hero
+- [x] **Dark theme for CustomerOrdersPage** - Updated order cards and status badges for dark mode
 
 ---
 
