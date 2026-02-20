@@ -1716,3 +1716,275 @@ class PDFGenerator:
         
         return elements
 
+
+
+    def generate_customer_invoice(self, order_data: dict, settings_data: dict, output_path: str):
+        """Generate a professional invoice PDF for customer orders with room-wise grouping and product images"""
+        from reportlab.lib.pagesizes import letter
+        
+        doc = SimpleDocTemplate(
+            output_path,
+            pagesize=letter,
+            rightMargin=40,
+            leftMargin=40,
+            topMargin=40,
+            bottomMargin=40,
+            title=f"Invoice {order_data.get('order_number', 'N/A')}"
+        )
+        
+        story = []
+        
+        # ===== HEADER: InHaus Logo/Name on Left, Customer Details on Right =====
+        story.extend(self._create_customer_invoice_header(order_data, settings_data))
+        story.append(Spacer(1, 20))
+        
+        # ===== ORDER INFO =====
+        story.extend(self._create_customer_order_info(order_data))
+        story.append(Spacer(1, 15))
+        
+        # ===== ROOM-WISE PRODUCT LISTING WITH IMAGES =====
+        story.extend(self._create_roomwise_items_table(order_data))
+        story.append(Spacer(1, 20))
+        
+        # ===== PAYMENT SUMMARY =====
+        story.extend(self._create_customer_payment_summary(order_data))
+        story.append(Spacer(1, 25))
+        
+        # ===== FOOTER =====
+        story.extend(self._create_thank_you_footer(settings_data, include_bank=True))
+        
+        # Build PDF
+        doc.build(story)
+        logging.info(f"Customer invoice PDF generated: {output_path}")
+
+    def _create_customer_invoice_header(self, order_data: dict, settings_data: dict):
+        """Create invoice header with company on left, customer on right"""
+        elements = []
+        
+        company_name = settings_data.get('company_name', 'InHaus Smart Automation')
+        company_address = settings_data.get('company_address', 'Shop No 207, 1st Floor, Kokapet Terminal, Gandipet, Hyderabad - 500075')
+        company_email = settings_data.get('company_email', 'support@inhaus.co.in')
+        company_phone = settings_data.get('company_phone', '+91 7416925607')
+        gstin = settings_data.get('company_gstin', '')
+        
+        # Customer info
+        customer_name = order_data.get('customer_name', '')
+        customer_email = order_data.get('customer_email', '')
+        customer_phone = order_data.get('customer_phone', '')
+        billing_address = order_data.get('billing_address', '')
+        
+        # Create two-column header
+        left_content = f"""
+        <font size=16 color="#FF6B35"><b>{company_name}</b></font><br/><br/>
+        <font size=9 color="#333333">{company_address}</font><br/>
+        <font size=9 color="#666666">Phone: {company_phone}</font><br/>
+        <font size=9 color="#666666">Email: {company_email}</font>
+        """
+        if gstin:
+            left_content += f"<br/><font size=9 color='#666666'>GSTIN: {gstin}</font>"
+        
+        right_content = f"""
+        <font size=14 color="#333333"><b>INVOICE</b></font><br/><br/>
+        <font size=10 color="#333333"><b>Bill To:</b></font><br/>
+        <font size=10 color="#333333">{customer_name}</font><br/>
+        <font size=9 color="#666666">{billing_address}</font><br/>
+        <font size=9 color="#666666">Phone: {customer_phone}</font><br/>
+        <font size=9 color="#666666">Email: {customer_email}</font>
+        """
+        
+        data = [[
+            Paragraph(left_content, self.normal_style),
+            Paragraph(right_content, self.normal_style)
+        ]]
+        
+        table = Table(data, colWidths=[3.5*inch, 3.5*inch])
+        table.setStyle(TableStyle([
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 0),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+            ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
+        ]))
+        
+        elements.append(table)
+        
+        # Invoice number and date bar
+        elements.append(Spacer(1, 15))
+        
+        invoice_date = datetime.now().strftime('%d %B %Y')
+        if order_data.get('created_at'):
+            try:
+                if isinstance(order_data['created_at'], str):
+                    invoice_date = datetime.fromisoformat(order_data['created_at'].replace('Z', '+00:00')).strftime('%d %B %Y')
+            except:
+                pass
+        
+        info_data = [[
+            Paragraph(f"<b>Invoice No:</b> {order_data.get('order_number', 'N/A')}", self.normal_style),
+            Paragraph(f"<b>Date:</b> {invoice_date}", self.normal_style),
+            Paragraph(f"<b>Payment:</b> {order_data.get('payment_method', 'COD').upper()}", self.normal_style),
+            Paragraph(f"<b>Status:</b> {order_data.get('payment_status', 'Pending').upper()}", self.normal_style)
+        ]]
+        
+        info_table = Table(info_data, colWidths=[2*inch, 1.8*inch, 1.5*inch, 1.7*inch])
+        info_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#FFF7ED')),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#9A3412')),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTSIZE', (0, 0), (-1, -1), 9),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#FB923C')),
+        ]))
+        
+        elements.append(info_table)
+        
+        return elements
+
+    def _create_customer_order_info(self, order_data: dict):
+        """Create shipping address section"""
+        elements = []
+        
+        shipping_address = order_data.get('shipping_address', '')
+        
+        if shipping_address:
+            elements.append(Paragraph('<b>Shipping Address:</b>', self.bold_style))
+            elements.append(Spacer(1, 5))
+            elements.append(Paragraph(f"<font size=9 color='#666666'>{shipping_address}</font>", self.normal_style))
+        
+        return elements
+
+    def _create_roomwise_items_table(self, order_data: dict):
+        """Create room-wise product listing with images"""
+        elements = []
+        
+        items = order_data.get('items', [])
+        
+        # Group items by room
+        rooms = {}
+        for item in items:
+            room = item.get('room_name', 'General')
+            if room not in rooms:
+                rooms[room] = []
+            rooms[room].append(item)
+        
+        # If no room grouping, treat as single group
+        if not rooms:
+            rooms = {'Products': items}
+        
+        for room_name, room_items in rooms.items():
+            # Room header
+            elements.append(Paragraph(f'<b>{room_name}</b>', ParagraphStyle(
+                'RoomHeader',
+                parent=self.styles['Normal'],
+                fontSize=12,
+                textColor=colors.HexColor('#FF6B35'),
+                spaceBefore=15,
+                spaceAfter=8,
+                fontName='Helvetica-Bold'
+            )))
+            
+            # Table header
+            data = [[
+                Paragraph('<b>Image</b>', self.bold_style),
+                Paragraph('<b>Product Details</b>', self.bold_style),
+                Paragraph('<b>Qty</b>', self.bold_style),
+                Paragraph('<b>Unit Price</b>', self.bold_style),
+                Paragraph('<b>Total</b>', self.bold_style)
+            ]]
+            
+            for item in room_items:
+                if not isinstance(item, dict):
+                    continue
+                
+                # Get product image
+                image_cell = ''
+                image_url = item.get('image_url', '')
+                if image_url:
+                    try:
+                        # Handle local path
+                        if image_url.startswith('/api/uploads/'):
+                            image_path = Path(__file__).parent / 'uploads' / image_url.replace('/api/uploads/', '')
+                        elif image_url.startswith('/uploads/'):
+                            image_path = Path(__file__).parent / image_url.lstrip('/')
+                        else:
+                            image_path = Path(__file__).parent / 'uploads' / 'products' / os.path.basename(image_url)
+                        
+                        if image_path.exists():
+                            img = Image(str(image_path), width=0.7*inch, height=0.7*inch)
+                            img.hAlign = 'CENTER'
+                            image_cell = img
+                        else:
+                            image_cell = Paragraph('<font size=7 color="#999">No Image</font>', self.normal_style)
+                    except Exception as e:
+                        logging.warning(f"Failed to load image for invoice: {e}")
+                        image_cell = Paragraph('<font size=7 color="#999">No Image</font>', self.normal_style)
+                else:
+                    image_cell = Paragraph('<font size=7 color="#999">No Image</font>', self.normal_style)
+                
+                # Product details
+                product_details = f"""<b>{item.get('product_name', 'N/A')}</b><br/>
+                <font size=8 color="#666666">Model: {item.get('model_no', 'N/A')}</font>"""
+                
+                if item.get('description'):
+                    desc = item['description'][:80] + '...' if len(item.get('description', '')) > 80 else item.get('description', '')
+                    product_details += f"<br/><font size=7 color='#888888'>{desc}</font>"
+                
+                data.append([
+                    image_cell,
+                    Paragraph(product_details, self.normal_style),
+                    Paragraph(str(item.get('quantity', 1)), self.normal_style),
+                    Paragraph(f"₹ {item.get('list_price', 0):,.0f}", self.normal_style),
+                    Paragraph(f"₹ {item.get('total_price', 0):,.0f}", self.bold_style)
+                ])
+            
+            # Create table
+            table = Table(data, colWidths=[0.9*inch, 3*inch, 0.6*inch, 1.1*inch, 1.1*inch])
+            table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#F3F4F6')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#1F2937')),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('ALIGN', (1, 1), (1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 9),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+                ('TOPPADDING', (0, 0), (-1, -1), 8),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#E5E7EB')),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#FAFAFA')]),
+            ]))
+            
+            elements.append(table)
+            elements.append(Spacer(1, 10))
+        
+        return elements
+
+    def _create_customer_payment_summary(self, order_data: dict):
+        """Create payment summary for customer invoice"""
+        elements = []
+        
+        subtotal = order_data.get('subtotal', 0)
+        tax_percentage = order_data.get('tax_percentage', 18)
+        tax_amount = order_data.get('tax_amount', 0)
+        total = order_data.get('total', 0)
+        
+        # Summary table aligned right
+        data = [
+            ['', Paragraph('<b>Subtotal</b>', self.bold_style), Paragraph(f"₹ {subtotal:,.2f}", self.normal_style)],
+            ['', Paragraph(f"GST ({tax_percentage}%)", self.normal_style), Paragraph(f"₹ {tax_amount:,.2f}", self.normal_style)],
+            ['', Paragraph('<font size=12><b>TOTAL</b></font>', self.bold_style), 
+             Paragraph(f"<font size=12 color='#FF6B35'><b>₹ {total:,.2f}</b></font>", self.bold_style)]
+        ]
+        
+        table = Table(data, colWidths=[3*inch, 2*inch, 1.7*inch])
+        table.setStyle(TableStyle([
+            ('ALIGN', (1, 0), (-1, -1), 'RIGHT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('LINEABOVE', (1, -1), (-1, -1), 2, colors.HexColor('#FF6B35')),
+            ('BACKGROUND', (1, -1), (-1, -1), colors.HexColor('#FFF7ED')),
+            ('TOPPADDING', (0, -1), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, -1), (-1, -1), 10),
+        ]))
+        
+        elements.append(table)
+        
+        return elements
