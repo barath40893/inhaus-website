@@ -1968,6 +1968,725 @@ async def download_order_invoice(order_id: str, payload: dict = Depends(verify_t
         raise HTTPException(status_code=500, detail=str(e))
 
     client.close()
+
+# ============= CUSTOMER AUTHENTICATION MODELS =============
+
+class Customer(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    user_id: str = Field(default_factory=lambda: f"cust_{uuid.uuid4().hex[:12]}")
+    email: EmailStr
+    name: str
+    picture: Optional[str] = None
+    phone: Optional[str] = None
+    shipping_address: Optional[str] = None
+    billing_address: Optional[str] = None
+    auth_provider: str = "email"  # "email" or "google"
+    password_hash: Optional[str] = None
+    status: str = "active"  # "active", "inactive"
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_login: Optional[datetime] = None
+
+class CustomerRegister(BaseModel):
+    email: EmailStr
+    name: str
+    password: str
+    phone: Optional[str] = None
+
+class CustomerLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+class CustomerSession(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    user_id: str
+    session_token: str
+    expires_at: datetime
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+# Room model for cart items
+class RoomCartItem(BaseModel):
+    product_id: str
+    product_name: str
+    model_no: str
+    image_url: Optional[str] = None
+    price: float
+    quantity: int
+    room_name: str
+    room_type: str  # "predefined" or "custom"
+
+class CustomerCheckoutRequest(BaseModel):
+    shipping_address: str
+    billing_address: str
+    same_as_shipping: bool = True
+    items: List[RoomCartItem]
+    payment_method: str
+
+# ============= CUSTOMER AUTH ENDPOINTS =============
+
+import httpx
+
+async def get_customer_from_session(request: Request):
+    """Get customer from session token - checks cookie first, then Authorization header"""
+    session_token = request.cookies.get("session_token")
+    
+    if not session_token:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            session_token = auth_header.split(" ")[1]
+    
+    if not session_token:
+        return None
+    
+    # Find session
+    session = await db.customer_sessions.find_one(
+        {"session_token": session_token},
+        {"_id": 0}
+    )
+    
+    if not session:
+        return None
+    
+    # Check expiry
+    expires_at = session.get("expires_at")
+    if isinstance(expires_at, str):
+        expires_at = datetime.fromisoformat(expires_at)
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+    
+    if expires_at < datetime.now(timezone.utc):
+        return None
+    
+    # Get customer
+    customer = await db.customers.find_one(
+        {"user_id": session["user_id"]},
+        {"_id": 0, "password_hash": 0}
+    )
+    
+    return customer
+
+@api_router.post("/customer/register")
+async def customer_register(data: CustomerRegister):
+    """Customer registration with email/password"""
+    try:
+        # Check if customer exists
+        existing = await db.customers.find_one({"email": data.email}, {"_id": 0})
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        # Hash password
+        password_hash = pwd_context.hash(data.password)
+        
+        # Create customer
+        customer = Customer(
+            email=data.email,
+            name=data.name,
+            phone=data.phone,
+            password_hash=password_hash,
+            auth_provider="email"
+        )
+        
+        doc = customer.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        
+        await db.customers.insert_one(doc)
+        
+        return {"message": "Registration successful", "user_id": customer.user_id}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Customer registration error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/customer/login")
+async def customer_login(data: CustomerLogin, response: JSONResponse = None):
+    """Customer login with email/password"""
+    try:
+        customer = await db.customers.find_one({"email": data.email}, {"_id": 0})
+        
+        if not customer:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+        if customer.get("auth_provider") == "google":
+            raise HTTPException(status_code=400, detail="Please use Google Sign-in for this account")
+        
+        if not pwd_context.verify(data.password, customer.get("password_hash", "")):
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+        # Create session
+        session_token = f"sess_{uuid.uuid4().hex}"
+        expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+        
+        session = CustomerSession(
+            user_id=customer["user_id"],
+            session_token=session_token,
+            expires_at=expires_at
+        )
+        
+        doc = session.model_dump()
+        doc['expires_at'] = doc['expires_at'].isoformat()
+        doc['created_at'] = doc['created_at'].isoformat()
+        
+        await db.customer_sessions.insert_one(doc)
+        
+        # Update last login
+        await db.customers.update_one(
+            {"user_id": customer["user_id"]},
+            {"$set": {"last_login": datetime.now(timezone.utc).isoformat()}}
+        )
+        
+        # Return customer data with session token
+        return {
+            "user_id": customer["user_id"],
+            "email": customer["email"],
+            "name": customer["name"],
+            "picture": customer.get("picture"),
+            "session_token": session_token
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Customer login error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/customer/google-session")
+async def process_google_session(request: Request):
+    """Process Google OAuth session_id and create customer session"""
+    try:
+        body = await request.json()
+        session_id = body.get("session_id")
+        
+        if not session_id:
+            raise HTTPException(status_code=400, detail="session_id required")
+        
+        # Call Emergent Auth to get user data
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
+                headers={"X-Session-ID": session_id}
+            )
+        
+        if response.status_code != 200:
+            raise HTTPException(status_code=401, detail="Invalid session")
+        
+        user_data = response.json()
+        email = user_data.get("email")
+        name = user_data.get("name")
+        picture = user_data.get("picture")
+        
+        # Check if customer exists
+        existing_customer = await db.customers.find_one({"email": email}, {"_id": 0})
+        
+        if existing_customer:
+            user_id = existing_customer["user_id"]
+            # Update customer info
+            await db.customers.update_one(
+                {"user_id": user_id},
+                {"$set": {
+                    "name": name,
+                    "picture": picture,
+                    "last_login": datetime.now(timezone.utc).isoformat()
+                }}
+            )
+        else:
+            # Create new customer
+            user_id = f"cust_{uuid.uuid4().hex[:12]}"
+            customer = Customer(
+                user_id=user_id,
+                email=email,
+                name=name,
+                picture=picture,
+                auth_provider="google"
+            )
+            
+            doc = customer.model_dump()
+            doc['created_at'] = doc['created_at'].isoformat()
+            
+            await db.customers.insert_one(doc)
+        
+        # Create session
+        session_token = f"sess_{uuid.uuid4().hex}"
+        expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+        
+        session = CustomerSession(
+            user_id=user_id,
+            session_token=session_token,
+            expires_at=expires_at
+        )
+        
+        doc = session.model_dump()
+        doc['expires_at'] = doc['expires_at'].isoformat()
+        doc['created_at'] = doc['created_at'].isoformat()
+        
+        await db.customer_sessions.insert_one(doc)
+        
+        return {
+            "user_id": user_id,
+            "email": email,
+            "name": name,
+            "picture": picture,
+            "session_token": session_token
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Google session error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/customer/me")
+async def get_customer_profile(request: Request):
+    """Get current customer profile"""
+    customer = await get_customer_from_session(request)
+    
+    if not customer:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    return customer
+
+@api_router.post("/customer/logout")
+async def customer_logout(request: Request):
+    """Logout customer and clear session"""
+    session_token = request.cookies.get("session_token")
+    
+    if not session_token:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            session_token = auth_header.split(" ")[1]
+    
+    if session_token:
+        await db.customer_sessions.delete_one({"session_token": session_token})
+    
+    return {"message": "Logged out successfully"}
+
+# ============= ROOM MANAGEMENT ENDPOINTS =============
+
+DEFAULT_ROOMS = [
+    "Living Room",
+    "Master Bedroom",
+    "Bedroom 2",
+    "Bedroom 3",
+    "Kitchen",
+    "Bathroom",
+    "Office/Study",
+    "Dining Room",
+    "Balcony",
+    "Hall"
+]
+
+@api_router.get("/rooms/default")
+async def get_default_rooms():
+    """Get list of predefined room types"""
+    return {"rooms": DEFAULT_ROOMS}
+
+@api_router.get("/customer/rooms")
+async def get_customer_rooms(request: Request):
+    """Get customer's custom rooms"""
+    customer = await get_customer_from_session(request)
+    
+    if not customer:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    custom_rooms = await db.custom_rooms.find(
+        {"user_id": customer["user_id"]},
+        {"_id": 0}
+    ).to_list(100)
+    
+    return {
+        "default_rooms": DEFAULT_ROOMS,
+        "custom_rooms": [r["name"] for r in custom_rooms]
+    }
+
+@api_router.post("/customer/rooms")
+async def add_custom_room(request: Request):
+    """Add a custom room for customer"""
+    customer = await get_customer_from_session(request)
+    
+    if not customer:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    body = await request.json()
+    room_name = body.get("name")
+    
+    if not room_name:
+        raise HTTPException(status_code=400, detail="Room name required")
+    
+    # Check if exists
+    existing = await db.custom_rooms.find_one({
+        "user_id": customer["user_id"],
+        "name": room_name
+    })
+    
+    if existing:
+        raise HTTPException(status_code=400, detail="Room already exists")
+    
+    await db.custom_rooms.insert_one({
+        "user_id": customer["user_id"],
+        "name": room_name,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    return {"message": "Room added", "name": room_name}
+
+# ============= CUSTOMER ORDER ENDPOINTS =============
+
+@api_router.post("/customer/checkout")
+async def customer_checkout(data: CustomerCheckoutRequest, request: Request):
+    """Customer checkout with room-based items"""
+    customer = await get_customer_from_session(request)
+    
+    if not customer:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    try:
+        # Generate order number
+        order_count = await db.customer_orders.count_documents({})
+        order_number = f"INV-{datetime.now().year}-{order_count + 1:04d}"
+        
+        # Group items by room for display
+        items_by_room = {}
+        for item in data.items:
+            room = item.room_name
+            if room not in items_by_room:
+                items_by_room[room] = []
+            items_by_room[room].append(item)
+        
+        # Calculate totals
+        order_items = []
+        subtotal = 0
+        total_cost = 0
+        
+        for item in data.items:
+            product = await db.products.find_one({"id": item.product_id}, {"_id": 0})
+            
+            if not product:
+                raise HTTPException(status_code=404, detail=f"Product {item.product_id} not found")
+            
+            item_total = product['list_price'] * item.quantity
+            item_cost = product.get('company_cost', 0) * item.quantity
+            
+            order_items.append({
+                "product_id": item.product_id,
+                "product_name": product['name'],
+                "model_no": product['model_no'],
+                "image_url": product.get('image_url'),
+                "description": product.get('description', ''),
+                "list_price": product['list_price'],
+                "company_cost": product.get('company_cost', 0),
+                "quantity": item.quantity,
+                "total_price": item_total,
+                "total_cost": item_cost,
+                "room_name": item.room_name,
+                "room_type": item.room_type
+            })
+            
+            subtotal += item_total
+            total_cost += item_cost
+        
+        # Calculate tax and total
+        tax_percentage = 18.0
+        tax_amount = subtotal * (tax_percentage / 100)
+        total = subtotal + tax_amount
+        profit_margin = total - total_cost - tax_amount
+        
+        # Create order
+        order_id = str(uuid.uuid4())
+        billing_address = data.billing_address if not data.same_as_shipping else data.shipping_address
+        
+        order = {
+            "id": order_id,
+            "order_number": order_number,
+            "user_id": customer["user_id"],
+            "customer_name": customer["name"],
+            "customer_email": customer["email"],
+            "customer_phone": customer.get("phone", ""),
+            "shipping_address": data.shipping_address,
+            "billing_address": billing_address,
+            "items": order_items,
+            "items_by_room": {room: [i.model_dump() for i in items] for room, items in items_by_room.items()},
+            "subtotal": round(subtotal, 2),
+            "tax_percentage": tax_percentage,
+            "tax_amount": round(tax_amount, 2),
+            "total": round(total, 2),
+            "total_cost": round(total_cost, 2),
+            "profit_margin": round(profit_margin, 2),
+            "payment_method": data.payment_method,
+            "payment_status": "pending",
+            "order_status": "pending",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.customer_orders.insert_one(order)
+        
+        logger.info(f"Customer order created: {order_number} for {customer['email']}")
+        
+        return {
+            "success": True,
+            "order_id": order_id,
+            "order_number": order_number,
+            "total": round(total, 2),
+            "message": "Order placed successfully"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Customer checkout error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/customer/orders")
+async def get_customer_orders(request: Request):
+    """Get customer's order history"""
+    customer = await get_customer_from_session(request)
+    
+    if not customer:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    orders = await db.customer_orders.find(
+        {"user_id": customer["user_id"]},
+        {"_id": 0, "total_cost": 0, "profit_margin": 0}  # Hide internal data
+    ).sort("created_at", -1).to_list(100)
+    
+    return orders
+
+@api_router.get("/customer/orders/{order_id}")
+async def get_customer_order_detail(order_id: str, request: Request):
+    """Get customer's order detail"""
+    customer = await get_customer_from_session(request)
+    
+    if not customer:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    order = await db.customer_orders.find_one(
+        {"id": order_id, "user_id": customer["user_id"]},
+        {"_id": 0, "total_cost": 0, "profit_margin": 0}
+    )
+    
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    return order
+
+@api_router.get("/customer/orders/{order_id}/invoice")
+async def download_customer_invoice(order_id: str, request: Request):
+    """Download invoice PDF for customer order"""
+    customer = await get_customer_from_session(request)
+    
+    if not customer:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    order = await db.customer_orders.find_one(
+        {"id": order_id, "user_id": customer["user_id"]},
+        {"_id": 0}
+    )
+    
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Get settings
+    settings = await db.settings.find_one({"id": "company_settings"}, {"_id": 0})
+    if not settings:
+        settings = Settings().model_dump()
+    
+    # Generate invoice PDF
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    pdf_filename = f"invoice_{order['order_number'].replace('/', '_')}_{timestamp}.pdf"
+    pdf_path = PDF_DIR / pdf_filename
+    
+    # Generate customer invoice with room grouping
+    pdf_generator.generate_customer_invoice(order, settings, str(pdf_path))
+    
+    return FileResponse(
+        path=str(pdf_path),
+        media_type='application/pdf',
+        filename=f"invoice_{order['order_number'].replace('/', '_')}.pdf",
+        headers={
+            'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+        }
+    )
+
+@api_router.post("/customer/orders/{order_id}/send-invoice")
+async def send_customer_invoice_email(order_id: str, request: Request):
+    """Send invoice to customer email"""
+    customer = await get_customer_from_session(request)
+    
+    if not customer:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    order = await db.customer_orders.find_one(
+        {"id": order_id, "user_id": customer["user_id"]},
+        {"_id": 0}
+    )
+    
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Get settings
+    settings = await db.settings.find_one({"id": "company_settings"}, {"_id": 0})
+    if not settings:
+        settings = Settings().model_dump()
+    
+    # Generate invoice PDF
+    pdf_filename = f"invoice_{order['order_number'].replace('/', '_')}.pdf"
+    pdf_path = PDF_DIR / pdf_filename
+    
+    pdf_generator.generate_customer_invoice(order, settings, str(pdf_path))
+    
+    # Send email
+    try:
+        msg = MIMEMultipart()
+        msg['Subject'] = f"Invoice {order['order_number']} - {settings.get('company_name', 'InHaus')}"
+        msg['From'] = SMTP_USER
+        msg['To'] = customer['email']
+        
+        html_content = f"""
+        <html>
+          <body style="font-family: Arial, sans-serif; padding: 20px;">
+            <h2 style="color: #f97316;">Thank You for Your Order!</h2>
+            <p>Dear {customer['name']},</p>
+            <p>Your order <b>{order['order_number']}</b> has been received.</p>
+            
+            <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+              <p><strong>Order Summary:</strong></p>
+              <p><strong>Total Amount:</strong> ₹ {order['total']:,.2f}</p>
+              <p><strong>Payment Method:</strong> {order['payment_method'].upper()}</p>
+              <p><strong>Order Status:</strong> {order['order_status'].title()}</p>
+            </div>
+            
+            <p>Please find your invoice attached.</p>
+            
+            <p>Best regards,<br/>
+            {settings.get('company_name', 'InHaus Smart Automation')}<br/>
+            {settings.get('company_phone', '')}</p>
+          </body>
+        </html>
+        """
+        
+        msg.attach(MIMEText(html_content, 'html'))
+        
+        with open(pdf_path, 'rb') as f:
+            pdf_attachment = MIMEApplication(f.read(), _subtype='pdf')
+            pdf_attachment.add_header('Content-Disposition', 'attachment', filename=Path(pdf_path).name)
+            msg.attach(pdf_attachment)
+        
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SMTP_USER, SMTP_PASSWORD)
+            server.send_message(msg)
+        
+        return {"message": "Invoice sent to your email", "email": customer['email']}
+    except Exception as e:
+        logger.error(f"Failed to send invoice email: {str(e)}")
+        return {"message": "Invoice generated but email failed. Please download manually.", "error": str(e)}
+
+# ============= ADMIN CUSTOMER MANAGEMENT =============
+
+@api_router.get("/admin/customers")
+async def get_all_customers(payload: dict = Depends(verify_token)):
+    """Get all customers - ADMIN ONLY"""
+    try:
+        is_admin = await check_admin(payload)
+        if not is_admin:
+            raise HTTPException(status_code=403, detail="Admin access required")
+        
+        customers = await db.customers.find(
+            {},
+            {"_id": 0, "password_hash": 0}
+        ).sort("created_at", -1).to_list(1000)
+        
+        return customers
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching customers: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/admin/customers")
+async def admin_create_customer(data: CustomerRegister, payload: dict = Depends(verify_token)):
+    """Admin creates a customer account"""
+    try:
+        is_admin = await check_admin(payload)
+        if not is_admin:
+            raise HTTPException(status_code=403, detail="Admin access required")
+        
+        # Check if customer exists
+        existing = await db.customers.find_one({"email": data.email}, {"_id": 0})
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        # Hash password
+        password_hash = pwd_context.hash(data.password)
+        
+        # Create customer
+        customer = Customer(
+            email=data.email,
+            name=data.name,
+            phone=data.phone,
+            password_hash=password_hash,
+            auth_provider="email"
+        )
+        
+        doc = customer.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        
+        await db.customers.insert_one(doc)
+        
+        return {"message": "Customer created successfully", "user_id": customer.user_id, "email": data.email}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Admin create customer error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/admin/customer-orders")
+async def get_all_customer_orders(payload: dict = Depends(verify_token)):
+    """Get all customer orders with profit data - ADMIN ONLY"""
+    try:
+        is_admin = await check_admin(payload)
+        if not is_admin:
+            raise HTTPException(status_code=403, detail="Admin access required")
+        
+        orders = await db.customer_orders.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+        
+        return orders
+    except Exception as e:
+        logger.error(f"Error fetching customer orders: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.put("/admin/customer-orders/{order_id}/status")
+async def update_customer_order_status(order_id: str, request: Request, payload: dict = Depends(verify_token)):
+    """Update customer order status - ADMIN ONLY"""
+    try:
+        is_admin = await check_admin(payload)
+        if not is_admin:
+            raise HTTPException(status_code=403, detail="Admin access required")
+        
+        body = await request.json()
+        
+        update_data = {"updated_at": datetime.now(timezone.utc).isoformat()}
+        
+        if "order_status" in body:
+            update_data["order_status"] = body["order_status"]
+        if "payment_status" in body:
+            update_data["payment_status"] = body["payment_status"]
+        
+        result = await db.customer_orders.update_one(
+            {"id": order_id},
+            {"$set": update_data}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        return {"message": "Order status updated"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating order status: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 app.include_router(api_router)
 
 # CORS configuration for production
