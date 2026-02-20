@@ -970,17 +970,64 @@ async def get_quotations(payload: dict = Depends(verify_token)):
         
         # Admin sees all, users see only their created ones
         if is_admin:
-            quotations = await db.quotations.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+            raw_quotations = await db.quotations.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
         else:
-            quotations = await db.quotations.find({"created_by": user_id}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+            raw_quotations = await db.quotations.find({"created_by": user_id}, {"_id": 0}).sort("created_at", -1).to_list(1000)
         
-        for quotation in quotations:
-            if isinstance(quotation['created_at'], str):
+        quotations = []
+        for quotation in raw_quotations:
+            # Fix legacy converted-from-order documents with wrong schema
+            if "quotation_number" in quotation and "quote_number" not in quotation:
+                quotation["quote_number"] = quotation.pop("quotation_number")
+            if "customer" in quotation and "customer_name" not in quotation:
+                cust = quotation.pop("customer", {})
+                quotation["customer_name"] = cust.get("name", "")
+                quotation["customer_email"] = cust.get("email", "unknown@example.com")
+                quotation["customer_phone"] = cust.get("phone", "")
+                quotation["customer_address"] = cust.get("address", "")
+            if "rooms" in quotation and "items" not in quotation:
+                items = []
+                for room in quotation.pop("rooms", []):
+                    for item in room.get("items", []):
+                        items.append({
+                            "id": str(uuid.uuid4()),
+                            "room_area": room.get("name", "General"),
+                            "model_no": item.get("model_no", ""),
+                            "product_name": item.get("name", item.get("product_name", "")),
+                            "description": item.get("description", ""),
+                            "image_url": item.get("image_url"),
+                            "quantity": item.get("quantity", 1),
+                            "list_price": item.get("list_price", 0),
+                            "discount": 0,
+                            "offered_price": item.get("offered_price", item.get("list_price", 0)),
+                            "company_cost": item.get("company_cost", 0),
+                            "total_amount": item.get("total_amount", 0),
+                            "total_company_cost": item.get("company_cost", 0) * item.get("quantity", 1),
+                            "is_custom": False
+                        })
+                quotation["items"] = items
+            
+            # Ensure required fields have defaults
+            quotation.setdefault("revision_no", 0)
+            quotation.setdefault("total_company_cost", 0)
+            quotation.setdefault("profit_margin", 0)
+            quotation.setdefault("payment_terms", "")
+            quotation.setdefault("created_by", None)
+            quotation.setdefault("assigned_to", [])
+            quotation.setdefault("sent_at", None)
+            
+            if isinstance(quotation.get('created_at'), str):
                 quotation['created_at'] = datetime.fromisoformat(quotation['created_at'])
-            if isinstance(quotation['updated_at'], str):
+            if isinstance(quotation.get('updated_at'), str):
                 quotation['updated_at'] = datetime.fromisoformat(quotation['updated_at'])
             if quotation.get('sent_at') and isinstance(quotation['sent_at'], str):
                 quotation['sent_at'] = datetime.fromisoformat(quotation['sent_at'])
+            
+            try:
+                quotations.append(Quotation(**quotation))
+            except Exception as parse_err:
+                logger.warning(f"Skipping malformed quotation {quotation.get('id', 'unknown')}: {parse_err}")
+                continue
         
         return quotations
     except Exception as e:
