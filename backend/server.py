@@ -1330,7 +1330,6 @@ async def update_settings(settings: Settings, payload: dict = Depends(verify_tok
 
 # ============= PDF GENERATION ENDPOINTS =============
 
-from fastapi.responses import FileResponse
 
 @api_router.post("/quotations/{quotation_id}/generate-pdf")
 async def generate_quotation_pdf(quotation_id: str, payload: dict = Depends(verify_token)):
