@@ -19,18 +19,18 @@ import {
 } from 'lucide-react';
 
 const statusConfig = {
-  pending: { icon: Clock, color: 'text-yellow-500', bg: 'bg-yellow-50', label: 'Pending' },
-  confirmed: { icon: CheckCircle, color: 'text-blue-500', bg: 'bg-blue-50', label: 'Confirmed' },
-  processing: { icon: Package, color: 'text-purple-500', bg: 'bg-purple-50', label: 'Processing' },
-  shipped: { icon: Truck, color: 'text-indigo-500', bg: 'bg-indigo-50', label: 'Shipped' },
-  delivered: { icon: CheckCircle, color: 'text-green-500', bg: 'bg-green-50', label: 'Delivered' },
-  cancelled: { icon: XCircle, color: 'text-red-500', bg: 'bg-red-50', label: 'Cancelled' }
+  pending: { icon: Clock, color: 'text-yellow-500', bg: 'bg-yellow-500/10', label: 'Pending' },
+  confirmed: { icon: CheckCircle, color: 'text-blue-500', bg: 'bg-blue-500/10', label: 'Confirmed' },
+  processing: { icon: Package, color: 'text-purple-500', bg: 'bg-purple-500/10', label: 'Processing' },
+  shipped: { icon: Truck, color: 'text-indigo-500', bg: 'bg-indigo-500/10', label: 'Shipped' },
+  delivered: { icon: CheckCircle, color: 'text-green-500', bg: 'bg-green-500/10', label: 'Delivered' },
+  cancelled: { icon: XCircle, color: 'text-red-500', bg: 'bg-red-500/10', label: 'Cancelled' }
 };
 
 const paymentStatusConfig = {
-  pending: { color: 'text-yellow-600', bg: 'bg-yellow-100', label: 'Payment Pending' },
-  paid: { color: 'text-green-600', bg: 'bg-green-100', label: 'Paid' },
-  failed: { color: 'text-red-600', bg: 'bg-red-100', label: 'Failed' }
+  pending: { color: 'text-yellow-500', bg: 'bg-yellow-500/10', label: 'Payment Pending' },
+  paid: { color: 'text-green-500', bg: 'bg-green-500/10', label: 'Paid' },
+  failed: { color: 'text-red-500', bg: 'bg-red-500/10', label: 'Failed' }
 };
 
 const CustomerOrdersPage = () => {
