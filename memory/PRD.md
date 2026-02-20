@@ -1,26 +1,48 @@
 # InHaus Smart Home - Product Requirements Document
 
 ## Original Problem Statement
-Build and refine an internal tool for the "InHaus" e-commerce business. This includes product management, generating customized PDF quotations, and an e-commerce system.
+Build and refine an internal tool for the "InHaus" e-commerce business. This includes product management, generating customized PDF quotations, and a complete e-commerce system with customer authentication.
 
 ## Core Requirements
-- **Product Management**: Admin panel to manage smart home products
+- **Product Management**: Admin panel to manage smart home products with image upload (PNG, max 2MB)
 - **Quotation System**: Generate, send, and download PDF quotations with product images
-- **E-commerce System**: Shop page, cart, checkout, and order management
-- **User & Role Management**: Admin authentication with JWT
-- **Contact Form**: Public contact form for inquiries
+- **E-commerce System**: Customer authentication, room-based cart, checkout, and order management
+- **User & Role Management**: Admin and Customer authentication with JWT
+- **Invoice System**: PDF invoices with room-wise product grouping, shipping/billing address, company branding
 
 ## Tech Stack
 - **Frontend**: React, Tailwind CSS, Shadcn UI
 - **Backend**: FastAPI, Motor (async MongoDB)
 - **Database**: MongoDB
 - **PDF Generation**: ReportLab, Pillow
+- **Authentication**: JWT + Emergent-managed Google OAuth
 
 ---
 
 ## What's Been Implemented
 
 ### December 2025
+
+#### E-commerce System (Completed)
+- [x] Customer registration with email/password
+- [x] Customer login with email/password
+- [x] Google OAuth integration (via Emergent-managed auth)
+- [x] Auth-gated product catalog
+- [x] Room-based cart system (predefined + custom rooms)
+- [x] Room selection modal when adding products
+- [x] Cart page with room-wise product grouping
+- [x] Checkout with shipping/billing address
+- [x] Cash on Delivery payment method
+- [x] Order placement and confirmation
+- [x] PDF invoice generation with:
+  - InHaus logo/address on left
+  - Customer details on right
+  - Room-wise product listing with images
+  - Tax calculation (18% GST)
+- [x] Invoice download and email sending
+- [x] Customer orders history page
+- [x] Admin customer management (manual user creation)
+- [x] Admin shop orders with profit margins
 
 #### Core Features (Completed)
 - [x] Admin authentication (JWT-based)
@@ -34,62 +56,25 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
 #### Bug Fixes Applied
 - [x] Fixed "Response.clone: Body has already been consumed" error in quotations
 - [x] Added cache-control headers to prevent stale PDF downloads
-- [x] Fixed PDF discount rendering (HTML tags appeared instead of colored text)
-- [x] Fixed product image rendering in PDFs (images now display correctly)
-- [x] Added defensive code in pdf_generator.py to prevent server reload issues
-
-#### Website Pages
-- [x] HomePage (reverted to original simpler design - no framer-motion animations)
-- [x] AboutPage (reverted to original design with white/orange theme)
-- [x] ContactPage (reverted to original design with company field)
-- [x] ProductsPage
-- [x] SmartHomesPage, SmartCommercialPage, SmartHospitalityPage
-- [x] Admin pages (Login, Quotations, Products, Contacts, Settings)
-
-#### E-commerce Foundation (In Progress)
-- [x] Backend APIs: `/api/shop/products`, `/api/orders`, `/api/admin/orders`
-- [x] Frontend pages: ShopPage, CartPage, CheckoutPage, AdminOrdersPage
-- [x] CartContext for state management
-- [ ] Cart functionality (Add to cart buttons, localStorage)
-- [ ] Checkout flow completion
-- [ ] Payment integration
+- [x] Fixed PDF discount rendering
+- [x] Fixed product image rendering in PDFs
+- [x] Fixed PDF invoice generation (_create_footer method)
+- [x] Reverted website redesign (HomePage, AboutPage, ContactPage)
 
 ---
 
-## Prioritized Backlog
-
-### P0 - Critical
-- [ ] Fix Product Deletion bug (frontend issue in AdminProductsPage)
-
-### P1 - High Priority
-- [ ] Complete E-commerce cart functionality
-- [ ] Implement checkout flow with order placement
-- [ ] Payment gateway integration (Razorpay/Stripe)
-
-### P2 - Medium Priority
-- [ ] Test "In-Quotation Product Cloning & Editing" feature
-- [ ] Performance optimization (investigate slowness)
-- [ ] User Registration & Management System
-
-### P3 - Low Priority
-- [ ] Role-Based Access Control (RBAC)
-- [ ] Auto-logout functionality
-- [ ] Switchboard grouping in quotes
-
----
-
-## Known Issues
-
-### Product Deletion Bug
-- **Status**: Open
-- **Description**: Admin unable to delete products from the frontend
-- **Backend**: DELETE endpoint works via curl
-- **Frontend**: Redirects to login page immediately
-
-### Performance (Mitigated)
-- **Status**: Monitoring
-- **Root Cause**: Server running with --reload flag (readonly config)
-- **Mitigation**: Defensive code added to prevent frequent reloads
+## Predefined Rooms
+- Living Room
+- Master Bedroom
+- Bedroom 2
+- Bedroom 3
+- Kitchen
+- Bathroom
+- Office/Study
+- Dining Room
+- Balcony
+- Hall
+- (Custom rooms can be added by users)
 
 ---
 
@@ -98,58 +83,126 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
 ### Public
 - `POST /api/contact` - Submit contact form
 - `GET /api/shop/products` - Get products for shop
+- `GET /api/rooms/default` - Get predefined room list
+
+### Customer Auth
+- `POST /api/customer/register` - Customer registration
+- `POST /api/customer/login` - Customer login
+- `POST /api/customer/google-session` - Process Google OAuth
+- `GET /api/customer/me` - Get customer profile
+- `POST /api/customer/logout` - Logout customer
+
+### Customer Cart & Orders
+- `GET /api/customer/rooms` - Get customer's rooms (predefined + custom)
+- `POST /api/customer/rooms` - Add custom room
+- `POST /api/customer/checkout` - Place order
+- `GET /api/customer/orders` - Get order history
+- `GET /api/customer/orders/{id}` - Get order details
+- `GET /api/customer/orders/{id}/invoice` - Download invoice PDF
+- `POST /api/customer/orders/{id}/send-invoice` - Email invoice
 
 ### Admin (JWT Required)
 - `POST /api/auth/login` - Admin login
 - `GET/POST/DELETE /api/products` - Product CRUD
 - `GET/POST /api/quotations` - Quotation management
-- `GET /api/quotations/{id}/download` - Download PDF
-- `POST /api/quotations/{id}/send` - Send quotation via email
-- `GET/POST /api/orders` - Order management
-- `GET /api/admin/orders` - Admin orders with profit margins
+- `GET /api/admin/customers` - View all customers
+- `POST /api/admin/customers` - Create customer account
+- `GET /api/admin/customer-orders` - View all orders with profit
+- `PUT /api/admin/customer-orders/{id}/status` - Update order status
 
 ---
 
 ## Database Schema
 
-### Products Collection
+### Customers Collection
 ```json
 {
+  "user_id": "cust_xxx",
+  "email": "string",
   "name": "string",
-  "sku": "string",
-  "price": "number",
-  "cost": "number",
-  "category": "string",
-  "description": "string",
-  "image_url": "string"
+  "picture": "string (optional)",
+  "phone": "string (optional)",
+  "shipping_address": "string (optional)",
+  "billing_address": "string (optional)",
+  "auth_provider": "email|google",
+  "password_hash": "string (for email auth)",
+  "status": "active|inactive",
+  "created_at": "datetime",
+  "last_login": "datetime"
 }
 ```
 
-### Orders Collection
+### Customer Orders Collection
 ```json
 {
-  "order_id": "string",
-  "customer_details": {
-    "name": "string",
-    "email": "string",
-    "phone": "string",
-    "address": "string"
-  },
+  "id": "uuid",
+  "order_number": "INV-2025-0001",
+  "user_id": "cust_xxx",
+  "customer_name": "string",
+  "customer_email": "string",
+  "customer_phone": "string",
+  "shipping_address": "string",
+  "billing_address": "string",
   "items": [{
     "product_id": "string",
-    "name": "string",
-    "price": "number",
-    "quantity": "number"
+    "product_name": "string",
+    "model_no": "string",
+    "image_url": "string",
+    "list_price": "number",
+    "quantity": "number",
+    "total_price": "number",
+    "room_name": "string",
+    "room_type": "predefined|custom"
   }],
-  "total_price": "number",
+  "subtotal": "number",
+  "tax_percentage": 18,
+  "tax_amount": "number",
+  "total": "number",
   "total_cost": "number",
-  "status": "string",
+  "profit_margin": "number",
+  "payment_method": "cod|bank_transfer",
+  "payment_status": "pending|paid|failed",
+  "order_status": "pending|confirmed|processing|shipped|delivered|cancelled",
   "created_at": "datetime"
 }
 ```
 
 ---
 
+## Prioritized Backlog
+
+### P0 - Critical
+- [x] E-commerce system implementation ✅
+
+### P1 - High Priority
+- [ ] Payment gateway integration (Razorpay/Stripe)
+- [ ] Product deletion bug fix (frontend issue in AdminProductsPage)
+- [ ] Product image upload improvements
+
+### P2 - Medium Priority
+- [ ] Performance optimization
+- [ ] User profile management
+- [ ] Order tracking notifications
+
+### P3 - Low Priority
+- [ ] In-Quotation Product Cloning testing
+- [ ] Role-Based Access Control (RBAC)
+- [ ] Auto-logout functionality
+
+---
+
 ## Test Credentials
-- **Email**: barath40893@gmail.com
-- **Password**: InHaus@2024
+- **Admin**: barath40893@gmail.com / InHaus@2024
+- **Customer**: test@inhaus.co.in / Test1234
+
+---
+
+## Test Files
+- `/app/backend/tests/test_ecommerce.py` - 22 backend API tests
+- `/app/test_reports/iteration_1.json` - Test report
+
+---
+
+## Known Issues
+- Products show "No Image" placeholder - need to upload product images via admin
+- Product deletion frontend bug (redirects to login)
