@@ -2686,6 +2686,278 @@ async def update_customer_order_status(order_id: str, request: Request, payload:
         logger.error(f"Error updating order status: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ============= ADMIN ORDER EDITING ENDPOINTS =============
+
+class OrderEditRequest(BaseModel):
+    """Request model for editing customer orders"""
+    items: Optional[List[dict]] = None  # Updated items with prices
+    discount_type: Optional[str] = None  # "percentage" or "fixed"
+    discount_value: Optional[float] = 0
+    include_gst: Optional[bool] = True
+    gst_percentage: Optional[float] = 18.0
+    notes: Optional[str] = None
+
+@api_router.get("/admin/customer-orders/{order_id}")
+async def get_customer_order_detail_admin(order_id: str, payload: dict = Depends(verify_token)):
+    """Get single customer order details for editing - ADMIN ONLY"""
+    try:
+        is_admin = await check_admin(payload)
+        if not is_admin:
+            raise HTTPException(status_code=403, detail="Admin access required")
+        
+        order = await db.customer_orders.find_one({"id": order_id}, {"_id": 0})
+        
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        return order
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching order: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.put("/admin/customer-orders/{order_id}/edit")
+async def edit_customer_order(order_id: str, data: OrderEditRequest, payload: dict = Depends(verify_token)):
+    """Edit customer order - update prices, apply discount, adjust GST - ADMIN ONLY"""
+    try:
+        is_admin = await check_admin(payload)
+        if not is_admin:
+            raise HTTPException(status_code=403, detail="Admin access required")
+        
+        order = await db.customer_orders.find_one({"id": order_id}, {"_id": 0})
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        update_data = {"updated_at": datetime.now(timezone.utc).isoformat()}
+        
+        # Update items if provided
+        items = data.items if data.items else order.get('items', [])
+        
+        # Recalculate totals
+        subtotal = 0
+        total_cost = 0
+        
+        for item in items:
+            item_price = float(item.get('list_price', 0))
+            item_qty = int(item.get('quantity', 1))
+            item_cost = float(item.get('company_cost', 0))
+            
+            item['total_price'] = item_price * item_qty
+            item['total_cost'] = item_cost * item_qty
+            
+            subtotal += item['total_price']
+            total_cost += item['total_cost']
+        
+        update_data['items'] = items
+        update_data['subtotal'] = round(subtotal, 2)
+        update_data['total_cost'] = round(total_cost, 2)
+        
+        # Apply discount
+        discount_amount = 0
+        if data.discount_type and data.discount_value:
+            if data.discount_type == "percentage":
+                discount_amount = subtotal * (data.discount_value / 100)
+            else:  # fixed
+                discount_amount = data.discount_value
+            
+            update_data['discount_type'] = data.discount_type
+            update_data['discount_value'] = data.discount_value
+            update_data['discount_amount'] = round(discount_amount, 2)
+        
+        net_amount = subtotal - discount_amount
+        
+        # GST calculation
+        include_gst = data.include_gst if data.include_gst is not None else True
+        gst_percentage = data.gst_percentage if data.gst_percentage is not None else 18.0
+        
+        update_data['include_gst'] = include_gst
+        update_data['tax_percentage'] = gst_percentage
+        
+        if include_gst:
+            tax_amount = net_amount * (gst_percentage / 100)
+        else:
+            tax_amount = 0
+        
+        update_data['tax_amount'] = round(tax_amount, 2)
+        
+        # Final total
+        total = net_amount + tax_amount
+        update_data['total'] = round(total, 2)
+        
+        # Profit margin
+        profit_margin = total - total_cost - tax_amount
+        update_data['profit_margin'] = round(profit_margin, 2)
+        
+        # Notes
+        if data.notes:
+            update_data['admin_notes'] = data.notes
+        
+        # Update order
+        result = await db.customer_orders.update_one(
+            {"id": order_id},
+            {"$set": update_data}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=400, detail="No changes made")
+        
+        # Return updated order
+        updated_order = await db.customer_orders.find_one({"id": order_id}, {"_id": 0})
+        return updated_order
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error editing order: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/admin/customer-orders/{order_id}/convert-to-quotation")
+async def convert_order_to_quotation(order_id: str, payload: dict = Depends(verify_token)):
+    """Convert a customer order to a quotation for further editing - ADMIN ONLY"""
+    try:
+        is_admin = await check_admin(payload)
+        if not is_admin:
+            raise HTTPException(status_code=403, detail="Admin access required")
+        
+        order = await db.customer_orders.find_one({"id": order_id}, {"_id": 0})
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        # Get next quotation number
+        last_quotation = await db.quotations.find_one(
+            sort=[("quotation_number", -1)]
+        )
+        
+        if last_quotation and last_quotation.get("quotation_number"):
+            try:
+                last_num = int(last_quotation["quotation_number"].split("-")[-1])
+                next_num = last_num + 1
+            except:
+                next_num = 1
+        else:
+            next_num = 1
+        
+        quotation_number = f"QT-{datetime.now().year}-{next_num:04d}"
+        
+        # Create quotation from order
+        quotation_id = str(uuid.uuid4())
+        
+        # Convert order items to quotation format (grouped by room)
+        rooms = {}
+        for item in order.get('items', []):
+            room_name = item.get('room_name', 'General')
+            if room_name not in rooms:
+                rooms[room_name] = {
+                    "name": room_name,
+                    "items": []
+                }
+            
+            rooms[room_name]["items"].append({
+                "product_id": item.get('product_id'),
+                "name": item.get('product_name'),
+                "model_no": item.get('model_no'),
+                "image_url": item.get('image_url'),
+                "description": item.get('description', ''),
+                "list_price": item.get('list_price', 0),
+                "offered_price": item.get('list_price', 0),  # Admin can adjust
+                "quantity": item.get('quantity', 1),
+                "discount_percentage": 0,
+                "total_amount": item.get('total_price', 0)
+            })
+        
+        quotation = {
+            "id": quotation_id,
+            "quotation_number": quotation_number,
+            "converted_from_order": order_id,
+            "original_order_number": order.get('order_number'),
+            "customer": {
+                "name": order.get('customer_name'),
+                "email": order.get('customer_email'),
+                "phone": order.get('customer_phone', ''),
+                "address": order.get('billing_address', '')
+            },
+            "rooms": list(rooms.values()),
+            "subtotal": order.get('subtotal', 0),
+            "overall_discount": order.get('discount_amount', 0),
+            "net_quote": order.get('subtotal', 0) - order.get('discount_amount', 0),
+            "installation_charges": 0,
+            "gst_percentage": order.get('tax_percentage', 18),
+            "gst_amount": order.get('tax_amount', 0),
+            "total": order.get('total', 0),
+            "validity_days": 30,
+            "notes": f"Converted from Order {order.get('order_number')}",
+            "status": "draft",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.quotations.insert_one(quotation)
+        
+        # Update order to mark it as converted
+        await db.customer_orders.update_one(
+            {"id": order_id},
+            {"$set": {
+                "converted_to_quotation": quotation_id,
+                "quotation_number": quotation_number,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        logger.info(f"Order {order_id} converted to quotation {quotation_number}")
+        
+        return {
+            "message": "Order converted to quotation successfully",
+            "quotation_id": quotation_id,
+            "quotation_number": quotation_number
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error converting order to quotation: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/admin/customer-orders/{order_id}/invoice")
+async def admin_download_customer_invoice(order_id: str, payload: dict = Depends(verify_token)):
+    """Download invoice PDF for any customer order - ADMIN ONLY"""
+    try:
+        is_admin = await check_admin(payload)
+        if not is_admin:
+            raise HTTPException(status_code=403, detail="Admin access required")
+        
+        order = await db.customer_orders.find_one({"id": order_id}, {"_id": 0})
+        
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        # Get settings
+        settings = await db.settings.find_one({"id": "company_settings"}, {"_id": 0})
+        if not settings:
+            settings = Settings().model_dump()
+        
+        # Generate invoice PDF
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        pdf_filename = f"invoice_{order['order_number'].replace('/', '_')}_{timestamp}.pdf"
+        pdf_path = PDF_DIR / pdf_filename
+        
+        # Generate customer invoice
+        pdf_generator.generate_customer_invoice(order, settings, str(pdf_path))
+        
+        return FileResponse(
+            path=str(pdf_path),
+            media_type='application/pdf',
+            filename=f"invoice_{order['order_number'].replace('/', '_')}.pdf",
+            headers={
+                'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            }
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error generating admin invoice: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 app.include_router(api_router)
 
 # CORS configuration for production
