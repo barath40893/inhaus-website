@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ShoppingCart, User } from 'lucide-react';
-import { useCustomerAuth } from '../context/CustomerAuthProvider';
+import { useCustomerAuth } from '../context/CustomerAuthContext';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
