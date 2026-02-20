@@ -7,7 +7,6 @@ import { Textarea } from '../components/ui/textarea';
 import { useToast } from '../hooks/use-toast';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import axios from 'axios';
-import { motion } from 'framer-motion';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -15,38 +14,11 @@ const API = `${BACKEND_URL}/api`;
 const ContactPage = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 40 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.6, ease: 'easeOut' }
-    }
-  };
-
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2
-      }
-    }
-  };
-
-  const scaleIn = {
-    hidden: { opacity: 0, scale: 0.9 },
-    visible: { 
-      opacity: 1, 
-      scale: 1,
-      transition: { duration: 0.5, ease: 'easeOut' }
-    }
-  };
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
+    company: '',
     message: '',
   });
 
@@ -73,6 +45,7 @@ const ContactPage = () => {
         name: '',
         email: '',
         phone: '',
+        company: '',
         message: '',
       });
     } catch (error) {
@@ -155,7 +128,9 @@ const ContactPage = () => {
               <div className="mt-12">
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Business Hours</h3>
                 <div className="space-y-2 text-gray-600">
-                  <p>Everyday: 10:00 AM - 8:00 PM</p>
+                  <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
+                  <p>Saturday: 10:00 AM - 4:00 PM</p>
+                  <p>Sunday: Closed</p>
                 </div>
               </div>
             </div>
@@ -208,6 +183,21 @@ const ContactPage = () => {
                     onChange={handleChange}
                     className="bg-white border-gray-300 text-gray-900"
                     placeholder="+1 (555) 123-4567"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
+                    Company Name
+                  </label>
+                  <Input
+                    id="company"
+                    name="company"
+                    type="text"
+                    value={formData.company}
+                    onChange={handleChange}
+                    className="bg-white border-gray-300 text-gray-900"
+                    placeholder="Your Company"
                   />
                 </div>
 

@@ -52,7 +52,7 @@ const AboutPage = () => {
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">Our Story</h2>
             <div className="space-y-6 text-lg text-gray-600">
               <p>
-                InHaus was founded with a simple yet powerful vision: to make smart home technology accessible and affordable for everyone. We believe that everyone deserves to experience the comfort, convenience, and security that comes with a truly intelligent home.
+                InHaus was founded with a simple yet powerful vision: to make smart home technology accessible and affordable for everyone. We recognized that while the potential of smart devices was enormous, the complexity of development and deployment was a significant barrier for many brands.
               </p>
               <p>
                 Today, we're proud to serve thousands of homes across the country, transforming ordinary houses into extraordinary smart homes. Our products are designed with you in mind—easy to install, simple to use, and built to last. Whether you're looking to save on energy bills, enhance your home security, or simply enjoy the convenience of voice-controlled lighting, we have the perfect solution.
@@ -121,7 +121,7 @@ const AboutPage = () => {
             </div>
             <div className="text-center">
               <div className="text-5xl font-bold bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text mb-2">
-                4.8★
+                4.8
               </div>
               <div className="text-lg text-gray-600">Customer Rating</div>
             </div>
