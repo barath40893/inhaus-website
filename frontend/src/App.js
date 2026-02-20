@@ -67,7 +67,7 @@ function AppRouter() {
       {/* Customer Routes */}
       <Route path="/customer/login" element={<CustomerLoginPage />} />
       <Route path="/auth/callback" element={<CustomerAuthCallback />} />
-      <Route path="/catalog" element={<CatalogPage />} />
+      <Route path="/catalog" element={<Navigate to="/products" replace />} />
       <Route path="/customer/cart" element={<CustomerCartPage />} />
       <Route path="/customer/checkout" element={<CustomerCheckoutPage />} />
       <Route path="/customer/orders" element={<CustomerOrdersPage />} />
