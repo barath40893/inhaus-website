@@ -83,6 +83,8 @@ function AppRouter() {
       <Route path="/admin/invoices/new" element={<ProtectedRoute><AdminCreateInvoicePage /></ProtectedRoute>} />
       <Route path="/admin/invoices/edit/:id" element={<ProtectedRoute><AdminCreateInvoicePage /></ProtectedRoute>} />
       <Route path="/admin/orders" element={<ProtectedRoute><AdminOrdersPage /></ProtectedRoute>} />
+      <Route path="/admin/customers" element={<ProtectedRoute><AdminCustomersPage /></ProtectedRoute>} />
+      <Route path="/admin/customer-orders" element={<ProtectedRoute><AdminCustomerOrdersPage /></ProtectedRoute>} />
       <Route path="/admin/products" element={<ProtectedRoute><AdminProductsPage /></ProtectedRoute>} />
       <Route path="/admin/settings" element={<ProtectedRoute><AdminSettingsPage /></ProtectedRoute>} />
     </Routes>
