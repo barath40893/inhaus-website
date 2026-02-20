@@ -350,7 +350,7 @@ const AdminCustomerOrdersPage = () => {
           </div>
         )}
       </div>
-    </AdminLayout>
+    </div>
   );
 };
 
