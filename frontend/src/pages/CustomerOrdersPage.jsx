@@ -278,13 +278,13 @@ const CustomerOrdersPage = () => {
                                     )}
                                   </div>
                                   <div className="flex-1">
-                                    <p className="font-medium text-gray-900">{item.product_name}</p>
-                                    <p className="text-sm text-gray-500">
+                                    <p className="font-medium text-white">{item.product_name}</p>
+                                    <p className="text-sm text-neutral-500">
                                       Model: {item.model_no} × {item.quantity}
                                     </p>
                                   </div>
-                                  <p className="font-semibold text-gray-900">
-                                    ₹{item.total_price?.toLocaleString()}
+                                  <p className="font-semibold text-white">
+                                    Rs. {item.total_price?.toLocaleString()}
                                   </p>
                                 </div>
                               ))}
@@ -295,30 +295,30 @@ const CustomerOrdersPage = () => {
 
                       {/* Addresses */}
                       <div className="px-6 pb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="bg-gray-50 rounded-lg p-4">
-                          <h5 className="font-medium text-gray-900 mb-2">Shipping Address</h5>
-                          <p className="text-sm text-gray-600">{order.shipping_address}</p>
+                        <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                          <h5 className="font-medium text-white mb-2">Shipping Address</h5>
+                          <p className="text-sm text-neutral-400">{order.shipping_address}</p>
                         </div>
-                        <div className="bg-gray-50 rounded-lg p-4">
-                          <h5 className="font-medium text-gray-900 mb-2">Billing Address</h5>
-                          <p className="text-sm text-gray-600">{order.billing_address}</p>
+                        <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                          <h5 className="font-medium text-white mb-2">Billing Address</h5>
+                          <p className="text-sm text-neutral-400">{order.billing_address}</p>
                         </div>
                       </div>
 
                       {/* Order Summary */}
                       <div className="px-6 pb-4">
-                        <div className="bg-orange-50 rounded-lg p-4">
-                          <div className="flex justify-between text-sm mb-1">
+                        <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-4">
+                          <div className="flex justify-between text-sm mb-1 text-neutral-300">
                             <span>Subtotal</span>
-                            <span>₹{order.subtotal?.toLocaleString()}</span>
+                            <span>Rs. {order.subtotal?.toLocaleString()}</span>
                           </div>
-                          <div className="flex justify-between text-sm mb-1">
+                          <div className="flex justify-between text-sm mb-1 text-neutral-300">
                             <span>GST ({order.tax_percentage}%)</span>
-                            <span>₹{order.tax_amount?.toLocaleString()}</span>
+                            <span>Rs. {order.tax_amount?.toLocaleString()}</span>
                           </div>
-                          <div className="flex justify-between font-bold border-t border-orange-200 pt-2 mt-2">
-                            <span>Total</span>
-                            <span className="text-orange-600">₹{order.total?.toLocaleString()}</span>
+                          <div className="flex justify-between font-bold border-t border-orange-500/30 pt-2 mt-2">
+                            <span className="text-white">Total</span>
+                            <span className="text-orange-500">Rs. {order.total?.toLocaleString()}</span>
                           </div>
                         </div>
                       </div>
@@ -327,7 +327,7 @@ const CustomerOrdersPage = () => {
                       <div className="px-6 pb-6 flex gap-3">
                         <Button
                           onClick={() => handleDownloadInvoice(order.id, order.order_number)}
-                          className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                          className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
                           data-testid={`download-invoice-${order.id}`}
                         >
                           <Download className="h-4 w-4 mr-2" />
@@ -336,7 +336,7 @@ const CustomerOrdersPage = () => {
                         <Button
                           onClick={() => handleSendInvoice(order.id)}
                           variant="outline"
-                          className="flex-1 border-orange-500 text-orange-600 hover:bg-orange-50"
+                          className="flex-1 border-orange-500/30 text-orange-500 hover:bg-orange-500/10"
                           data-testid={`send-invoice-${order.id}`}
                         >
                           <Mail className="h-4 w-4 mr-2" />
