@@ -349,8 +349,8 @@ const AdminInvoicesPage = () => {
               </table>
             </div>
           )}
+        </motion.div>
       </div>
-    </motion.div>
   );
 };
 
