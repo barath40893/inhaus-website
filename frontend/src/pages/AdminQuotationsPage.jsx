@@ -212,38 +212,12 @@ const AdminQuotationsPage = () => {
               <h1 className="text-3xl font-bold text-gray-900">Quotations</h1>
               <p className="text-gray-600 mt-2">Manage customer quotations</p>
             </div>
-            <div className="flex gap-4">
-              <button
-                onClick={() => navigate('/admin/contacts')}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Contacts
-              </button>
-              <button
-                onClick={() => navigate('/admin/invoices')}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Invoices
-              </button>
-              <button
-                onClick={() => navigate('/admin/products')}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Products
-              </button>
-              <button
-                onClick={() => navigate('/admin/settings')}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Settings
-              </button>
-              <button
-                onClick={() => navigate('/admin/quotations/new')}
-                className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
-              >
-                + New Quotation
-              </button>
-            </div>
+            <button
+              onClick={() => navigate('/admin/quotations/new')}
+              className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+            >
+              + New Quotation
+            </button>
           </div>
 
           {/* Filters */}
