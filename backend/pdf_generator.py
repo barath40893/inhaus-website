@@ -1671,8 +1671,8 @@ class PDFGenerator:
                 Paragraph(item.get('product_name', ''), self.normal_style),
                 Paragraph(item.get('model_no', ''), self.normal_style),
                 Paragraph(str(item.get('quantity', 0)), self.normal_style),
-                Paragraph(f"₹ {item.get('list_price', 0):,.0f}", self.normal_style),
-                Paragraph(f"₹ {item.get('total_price', 0):,.0f}", self.normal_style)
+                Paragraph(f"Rs. {item.get('list_price', 0):,.0f}", self.normal_style),
+                Paragraph(f"Rs. {item.get('total_price', 0):,.0f}", self.normal_style)
             ])
         
         # Create table
@@ -1700,9 +1700,9 @@ class PDFGenerator:
         
         # Create summary table
         data = [
-            ['', Paragraph('<b>Subtotal</b>', self.bold_style), f"₹ {order_data.get('subtotal', 0):,.0f}"],
-            ['', Paragraph(f"GST ({order_data.get('tax_percentage', 18)}%)", self.normal_style), f"₹ {order_data.get('tax_amount', 0):,.0f}"],
-            ['', Paragraph('<b>Total Amount</b>', self.bold_style), Paragraph(f"<b>₹ {order_data.get('total', 0):,.0f}</b>", self.bold_style)]
+            ['', Paragraph('<b>Subtotal</b>', self.bold_style), f"Rs. {order_data.get('subtotal', 0):,.0f}"],
+            ['', Paragraph(f"GST ({order_data.get('tax_percentage', 18)}%)", self.normal_style), f"Rs. {order_data.get('tax_amount', 0):,.0f}"],
+            ['', Paragraph('<b>Total Amount</b>', self.bold_style), Paragraph(f"<b>Rs. {order_data.get('total', 0):,.0f}</b>", self.bold_style)]
         ]
         
         table = Table(data, colWidths=[3*inch, 2*inch, 2*inch])
@@ -1933,8 +1933,8 @@ class PDFGenerator:
                     image_cell,
                     Paragraph(product_details, self.normal_style),
                     Paragraph(str(item.get('quantity', 1)), self.normal_style),
-                    Paragraph(f"₹ {item.get('list_price', 0):,.0f}", self.normal_style),
-                    Paragraph(f"₹ {item.get('total_price', 0):,.0f}", self.bold_style)
+                    Paragraph(f"Rs. {item.get('list_price', 0):,.0f}", self.normal_style),
+                    Paragraph(f"Rs. {item.get('total_price', 0):,.0f}", self.bold_style)
                 ])
             
             # Create table
@@ -1969,10 +1969,10 @@ class PDFGenerator:
         
         # Summary table aligned right
         data = [
-            ['', Paragraph('<b>Subtotal</b>', self.bold_style), Paragraph(f"₹ {subtotal:,.2f}", self.normal_style)],
-            ['', Paragraph(f"GST ({tax_percentage}%)", self.normal_style), Paragraph(f"₹ {tax_amount:,.2f}", self.normal_style)],
+            ['', Paragraph('<b>Subtotal</b>', self.bold_style), Paragraph(f"Rs. {subtotal:,.2f}", self.normal_style)],
+            ['', Paragraph(f"GST ({tax_percentage}%)", self.normal_style), Paragraph(f"Rs. {tax_amount:,.2f}", self.normal_style)],
             ['', Paragraph('<font size=12><b>TOTAL</b></font>', self.bold_style), 
-             Paragraph(f"<font size=12 color='#FF6B35'><b>₹ {total:,.2f}</b></font>", self.bold_style)]
+             Paragraph(f"<font size=12 color='#FF6B35'><b>Rs. {total:,.2f}</b></font>", self.bold_style)]
         ]
         
         table = Table(data, colWidths=[3*inch, 2*inch, 1.7*inch])
