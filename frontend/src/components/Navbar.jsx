@@ -151,7 +151,7 @@ const Navbar = () => {
                 
                 {customer ? (
                   <Link
-                    to="/account"
+                    to="/customer/orders"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-orange-500 text-white font-medium"
                   >
