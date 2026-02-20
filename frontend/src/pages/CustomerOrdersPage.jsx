@@ -204,12 +204,12 @@ const CustomerOrdersPage = () => {
               return (
                 <div 
                   key={order.id} 
-                  className="bg-white rounded-2xl shadow-sm overflow-hidden"
+                  className="bg-neutral-900/50 border border-white/10 rounded-2xl overflow-hidden"
                   data-testid={`order-${order.id}`}
                 >
                   {/* Order Header */}
                   <div 
-                    className="p-6 cursor-pointer hover:bg-gray-50 transition-colors"
+                    className="p-6 cursor-pointer hover:bg-white/5 transition-colors"
                     onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
                   >
                     <div className="flex items-center justify-between">
@@ -218,8 +218,8 @@ const CustomerOrdersPage = () => {
                           <StatusIcon className={`h-6 w-6 ${status.color}`} />
                         </div>
                         <div>
-                          <h3 className="font-bold text-gray-900">{order.order_number}</h3>
-                          <p className="text-sm text-gray-500">
+                          <h3 className="font-bold text-white">{order.order_number}</h3>
+                          <p className="text-sm text-neutral-500">
                             Placed on {formatDate(order.created_at)}
                           </p>
                         </div>
@@ -227,8 +227,8 @@ const CustomerOrdersPage = () => {
                       
                       <div className="flex items-center gap-4">
                         <div className="text-right">
-                          <p className="font-bold text-orange-600 text-lg">
-                            ₹{order.total?.toLocaleString()}
+                          <p className="font-bold text-orange-500 text-lg">
+                            Rs. {order.total?.toLocaleString()}
                           </p>
                           <div className="flex gap-2 mt-1">
                             <span className={`text-xs px-2 py-1 rounded-full ${status.bg} ${status.color}`}>
@@ -240,9 +240,9 @@ const CustomerOrdersPage = () => {
                           </div>
                         </div>
                         {isExpanded ? (
-                          <ChevronUp className="h-5 w-5 text-gray-400" />
+                          <ChevronUp className="h-5 w-5 text-neutral-400" />
                         ) : (
-                          <ChevronDown className="h-5 w-5 text-gray-400" />
+                          <ChevronDown className="h-5 w-5 text-neutral-400" />
                         )}
                       </div>
                     </div>
@@ -250,14 +250,14 @@ const CustomerOrdersPage = () => {
 
                   {/* Expanded Details */}
                   {isExpanded && (
-                    <div className="border-t border-gray-100">
+                    <div className="border-t border-white/10">
                       {/* Items by Room */}
                       <div className="p-6">
-                        <h4 className="font-semibold text-gray-900 mb-4">Order Items</h4>
+                        <h4 className="font-semibold text-white mb-4">Order Items</h4>
                         
                         {Object.entries(groupedItems).map(([roomName, items]) => (
                           <div key={roomName} className="mb-4">
-                            <div className="flex items-center gap-2 text-sm font-medium text-orange-600 mb-2">
+                            <div className="flex items-center gap-2 text-sm font-medium text-orange-500 mb-2">
                               <Package className="h-4 w-4" />
                               {roomName}
                             </div>
@@ -266,9 +266,9 @@ const CustomerOrdersPage = () => {
                               {items.map((item, idx) => (
                                 <div 
                                   key={idx}
-                                  className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg"
+                                  className="flex items-center gap-4 p-3 bg-white/5 border border-white/5 rounded-lg"
                                 >
-                                  <div className="w-12 h-12 bg-gray-200 rounded overflow-hidden flex-shrink-0">
+                                  <div className="w-12 h-12 bg-neutral-800 rounded overflow-hidden flex-shrink-0">
                                     {item.image_url && (
                                       <img
                                         src={`${backendUrl}${item.image_url}`}
