@@ -1,5 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Calculator, X } from 'lucide-react';
+
+const PriceCalculatorModal = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
+      <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-5 py-3 bg-gradient-to-r from-orange-500 to-red-500">
+          <div className="flex items-center gap-2 text-white font-semibold">
+            <Calculator size={18} />
+            <span>Price Calculator</span>
+          </div>
+          <button onClick={onClose} className="text-white/80 hover:text-white transition-colors" data-testid="close-price-calc-modal-invoice">
+            <X size={20} />
+          </button>
+        </div>
+        <iframe
+          src="https://price-calc-18.preview.emergentagent.com/embed"
+          width="420"
+          height="440"
+          frameBorder="0"
+          style={{ borderRadius: '0 0 12px 12px', display: 'block' }}
+          title="Price Calculator"
+        />
+      </div>
+    </div>
+  );
+};
 
 const AdminCreateInvoicePage = () => {
   const navigate = useNavigate();
@@ -7,6 +35,7 @@ const AdminCreateInvoicePage = () => {
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
   const [products, setProducts] = useState([]);
   const [saving, setSaving] = useState(false);
+  const [showPriceCalc, setShowPriceCalc] = useState(false);
 
   const [formData, setFormData] = useState({
     customer_name: '',
@@ -179,10 +208,23 @@ const AdminCreateInvoicePage = () => {
     <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">{id ? 'Edit Invoice' : 'New Invoice'}</h1>
-          <button onClick={() => navigate('/admin/invoices')} className="px-4 py-2 border rounded-lg hover:bg-gray-50">
-            Back
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setShowPriceCalc(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg hover:from-orange-600 hover:to-red-600 transition-all shadow-md"
+              data-testid="open-price-calc-invoice"
+            >
+              <Calculator size={16} />
+              Price Calculator
+            </button>
+            <button onClick={() => navigate('/admin/invoices')} className="px-4 py-2 border rounded-lg hover:bg-gray-50">
+              Back
+            </button>
+          </div>
         </div>
+
+        <PriceCalculatorModal isOpen={showPriceCalc} onClose={() => setShowPriceCalc(false)} />
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Customer Details */}
