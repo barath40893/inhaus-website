@@ -341,6 +341,7 @@ class InvoiceCreate(BaseModel):
     installation_charges: float = 0
     gst_percentage: float = 18
     due_days: int = 30
+    amount_paid: float = 0
 
 class InvoiceUpdate(BaseModel):
     customer_name: Optional[str] = None
@@ -1182,8 +1183,18 @@ async def create_invoice(input: InvoiceCreate, payload: dict = Depends(verify_to
         invoice_data['items'] = [item.model_dump() for item in items]
         invoice_data['invoice_number'] = invoice_number
         invoice_data['due_date'] = due_date
-        invoice_data['amount_due'] = totals['total']
         invoice_data.update(totals)
+        
+        # Calculate payment tracking
+        amount_paid = input.amount_paid or 0
+        invoice_data['amount_paid'] = amount_paid
+        invoice_data['amount_due'] = round(totals['total'] - amount_paid, 2)
+        if amount_paid >= totals['total'] and totals['total'] > 0:
+            invoice_data['payment_status'] = 'paid'
+        elif amount_paid > 0:
+            invoice_data['payment_status'] = 'partial'
+        else:
+            invoice_data['payment_status'] = 'pending'
         
         invoice_obj = Invoice(**invoice_data)
         

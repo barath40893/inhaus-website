@@ -85,6 +85,8 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
 - [x] **P0 Fixed: Blank /login page** - Added redirect from `/login` to `/customer/login` in App.js (Feb 2026)
 - [x] **P0 Fixed: Quotations not saving/loading** - Fixed `convert_order_to_quotation` endpoint creating wrong schema (used `quotation_number`/`customer`/`rooms` instead of `quote_number`/`customer_name`/`items`). Added legacy data migration in GET endpoint. (Feb 2026)
 - [x] **Price Calculator embed** - Added Price Calculator iframe as a popup modal (triggered by button) on both Create/Edit Quotation and Create/Edit Invoice pages (Feb 2026)
+- [x] **Invoice Payment Tracking** - Added Amount Paid input, auto-calculated Balance Due, and auto Payment Status (PENDING/PARTIAL/PAID) to Invoice create/edit form. Backend now correctly computes amount_due and payment_status on create and update. (Mar 2026)
+- [x] **Product Image Display** - Added Image column with thumbnails to quotation and invoice item tables. Added onError fallback for broken images. Product selector on invoice page now shows product images. (Mar 2026)
 
 ---
 

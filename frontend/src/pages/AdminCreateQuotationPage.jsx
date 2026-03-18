@@ -419,7 +419,7 @@ const AdminCreateQuotationPage = () => {
                         <div className="text-xs text-gray-500">₹{p.list_price}</div>
                       </div>
                       {p.image_url && (
-                        <img src={`${process.env.REACT_APP_BACKEND_URL}${p.image_url}`} alt={p.name} className="w-12 h-12 object-cover rounded ml-2" />
+                        <img src={`${process.env.REACT_APP_BACKEND_URL}${p.image_url}`} alt={p.name} className="w-12 h-12 object-cover rounded ml-2" onError={(e) => { e.target.style.display = 'none'; }} />
                       )}
                     </div>
                     <div className="flex gap-2">
@@ -530,6 +530,7 @@ const AdminCreateQuotationPage = () => {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Image</th>
                         <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Room</th>
                         <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Switchboard</th>
                         <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Model</th>
@@ -543,6 +544,19 @@ const AdminCreateQuotationPage = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                       {formData.items.map((item, idx) => (
                         <tr key={idx} className={item.is_custom ? 'bg-orange-50' : ''}>
+                          <td className="px-4 py-2">
+                            {item.image_url ? (
+                              <img
+                                src={`${backendUrl}${item.image_url}`}
+                                alt={item.product_name}
+                                className="w-10 h-10 object-cover rounded border"
+                                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                              />
+                            ) : null}
+                            <div className={`w-10 h-10 bg-gray-100 rounded border flex items-center justify-center text-gray-400 text-xs ${item.image_url ? 'hidden' : 'flex'}`}>
+                              N/A
+                            </div>
+                          </td>
                           <td className="px-4 py-2 text-sm">{item.room_area}</td>
                           <td className="px-4 py-2 text-sm text-gray-600">
                             {item.switchboard_name || '-'}

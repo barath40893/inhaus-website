@@ -47,6 +47,7 @@ const AdminCreateInvoicePage = () => {
     installation_charges: 0,
     gst_percentage: 18,
     due_days: 30,
+    amount_paid: 0,
     items: []
   });
 
@@ -59,7 +60,8 @@ const AdminCreateInvoicePage = () => {
     list_price: 0,
     discount: 0,
     offered_price: 0,
-    company_cost: 0
+    company_cost: 0,
+    image_url: null
   });
 
   useEffect(() => {
@@ -125,7 +127,8 @@ const AdminCreateInvoicePage = () => {
       list_price: 0,
       discount: 0,
       offered_price: 0,
-      company_cost: 0
+      company_cost: 0,
+      image_url: null
     });
   };
 
@@ -142,7 +145,8 @@ const AdminCreateInvoicePage = () => {
       description: product.description,
       list_price: product.list_price,
       offered_price: product.list_price,
-      company_cost: product.company_cost
+      company_cost: product.company_cost,
+      image_url: product.image_url || null
     });
   };
 
@@ -265,12 +269,32 @@ const AdminCreateInvoicePage = () => {
             {/* Product Selector */}
             <div className="mb-4 p-4 bg-gray-50 rounded-lg">
               <label className="block text-sm font-medium mb-2">Quick Select from Product Master</label>
-              <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto">
+              <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
                 {products.map(p => (
-                  <button key={p.id} type="button" onClick={() => selectProduct(p)} className="p-2 text-sm border rounded hover:bg-blue-50 text-left">
-                    <div className="font-semibold">{p.model_no}</div>
-                    <div className="text-xs text-gray-600">{p.name}</div>
-                  </button>
+                  <div key={p.id} className="border rounded-lg p-3 bg-white">
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex-1">
+                        <div className="font-semibold text-sm">{p.model_no}</div>
+                        <div className="text-xs text-gray-600">{p.name}</div>
+                        <div className="text-xs text-gray-500">₹{p.list_price}</div>
+                      </div>
+                      {p.image_url && (
+                        <img
+                          src={`${backendUrl}${p.image_url}`}
+                          alt={p.name}
+                          className="w-12 h-12 object-cover rounded ml-2"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => selectProduct(p)}
+                      className="w-full px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      Select
+                    </button>
+                  </div>
                 ))}
               </div>
             </div>
@@ -319,6 +343,7 @@ const AdminCreateInvoicePage = () => {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Image</th>
                         <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Room</th>
                         <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Model</th>
                         <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Product</th>
@@ -331,6 +356,19 @@ const AdminCreateInvoicePage = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                       {formData.items.map((item, idx) => (
                         <tr key={idx}>
+                          <td className="px-4 py-2">
+                            {item.image_url ? (
+                              <img
+                                src={`${backendUrl}${item.image_url}`}
+                                alt={item.product_name}
+                                className="w-10 h-10 object-cover rounded border"
+                                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                              />
+                            ) : null}
+                            <div className={`w-10 h-10 bg-gray-100 rounded border flex items-center justify-center text-gray-400 text-xs ${item.image_url ? 'hidden' : 'flex'}`}>
+                              N/A
+                            </div>
+                          </td>
                           <td className="px-4 py-2 text-sm">{item.room_area}</td>
                           <td className="px-4 py-2 text-sm">{item.model_no}</td>
                           <td className="px-4 py-2 text-sm">{item.product_name}</td>
@@ -392,6 +430,47 @@ const AdminCreateInvoicePage = () => {
                 <div className="text-right">₹ {totals.gst_amount.toFixed(2)}</div>
                 <div className="text-right text-lg font-bold border-t pt-2">TOTAL:</div>
                 <div className="text-right text-lg font-bold border-t pt-2">₹ {totals.total.toFixed(2)}</div>
+              </div>
+            </div>
+
+            {/* Payment Tracking */}
+            <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <h3 className="font-semibold text-green-800 mb-3">Payment Tracking</h3>
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Amount Paid (₹)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={formData.amount_paid}
+                    onChange={(e) => setFormData({...formData, amount_paid: parseFloat(e.target.value) || 0})}
+                    className="w-full px-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"
+                    data-testid="invoice-amount-paid"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Balance Due (₹)</label>
+                  <div className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-red-600 font-semibold" data-testid="invoice-balance-due">
+                    ₹ {Math.max(0, totals.total - (formData.amount_paid || 0)).toFixed(2)}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Payment Status</label>
+                  <div className={`w-full px-4 py-2 rounded-lg font-semibold text-center ${
+                    (formData.amount_paid || 0) >= totals.total && totals.total > 0
+                      ? 'bg-green-100 text-green-800 border border-green-300'
+                      : (formData.amount_paid || 0) > 0
+                        ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                        : 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                  }`} data-testid="invoice-payment-status">
+                    {(formData.amount_paid || 0) >= totals.total && totals.total > 0
+                      ? 'PAID'
+                      : (formData.amount_paid || 0) > 0
+                        ? 'PARTIAL'
+                        : 'PENDING'}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
