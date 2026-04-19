@@ -5,18 +5,43 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { ArrowRight, Wifi, Bluetooth, Shield, Lightbulb, Lock, Mic, Power, Sun, Moon, Volume2, ChevronRight, CheckCircle, Play, Zap } from 'lucide-react';
 
-// ─── ROOM DATA FOR 3BHK FLOORPLAN ───────────────────────────────
+// ─── ROOM DATA FOR FLOORPLAN (matches NoLights.png) ─────────────
 const rooms = [
-  { id: 'hall', name: 'Living Room', icon: Lightbulb },
+  { id: 'living', name: 'Living Room', icon: Lightbulb },
   { id: 'kitchen', name: 'Kitchen', icon: Sun },
-  { id: 'dining', name: 'Dining', icon: Lightbulb },
-  { id: 'master', name: 'Master Bedroom', icon: Moon },
-  { id: 'masterbath', name: 'Master Bath', icon: Lightbulb },
-  { id: 'bedroom2', name: 'Bedroom 2', icon: Moon },
-  { id: 'bedroom3', name: 'Bedroom 3', icon: Moon },
-  { id: 'bathroom', name: 'Bathroom', icon: Lightbulb },
-  { id: 'balcony', name: 'Balcony', icon: Sun },
+  { id: 'bedroom', name: 'Bedroom', icon: Moon },
+  { id: 'office', name: 'Office / Study', icon: Lightbulb },
+  { id: 'garage', name: 'Garage', icon: Power },
+  { id: 'hallway', name: 'Hallway', icon: Lightbulb },
 ];
+
+// ─── ROOM LIGHT OVERLAY POSITIONS (% of image 1000x678) ────────
+const roomOverlays = {
+  living: {
+    cx: 47.5, cy: 65, rx: 18, ry: 12,
+    color: '255,180,60',
+  },
+  kitchen: {
+    cx: 29, cy: 30, rx: 11, ry: 16,
+    color: '255,200,100',
+  },
+  bedroom: {
+    cx: 76, cy: 67, rx: 14, ry: 10,
+    color: '255,170,50',
+  },
+  office: {
+    cx: 13, cy: 28, rx: 9, ry: 12,
+    color: '255,190,80',
+  },
+  garage: {
+    cx: 71, cy: 90, rx: 18, ry: 14,
+    color: '255,210,130',
+  },
+  hallway: {
+    cx: 50, cy: 46, rx: 10, ry: 10,
+    color: '255,185,70',
+  },
+};
 
 // ─── TICKER ITEMS ───────────────────────────────────────────────
 const tickerItems = [
@@ -48,248 +73,98 @@ const ScrollingTicker = () => (
   </div>
 );
 
-// ─── 3D ISOMETRIC FLOORPLAN FOR 3BHK ────────────────────────────
-const FloorplanSVG = ({ roomStates }) => {
-  const isOn = (id) => !!roomStates[id];
-
-  // Isometric projection helpers
-  const ISO = 0.866; // cos(30)
-  const wallH = 18; // wall height in pixels
-
-  // Convert grid (x, y) to isometric screen (sx, sy)
-  const isoX = (x, y) => 400 + (x - y) * ISO * 0.9;
-  const isoY = (x, y) => 60 + (x + y) * 0.45;
-
-  // Create isometric floor polygon points
-  const floorPoly = (x, y, w, h) => {
-    const tl = `${isoX(x, y)},${isoY(x, y)}`;
-    const tr = `${isoX(x + w, y)},${isoY(x + w, y)}`;
-    const br = `${isoX(x + w, y + h)},${isoY(x + w, y + h)}`;
-    const bl = `${isoX(x, y + h)},${isoY(x, y + h)}`;
-    return `${tl} ${tr} ${br} ${bl}`;
-  };
-
-  // Left wall polygon
-  const leftWall = (x, y, h) => {
-    const b1 = `${isoX(x, y)},${isoY(x, y)}`;
-    const b2 = `${isoX(x, y + h)},${isoY(x, y + h)}`;
-    const t2 = `${isoX(x, y + h)},${isoY(x, y + h) - wallH}`;
-    const t1 = `${isoX(x, y)},${isoY(x, y) - wallH}`;
-    return `${b1} ${b2} ${t2} ${t1}`;
-  };
-
-  // Right wall polygon
-  const rightWall = (x, y, w) => {
-    const b1 = `${isoX(x + w, y)},${isoY(x + w, y)}`;
-    const b2 = `${isoX(x, y)},${isoY(x, y)}`;
-    const t2 = `${isoX(x, y)},${isoY(x, y) - wallH}`;
-    const t1 = `${isoX(x + w, y)},${isoY(x + w, y) - wallH}`;
-    return `${b1} ${b2} ${t2} ${t1}`;
-  };
-
-  // Back wall (top-right wall)
-  const backWallR = (x, y, w) => {
-    const b1 = `${isoX(x, y)},${isoY(x, y)}`;
-    const b2 = `${isoX(x + w, y)},${isoY(x + w, y)}`;
-    const t2 = `${isoX(x + w, y)},${isoY(x + w, y) - wallH}`;
-    const t1 = `${isoX(x, y)},${isoY(x, y) - wallH}`;
-    return `${b1} ${b2} ${t2} ${t1}`;
-  };
-
-  // Back wall (top-left wall)
-  const backWallL = (x, y, h) => {
-    const b1 = `${isoX(x, y)},${isoY(x, y)}`;
-    const b2 = `${isoX(x, y + h)},${isoY(x, y + h)}`;
-    const t2 = `${isoX(x, y + h)},${isoY(x, y + h) - wallH}`;
-    const t1 = `${isoX(x, y)},${isoY(x, y) - wallH}`;
-    return `${b1} ${b2} ${t2} ${t1}`;
-  };
-
-  // Isometric rectangle (for furniture)
-  const isoRect = (x, y, w, h) => floorPoly(x, y, w, h);
-
-  // 3BHK Room definitions: {x, y, w, h} in grid units
-  const roomDefs = {
-    hall:       { x: 0, y: 0, w: 140, h: 100, name: 'Living Room' },
-    kitchen:    { x: 140, y: 0, w: 90, h: 70, name: 'Kitchen' },
-    dining:     { x: 140, y: 70, w: 90, h: 60, name: 'Dining' },
-    master:     { x: 0, y: 100, w: 110, h: 90, name: 'Master Bedroom' },
-    masterbath: { x: 0, y: 190, w: 50, h: 40, name: 'M. Bath' },
-    bedroom2:   { x: 110, y: 130, w: 80, h: 70, name: 'Bedroom 2' },
-    bedroom3:   { x: 190, y: 130, w: 80, h: 70, name: 'Bedroom 3' },
-    bathroom:   { x: 230, y: 0, w: 40, h: 70, name: 'Bathroom' },
-    balcony:    { x: 230, y: 70, w: 40, h: 60, name: 'Balcony' },
-  };
-
-  // Room component
-  const Room = ({ id, def }) => {
-    const { x, y, w, h, name } = def;
-    const lit = isOn(id);
-    const floorColor = lit ? '#2a2215' : '#0e0e0e';
-    const floorLitOverlay = lit ? 'rgba(255,165,0,0.08)' : 'transparent';
-    const wallLitLeft = lit ? '#d4c4a0' : '#3a3a3a';
-    const wallLitRight = lit ? '#b8a880' : '#2d2d2d';
-    const wallBack = lit ? '#c8b890' : '#333';
-    const cx = isoX(x + w / 2, y + h / 2);
-    const cy = isoY(x + w / 2, y + h / 2);
-
-    return (
-      <g style={{ transition: 'all 0.6s' }}>
-        {/* Floor */}
-        <polygon points={floorPoly(x, y, w, h)} fill={floorColor} stroke="#1a1a1a" strokeWidth="0.5" style={{ transition: 'fill 0.6s' }} />
-        {lit && <polygon points={floorPoly(x, y, w, h)} fill={floorLitOverlay} style={{ transition: 'fill 0.6s' }} />}
-
-        {/* Back walls (top-left and top-right) */}
-        <polygon points={backWallR(x, y, w)} fill={wallBack} stroke="#222" strokeWidth="0.3" opacity="0.9" style={{ transition: 'fill 0.6s' }} />
-        <polygon points={backWallL(x, y, h)} fill={wallLitLeft} stroke="#222" strokeWidth="0.3" opacity="0.85" style={{ transition: 'fill 0.6s' }} />
-
-        {/* Light glow effect */}
-        {lit && (
-          <>
-            <circle cx={cx} cy={cy - 5} r={Math.min(w, h) * 0.35} fill="url(#isoGlow)" opacity="0.5" />
-            <circle cx={cx} cy={cy - 8} r="3" fill="#FFE4A0" opacity="0.9">
-              <animate attributeName="opacity" values="0.9;0.6;0.9" dur="2s" repeatCount="indefinite" />
-            </circle>
-          </>
-        )}
-
-        {/* Room label */}
-        <text x={cx} y={cy + Math.min(w, h) * 0.3} textAnchor="middle" fill={lit ? '#FFD700' : '#3a3a3a'} fontSize="7" fontWeight="700" fontFamily="Inter, sans-serif" style={{ transition: 'fill 0.6s', textShadow: lit ? '0 0 8px rgba(255,215,0,0.5)' : 'none' }}>
-          {name}
-        </text>
-      </g>
-    );
-  };
-
-  // Isometric furniture piece
-  const Furniture = ({ x, y, w, h, lit, color = '#3d3520', darkColor = '#1a1a1a' }) => (
-    <polygon points={isoRect(x, y, w, h)} fill={lit ? color : darkColor} stroke={lit ? '#554a30' : '#222'} strokeWidth="0.5" style={{ transition: 'all 0.6s' }} />
-  );
-
+// ─── IMAGE-BASED INTERACTIVE FLOORPLAN ───────────────────────────
+const ImageFloorplan = ({ roomStates }) => {
+  const anyOn = Object.values(roomStates).some(Boolean);
+  
   return (
     <div className="relative w-full" data-testid="live-floorplan">
-      <svg viewBox="0 30 800 350" className="w-full h-auto" style={{ filter: 'drop-shadow(0 20px 60px rgba(0,0,0,0.6))' }}>
-        <defs>
-          <radialGradient id="isoGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#FFA500" stopOpacity="0.35" />
-            <stop offset="60%" stopColor="#FF8C00" stopOpacity="0.1" />
-            <stop offset="100%" stopColor="#FF6600" stopOpacity="0" />
-          </radialGradient>
-          <linearGradient id="wallGradLight" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#e8dcc0" />
-            <stop offset="100%" stopColor="#c8b890" />
-          </linearGradient>
-        </defs>
+      {/* Container with aspect ratio matching NoLights.png (1000x678) */}
+      <div className="relative w-full rounded-2xl overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.5)]" style={{ aspectRatio: '1000 / 678', background: '#0A0A0A' }}>
+        {/* Base floorplan image */}
+        <img
+          src="/NoLights.png"
+          alt="3D Isometric Floorplan"
+          className="absolute inset-0 w-full h-full object-contain select-none pointer-events-none transition-all duration-700"
+          draggable={false}
+          style={{
+            filter: anyOn ? 'brightness(0.55) saturate(0.7)' : 'brightness(0.35) saturate(0.4)',
+          }}
+        />
 
-        {/* Background */}
-        <rect x="0" y="30" width="800" height="350" fill="#080808" rx="12" />
+        {/* Large diffuse ambient glow per room (wide spread) */}
+        {Object.entries(roomOverlays).map(([id, ov]) => {
+          const isOn = !!roomStates[id];
+          return (
+            <div
+              key={`ambient-${id}`}
+              className="absolute pointer-events-none"
+              style={{
+                left: `${ov.cx - ov.rx * 1.5}%`,
+                top: `${ov.cy - ov.ry * 1.5}%`,
+                width: `${ov.rx * 3}%`,
+                height: `${ov.ry * 3}%`,
+                background: `radial-gradient(ellipse at center, rgba(${ov.color},0.35) 0%, rgba(${ov.color},0.12) 40%, transparent 70%)`,
+                opacity: isOn ? 1 : 0,
+                transition: 'opacity 0.7s ease-in-out',
+                mixBlendMode: 'screen',
+                borderRadius: '50%',
+              }}
+            />
+          );
+        })}
 
-        {/* ═══ ROOMS ═══ */}
-        <Room id="hall" def={roomDefs.hall} />
-        <Room id="kitchen" def={roomDefs.kitchen} />
-        <Room id="dining" def={roomDefs.dining} />
-        <Room id="master" def={roomDefs.master} />
-        <Room id="masterbath" def={roomDefs.masterbath} />
-        <Room id="bedroom2" def={roomDefs.bedroom2} />
-        <Room id="bedroom3" def={roomDefs.bedroom3} />
-        <Room id="bathroom" def={roomDefs.bathroom} />
-        <Room id="balcony" def={roomDefs.balcony} />
+        {/* Core room glow (concentrated warm light) */}
+        {Object.entries(roomOverlays).map(([id, ov]) => {
+          const isOn = !!roomStates[id];
+          return (
+            <div
+              key={`core-${id}`}
+              data-testid={`light-overlay-${id}`}
+              className="absolute pointer-events-none"
+              style={{
+                left: `${ov.cx - ov.rx}%`,
+                top: `${ov.cy - ov.ry}%`,
+                width: `${ov.rx * 2}%`,
+                height: `${ov.ry * 2}%`,
+                background: `radial-gradient(ellipse at center, rgba(${ov.color},0.65) 0%, rgba(${ov.color},0.3) 40%, rgba(${ov.color},0.08) 70%, transparent 100%)`,
+                opacity: isOn ? 1 : 0,
+                transition: 'opacity 0.6s ease-in-out',
+                mixBlendMode: 'screen',
+                filter: 'blur(6px)',
+                borderRadius: '50%',
+              }}
+            />
+          );
+        })}
 
-        {/* ═══ FURNITURE ═══ */}
-        {/* Hall - L-shaped sofa */}
-        <Furniture x={15} y={15} w={60} h={20} lit={isOn('hall')} />
-        <Furniture x={15} y={35} w={20} h={30} lit={isOn('hall')} />
-        {/* Hall - Coffee table */}
-        <Furniture x={45} y={45} w={25} h={15} lit={isOn('hall')} color="#2a2418" darkColor="#151515" />
-        {/* Hall - TV unit */}
-        <Furniture x={90} y={10} w={40} h={8} lit={isOn('hall')} color="#444" darkColor="#1a1a1a" />
-        {/* Hall - Rug */}
-        <polygon points={isoRect(30, 40, 55, 35)} fill={isOn('hall') ? 'rgba(42,32,21,0.3)' : 'rgba(17,17,17,0.3)'} style={{ transition: 'fill 0.6s' }} />
-
-        {/* Kitchen - Counter */}
-        <Furniture x={145} y={5} w={80} h={10} lit={isOn('kitchen')} color="#5a4d35" darkColor="#1e1e1e" />
-        {/* Kitchen - Island */}
-        <Furniture x={160} y={35} w={45} h={18} lit={isOn('kitchen')} color="#3a3025" darkColor="#151515" />
-        {/* Kitchen - Fridge */}
-        <Furniture x={215} y={10} w={10} h={18} lit={isOn('kitchen')} color="#4a4a4a" darkColor="#1a1a1a" />
-
-        {/* Dining - Table */}
-        <Furniture x={155} y={82} w={50} h={28} lit={isOn('dining')} color="#4a3f28" darkColor="#151515" />
-        {/* Dining - Chairs */}
-        {[0, 15, 30, 45].map(dx => (
-          <polygon key={dx} points={isoRect(155 + dx, 78, 8, 4)} fill={isOn('dining') ? '#3a3025' : '#141414'} style={{ transition: 'fill 0.6s' }} />
-        ))}
-        {[0, 15, 30, 45].map(dx => (
-          <polygon key={`b${dx}`} points={isoRect(155 + dx, 112, 8, 4)} fill={isOn('dining') ? '#3a3025' : '#141414'} style={{ transition: 'fill 0.6s' }} />
-        ))}
-
-        {/* Master Bedroom - Bed */}
-        <Furniture x={20} y={115} w={55} h={45} lit={isOn('master')} />
-        {/* Master - Pillows */}
-        <Furniture x={25} y={118} w={18} h={10} lit={isOn('master')} color="#5a4d35" darkColor="#1e1e1e" />
-        <Furniture x={48} y={118} w={18} h={10} lit={isOn('master')} color="#5a4d35" darkColor="#1e1e1e" />
-        {/* Master - Wardrobe */}
-        <Furniture x={85} y={105} w={15} h={50} lit={isOn('master')} color="#2a2418" darkColor="#151515" />
-        {/* Master - Bedside tables */}
-        <Furniture x={8} y={130} w={10} h={10} lit={isOn('master')} color="#2a2418" darkColor="#151515" />
-        <Furniture x={78} y={130} w={10} h={10} lit={isOn('master')} color="#2a2418" darkColor="#151515" />
-
-        {/* Master Bath - Bathtub */}
-        <polygon points={isoRect(8, 195, 30, 14)} fill="none" stroke={isOn('masterbath') ? '#666' : '#222'} strokeWidth="1" style={{ transition: 'stroke 0.6s' }} />
-        {/* Master Bath - Toilet */}
-        <polygon points={isoRect(10, 215, 10, 12)} fill={isOn('masterbath') ? '#444' : '#1a1a1a'} style={{ transition: 'fill 0.6s' }} />
-
-        {/* Bedroom 2 - Bed */}
-        <Furniture x={120} y={145} w={45} h={35} lit={isOn('bedroom2')} />
-        {/* Bedroom 2 - Pillows */}
-        <Furniture x={125} y={148} w={15} h={8} lit={isOn('bedroom2')} color="#5a4d35" darkColor="#1e1e1e" />
-        <Furniture x={145} y={148} w={15} h={8} lit={isOn('bedroom2')} color="#5a4d35" darkColor="#1e1e1e" />
-        {/* Bedroom 2 - Desk */}
-        <Furniture x={170} y={140} w={15} h={25} lit={isOn('bedroom2')} color="#2a2418" darkColor="#151515" />
-
-        {/* Bedroom 3 - Bed */}
-        <Furniture x={205} y={145} w={40} h={30} lit={isOn('bedroom3')} />
-        {/* Bedroom 3 - Pillow */}
-        <Furniture x={210} y={148} w={12} h={8} lit={isOn('bedroom3')} color="#5a4d35" darkColor="#1e1e1e" />
-        <Furniture x={228} y={148} w={12} h={8} lit={isOn('bedroom3')} color="#5a4d35" darkColor="#1e1e1e" />
-        {/* Bedroom 3 - Study corner */}
-        <Furniture x={255} y={140} w={12} h={20} lit={isOn('bedroom3')} color="#2a2418" darkColor="#151515" />
-
-        {/* Common Bathroom - Fixtures */}
-        <polygon points={isoRect(235, 8, 28, 12)} fill="none" stroke={isOn('bathroom') ? '#666' : '#222'} strokeWidth="1" style={{ transition: 'stroke 0.6s' }} />
-        <polygon points={isoRect(240, 35, 10, 14)} fill={isOn('bathroom') ? '#444' : '#1a1a1a'} style={{ transition: 'fill 0.6s' }} />
-        <polygon points={isoRect(255, 40, 10, 8)} fill="none" stroke={isOn('bathroom') ? '#555' : '#222'} strokeWidth="0.8" style={{ transition: 'stroke 0.6s' }} />
-
-        {/* Balcony - Plants */}
-        <circle cx={isoX(245, 85)} cy={isoY(245, 85)} r="4" fill={isOn('balcony') ? '#2d5016' : '#141414'} style={{ transition: 'fill 0.6s' }} />
-        <circle cx={isoX(255, 95)} cy={isoY(255, 95)} r="3" fill={isOn('balcony') ? '#2d5016' : '#141414'} style={{ transition: 'fill 0.6s' }} />
-        {/* Balcony railing */}
-        <line x1={isoX(270, 70)} y1={isoY(270, 70) - 8} x2={isoX(270, 130)} y2={isoY(270, 130) - 8} stroke={isOn('balcony') ? '#888' : '#333'} strokeWidth="1.5" style={{ transition: 'stroke 0.6s' }} />
-
-        {/* ═══ OUTER WALLS (front edges) ═══ */}
-        {/* Front-right wall */}
-        <polygon points={`
-          ${isoX(270, 0)},${isoY(270, 0)}
-          ${isoX(270, 200)},${isoY(270, 200)}
-          ${isoX(270, 200)},${isoY(270, 200) - wallH}
-          ${isoX(270, 0)},${isoY(270, 0) - wallH}
-        `} fill="#2a2a2a" stroke="#333" strokeWidth="0.5" opacity="0.6" />
-        {/* Front-left wall */}
-        <polygon points={`
-          ${isoX(0, 230)},${isoY(0, 230)}
-          ${isoX(270, 230)},${isoY(270, 230)}
-          ${isoX(270, 230)},${isoY(270, 230) - wallH}
-          ${isoX(0, 230)},${isoY(0, 230) - wallH}
-        `} fill="#222" stroke="#333" strokeWidth="0.5" opacity="0.5" />
-
-        {/* ═══ FLOOR SHADOW ═══ */}
-        <polygon points={floorPoly(-5, -5, 280, 240)} fill="none" stroke="#1a1a1a" strokeWidth="2" opacity="0.3" />
-      </svg>
+        {/* Hot center point (light bulb) */}
+        {Object.entries(roomOverlays).map(([id, ov]) => {
+          const isOn = !!roomStates[id];
+          return (
+            <div
+              key={`bulb-${id}`}
+              className="absolute pointer-events-none"
+              style={{
+                left: `${ov.cx - 1.5}%`,
+                top: `${ov.cy - 2}%`,
+                width: '3%',
+                height: '4%',
+                background: `radial-gradient(circle, rgba(255,240,200,0.9) 0%, rgba(${ov.color},0.4) 50%, transparent 100%)`,
+                opacity: isOn ? 1 : 0,
+                transition: 'opacity 0.4s ease-in-out',
+                mixBlendMode: 'screen',
+                borderRadius: '50%',
+              }}
+            />
+          );
+        })}
+      </div>
 
       {/* Badge */}
-      <div className="flex justify-center mt-3">
+      <div className="flex justify-center mt-4">
         <div className="px-6 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
-          <span className="text-[9px] font-bold tracking-[4px] text-neutral-500 uppercase">3BHK Live Floorplan</span>
+          <span className="text-[9px] font-bold tracking-[4px] text-neutral-500 uppercase">Interactive Floorplan</span>
         </div>
       </div>
     </div>
@@ -339,30 +214,46 @@ const HomePage = () => {
   };
 
   const toggleAll = (state) => {
+    // Cancel any running animation
+    animTimers.current.forEach(t => clearTimeout(t));
+    animTimers.current = [];
     const newStates = {};
     rooms.forEach(r => { newStates[r.id] = state; });
     setRoomStates(newStates);
   };
 
   // Animate rooms when demo comes into view
+  const animTimers = useRef([]);
   useEffect(() => {
     if (demoInView) {
-      const timer = setTimeout(() => {
+      // Clear any existing timers
+      animTimers.current.forEach(t => clearTimeout(t));
+      animTimers.current = [];
+      
+      const mainTimer = setTimeout(() => {
         rooms.forEach((room, i) => {
-          setTimeout(() => {
+          const t = setTimeout(() => {
             setRoomStates(prev => ({ ...prev, [room.id]: true }));
           }, i * 200);
+          animTimers.current.push(t);
         });
         // Turn off after demo
-        setTimeout(() => {
+        const offTimer = setTimeout(() => {
           rooms.forEach((room, i) => {
-            setTimeout(() => {
+            const t = setTimeout(() => {
               setRoomStates(prev => ({ ...prev, [room.id]: false }));
             }, i * 150);
+            animTimers.current.push(t);
           });
         }, 3000);
+        animTimers.current.push(offTimer);
       }, 500);
-      return () => clearTimeout(timer);
+      animTimers.current.push(mainTimer);
+      
+      return () => {
+        animTimers.current.forEach(t => clearTimeout(t));
+        animTimers.current = [];
+      };
     }
   }, [demoInView]);
 
@@ -637,7 +528,7 @@ const HomePage = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="lg:col-span-3 sticky top-32"
             >
-              <FloorplanSVG roomStates={roomStates} />
+              <ImageFloorplan roomStates={roomStates} />
               
               {/* Active count */}
               <div className="flex items-center justify-center gap-2 mt-4 text-sm text-neutral-500">
