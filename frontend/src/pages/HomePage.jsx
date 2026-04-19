@@ -716,7 +716,7 @@ const HomePage = () => {
                 </div>
               </div>
               <div className="relative mx-auto" style={{ width: '215px' }}>
-                <div className="rounded-[36px] border-[3px] border-zinc-700/50 overflow-hidden shadow-[0_20px_70px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.03)]" style={{ background: 'linear-gradient(175deg, #0e1225, #070810)', aspectRatio: '71.9 / 150' }}>
+                <div className="rounded-[36px] border-[3px] border-zinc-700/50 overflow-hidden shadow-[0_20px_70px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.03)] flex flex-col" style={{ background: 'linear-gradient(175deg, #0e1225, #070810)', aspectRatio: '71.9 / 150' }}>
                   {/* Status bar with logo in center */}
                   <div className="flex items-center justify-between px-5 pt-2.5 pb-0.5">
                     <span className="text-[9px] text-white/70 font-semibold" style={{ fontFamily: 'Outfit, sans-serif' }}>9:41</span>
@@ -736,7 +736,7 @@ const HomePage = () => {
                     <div className="w-20 h-5 rounded-full bg-black/80 border border-white/[0.04]" />
                   </div>
                   {/* App content — no separate bg, flows from phone bg */}
-                  <div className="px-3.5 pb-4">
+                  <div className="px-3.5 pb-4 flex-1 flex flex-col">
                     {/* All On/Off */}
                     <div className="grid grid-cols-2 gap-1.5 mb-2">
                       <button onClick={() => toggleAll(false)} className="py-1.5 rounded-lg text-[9px] font-semibold bg-white/[0.04] border border-white/[0.06] text-zinc-400 hover:bg-white/[0.07] transition-all" style={{ fontFamily: 'Outfit, sans-serif' }} data-testid="controller-all-off">All Off</button>
@@ -773,14 +773,14 @@ const HomePage = () => {
                         data-testid="voice-text-submit">Go</button>
                     </form>
                     {/* Room tiles */}
-                    <div className="grid grid-cols-2 gap-1.5 max-h-[180px] overflow-y-auto custom-scrollbar">
+                    <div className="grid grid-cols-2 gap-1.5 flex-1 overflow-y-auto custom-scrollbar">
                       {rooms.map((r) => (
                         <RoomTile key={r.id} room={r} isOn={!!roomStates[r.id]} onToggle={toggleRoom} />
                       ))}
                     </div>
                   </div>
                   {/* Home indicator */}
-                  <div className="flex justify-center pb-1.5 pt-0.5">
+                  <div className="flex justify-center pb-1.5 pt-1 mt-auto">
                     <div className="w-24 h-1 rounded-full bg-white/20" />
                   </div>
                 </div>
