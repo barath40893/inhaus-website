@@ -50,6 +50,20 @@ const useVoiceCommand = ({ onToggleAll, onSetRoom }) => {
   const callbacksRef = useRef({ onToggleAll, onSetRoom });
   callbacksRef.current = { onToggleAll, onSetRoom };
 
+  const processText = useCallback((text) => {
+    const cmd = parseVoiceCommand(text.toLowerCase().trim());
+    if (cmd) {
+      if (cmd.type === 'all') callbacksRef.current.onToggleAll(cmd.state);
+      else if (cmd.type === 'room') callbacksRef.current.onSetRoom(cmd.roomId, cmd.state);
+      setFeedback(cmd.feedback);
+    } else {
+      setFeedback('Try: "turn on hall" or "all lights off"');
+    }
+    setTranscript(text);
+    clearTimeout(feedbackTimer.current);
+    feedbackTimer.current = setTimeout(() => { setFeedback(''); setTranscript(''); }, 4000);
+  }, []);
+
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) { setSupported(false); return; }
@@ -70,31 +84,23 @@ const useVoiceCommand = ({ onToggleAll, onSetRoom }) => {
       }
       setTranscript(finalText || interimText);
       if (finalText) {
-        const cmd = parseVoiceCommand(finalText.toLowerCase().trim());
-        if (cmd) {
-          if (cmd.type === 'all') callbacksRef.current.onToggleAll(cmd.state);
-          else if (cmd.type === 'room') callbacksRef.current.onSetRoom(cmd.roomId, cmd.state);
-          setFeedback(cmd.feedback);
-        } else {
-          setFeedback('Try: "turn on hall" or "all lights off"');
-        }
-        clearTimeout(feedbackTimer.current);
-        feedbackTimer.current = setTimeout(() => { setFeedback(''); setTranscript(''); }, 4000);
+        processText(finalText);
+        setIsListening(false);
       }
     };
     recognition.onerror = (e) => {
       setIsListening(false);
-      if (e.error === 'not-allowed') setFeedback('Microphone access denied');
-      else if (e.error === 'no-speech') setFeedback('No speech detected. Try again.');
-      else if (e.error !== 'aborted') setFeedback('Error: ' + e.error);
+      if (e.error === 'not-allowed') setFeedback('Microphone access denied. Use text input below.');
+      else if (e.error === 'no-speech') setFeedback('No speech detected. Try again or type below.');
+      else if (e.error !== 'aborted') setFeedback('Error: ' + e.error + '. Try text input.');
       clearTimeout(feedbackTimer.current);
-      feedbackTimer.current = setTimeout(() => { setFeedback(''); setTranscript(''); }, 3000);
+      feedbackTimer.current = setTimeout(() => { setFeedback(''); setTranscript(''); }, 4000);
     };
     recognition.onend = () => setIsListening(false);
     return () => { recognition.abort(); clearTimeout(feedbackTimer.current); };
-  }, []);
+  }, [processText]);
 
-  const toggle = useCallback(() => {
+  const toggleMic = useCallback(() => {
     if (!recognitionRef.current || !supported) return;
     if (isListening) {
       recognitionRef.current.stop();
@@ -103,11 +109,11 @@ const useVoiceCommand = ({ onToggleAll, onSetRoom }) => {
       setTranscript('');
       setFeedback('');
       try { recognitionRef.current.start(); setIsListening(true); }
-      catch (err) { setFeedback('Mic busy, try again'); }
+      catch (err) { setFeedback('Mic busy, try text input'); }
     }
   }, [isListening, supported]);
 
-  return { isListening, transcript, feedback, supported, toggle };
+  return { isListening, transcript, feedback, supported, toggleMic, processText };
 };
 
 // ─── PARSE VOICE COMMAND ────────────────────────────────────────
@@ -252,6 +258,7 @@ const HomePage = () => {
   };
 
   const voice = useVoiceCommand({ onToggleAll: toggleAll, onSetRoom: setRoom });
+  const [cmdInput, setCmdInput] = useState('');
 
   useEffect(() => {
     if (!demoInView) return;
@@ -445,19 +452,18 @@ const HomePage = () => {
                     }`} data-testid="voice-command-panel">
                       <div className="flex items-center gap-3">
                         <button
-                          onClick={voice.toggle}
-                          disabled={!voice.supported}
-                          className={`relative w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
+                          onClick={voice.toggleMic}
+                          className={`relative w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 cursor-pointer ${
                             voice.isListening
                               ? 'bg-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.4)]'
                               : 'bg-gradient-to-br from-orange-500/80 to-amber-500/80 shadow-[0_0_12px_rgba(249,115,22,0.2)] hover:shadow-[0_0_18px_rgba(249,115,22,0.35)]'
-                          } ${!voice.supported ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
+                          }`}
                           data-testid="voice-mic-btn"
                         >
                           {voice.isListening && (
                             <span className="absolute inset-0 rounded-full border-2 border-orange-400/40 animate-ping" />
                           )}
-                          {voice.isListening ? <Mic size={16} className="text-white animate-pulse" /> : <Mic size={14} className="text-white" />}
+                          <Mic size={voice.isListening ? 16 : 14} className={`text-white ${voice.isListening ? 'animate-pulse' : ''}`} />
                         </button>
                         <div className="flex-1 min-w-0">
                           {voice.isListening ? (
@@ -472,13 +478,13 @@ const HomePage = () => {
                             </>
                           ) : (
                             <>
-                              <div className="text-[9px] text-zinc-500 uppercase tracking-[2px] font-medium">Voice</div>
-                              <div className="text-[11px] text-zinc-400">{voice.supported ? 'Tap mic to speak' : 'Not supported in this browser'}</div>
+                              <div className="text-[9px] text-zinc-500 uppercase tracking-[2px] font-medium">Voice / Text</div>
+                              <div className="text-[11px] text-zinc-400">Tap mic or type a command</div>
                             </>
                           )}
                         </div>
                       </div>
-                      {/* Voice waveform when listening */}
+                      {/* Waveform when listening */}
                       <AnimatePresence>
                         {voice.isListening && (
                           <motion.div
@@ -498,13 +504,30 @@ const HomePage = () => {
                           </motion.div>
                         )}
                       </AnimatePresence>
-                      {/* Command hints */}
-                      {!voice.isListening && !voice.feedback && voice.supported && (
-                        <div className="flex flex-wrap gap-1 mt-2 pt-2 border-t border-white/[0.04]">
-                          {['"Turn on hall"', '"All lights off"', '"Kitchen on"'].map((hint, i) => (
-                            <span key={i} className="text-[9px] text-zinc-600 bg-white/[0.03] rounded-full px-2 py-0.5">{hint}</span>
-                          ))}
-                        </div>
+                      {/* Text command input */}
+                      {!voice.isListening && (
+                        <form
+                          className="mt-2 pt-2 border-t border-white/[0.04]"
+                          onSubmit={(e) => { e.preventDefault(); if (cmdInput.trim()) { voice.processText(cmdInput.trim()); setCmdInput(''); } }}
+                        >
+                          <div className="flex gap-1.5">
+                            <input
+                              type="text"
+                              value={cmdInput}
+                              onChange={(e) => setCmdInput(e.target.value)}
+                              placeholder='e.g. "turn on hall"'
+                              className="flex-1 bg-white/[0.04] border border-white/[0.06] rounded-lg px-2.5 py-1.5 text-[11px] text-white placeholder-zinc-600 outline-none focus:border-orange-500/40 transition-colors"
+                              data-testid="voice-text-input"
+                            />
+                            <button
+                              type="submit"
+                              className="px-3 py-1.5 rounded-lg bg-orange-500/20 border border-orange-500/30 text-[10px] font-semibold text-orange-400 hover:bg-orange-500/30 transition-all"
+                              data-testid="voice-text-submit"
+                            >
+                              Go
+                            </button>
+                          </div>
+                        </form>
                       )}
                     </div>
 
