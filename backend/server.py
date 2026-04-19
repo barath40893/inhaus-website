@@ -3021,12 +3021,52 @@ async def admin_download_customer_invoice(order_id: str, payload: dict = Depends
         logger.error(f"Error generating admin invoice: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ─── VOICE COMMAND (Whisper STT) ────────────────────────────────
+@api_router.post("/voice/transcribe")
+async def voice_transcribe(file: UploadFile = File(...)):
+    """Transcribe short audio clip using OpenAI Whisper"""
+    import tempfile
+    try:
+        from emergentintegrations.llm.openai import OpenAISpeechToText
+        api_key = os.environ.get("EMERGENT_LLM_KEY")
+        if not api_key:
+            raise HTTPException(status_code=500, detail="Voice service not configured")
+
+        contents = await file.read()
+        if len(contents) > 5 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="Audio too large (max 5MB)")
+
+        suffix = ".webm"
+        if file.filename:
+            ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else "webm"
+            suffix = f".{ext}"
+
+        with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+            tmp.write(contents)
+            tmp_path = tmp.name
+
+        stt = OpenAISpeechToText(api_key=api_key)
+        with open(tmp_path, "rb") as audio_file:
+            response = await stt.transcribe(
+                file=audio_file,
+                model="whisper-1",
+                response_format="json",
+                language="en",
+                prompt="Smart home voice command: turn on, turn off, lights, hall, kitchen, master bedroom, small bedroom, parking, stairs, hanging lights, master bath, guest bath, all lights"
+            )
+
+        os.unlink(tmp_path)
+        return {"text": response.text}
+    except HTTPException:
+        raise
+    except Exception as e:
+        return {"text": "", "error": str(e)}
+
 app.include_router(api_router)
 
 # CORS configuration for production
 cors_origins = os.environ.get('CORS_ORIGINS', '*')
 if cors_origins == '*':
-    # In production, use specific origins
     cors_origins_list = [
         "https://inhaus.co.in",
         "https://www.inhaus.co.in",
@@ -3043,7 +3083,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allow_headers=["*"],
-    expose_headers=["Content-Disposition"],  # Important for file downloads
+    expose_headers=["Content-Disposition"],
     max_age=3600,
 )
 
