@@ -1,0 +1,43 @@
+{
+  "summary": "End-to-end validation of the new InHaus homepage redesign (Hero + Tech Ticker + Services + Smart Demo + Stats + Partners + Features + CTA) and backend APIs. All 14 feature checks from the review_request passed. Backend: 22/22 pytest tests pass; /api/shop/products=200, /api/quotations=403 (auth-gated, healthy), /api/admin/login=200, /api/customer/login=200. Note: /api/auth/login returns 404 — this endpoint does not exist in this backend (it uses /api/admin/login and /api/customer/login); the review_request mention is stale. Frontend: Hero renders 'Automation for Every Space' + CTAs + floorplan; mini toggle bar with all-on-btn/all-off-btn works; tech ticker scrolls Wi-Fi/Zigbee/Bluetooth/Alexa/Matter etc.; 3 service cards (Residential, Commercial, Hotels) with loaded Pexels/Unsplash images; Smart Demo controller has 9 room tiles (hall, kitchen, master, small, parking, stairs, hanging, masterbath, guestbath) in 2-col grid; controller-all-on and controller-all-off flip all 9 PNG overlays on both floorplans (verified opacity 1→0 in DOM); individual room toggles work; stats show 5,000+/50K+/30%/24/7; partners marquee shows Amazon Alexa, Google Home, Apple HomeKit, Matter, Samsung SmartThings, Tuya; Features shows Smart Automation / Premium Design / Always-On Care; CTA shows 'Ready to Upgrade Your Space?'.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/auth/login", "issue": "Returns 404 — backend has no /api/auth/login; it only exposes /api/admin/login and /api/customer/login. review_request mentions /api/auth/login which appears to be stale. Not a bug, just a documentation mismatch."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_ecommerce.py",
+    "/app/test_reports/pytest/iter5_results.xml"
+  ],
+  "action_items": [
+    "Optional: update review_request / docs to reference /api/admin/login and /api/customer/login instead of /api/auth/login.",
+    "Optional: remove duplicate data-testid collision on room-toggle-{id} — the hero mini toggle bar (rooms 0-4) reuses the same data-testid as the RoomTile buttons in the controller. Scoping tests by parent tile works, but unique ids (e.g., hero-room-toggle-{id} vs controller room-tile-{id} child) would prevent brittleness."
+  ],
+  "critical_code_review_comments": [
+    "HomePage.jsx (~392 lines) — acceptable but consider extracting Floorplan / RoomTile / ServiceCard / FeatureCard into /components/home/* for maintainability and unit-testing isolation.",
+    "Duplicate data-testid: `room-toggle-${r.id}` is used by BOTH the hero mini toggle bar (rooms slice 0-5) and the RoomTile inside the controller. Violates 'unique testid' best practice. Suggest: hero-room-toggle-{id} vs controller keeps room-toggle-{id}.",
+    "Demo auto-animation (useEffect on demoInView) schedules 9 on-then-off timeouts and cleans up on unmount or manual toggleAll. This is correct, but measurement during the 200ms CSS fade from a test can yield intermediate opacities. Not a bug — just a testing caveat for downstream testers (wait ≥300ms after toggle before asserting opacity).",
+    "Floorplan component is rendered twice on the page (hero + demo) with shared roomStates — fine, but it means every toggle triggers two <img> opacity transitions; verified both update in sync.",
+    "Service card img tags load remote Pexels/Unsplash URLs with no loading='lazy'; consider adding lazy loading for below-the-fold images to reduce initial payload."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "100% (22/22 pytest + /api/shop/products 200 + /api/admin/login 200 + /api/customer/login 200 + /api/quotations 403 auth-gated)",
+    "frontend": "100% (all 14 feature checks from review_request passed)"
+  },
+  "test_credentials": {
+    "admin": {"email": "barath40893@gmail.com", "password": "InHaus@2024"},
+    "customer": {"email": "test@inhaus.co.in", "password": "Test1234"}
+  },
+  "seed_data_creation": "Pytest creates TEST_-prefixed customers; test@inhaus.co.in is re-seeded by the login test. No manual seed needed.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "New homepage (9 rooms, 2 floorplans sharing roomStates). data-testid keys: hero-section, hero-title, hero-cta-primary/secondary, all-on-btn, all-off-btn (hero mini bar), scrolling-ticker, services-section, service-residential/commercial/hotels, smart-demo-section, controller-all-on, controller-all-off, room-tile-{id}, room-toggle-{id} (DUPLICATED: hero mini bar rooms 0-4 AND RoomTile controller — use `[data-testid=room-tile-${id}] [data-testid=room-toggle-${id}]` to scope to controller), light-overlay-{id}, stats-section, partners-section, capabilities-section, cta-section, live-floorplan (appears twice). Room IDs: hall, kitchen, master, small, parking, stairs, hanging, masterbath, guestbath. Opacity transition is 200ms — wait ≥300ms after toggles before asserting. Auto-animation on demo section fires once when scrolled into view (~5s total). Pytest invocation: REACT_APP_BACKEND_URL=https://room-cart-checkout.preview.emergentagent.com pytest /app/backend/tests/test_ecommerce.py -v",
+  "rca of the issue": "N/A — no bugs found. All features working as specified."
+}
