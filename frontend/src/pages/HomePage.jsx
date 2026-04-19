@@ -48,157 +48,251 @@ const ScrollingTicker = () => (
   </div>
 );
 
-// ─── SVG FLOORPLAN WITH INTERACTIVE LIGHTING ────────────────────
+// ─── PREMIUM SVG FLOORPLAN WITH 3D FURNITURE & LIGHTING ─────────
 const FloorplanSVG = ({ roomStates }) => {
-  // Room positions in the SVG floorplan (x, y, width, height)
-  const roomAreas = {
-    hall:      { x: 10,  y: 10,  w: 180, h: 140, label: 'Hall' },
-    kitchen:   { x: 200, y: 10,  w: 140, h: 140, label: 'Kitchen' },
-    master:    { x: 350, y: 10,  w: 200, h: 160, label: 'Master\nBedroom' },
-    bedroom2:  { x: 350, y: 180, w: 200, h: 130, label: 'Small\nBedroom' },
-    parking:   { x: 10,  y: 160, w: 180, h: 150, label: 'Parking' },
-    stairs:    { x: 200, y: 160, w: 70,  h: 80,  label: 'Stairs' },
-    hanging:   { x: 200, y: 248, w: 140, h: 62,  label: 'Hanging\nLights' },
-    masterbath:{ x: 280, y: 160, w: 60,  h: 80,  label: 'Master\nBath' },
-    guestbath: { x: 10,  y: 318, w: 100, h: 62,  label: 'Guest\nBath' },
-  };
+  const isOn = (id) => !!roomStates[id];
+
+  // Reusable light glow for a room
+  const RoomLight = ({ cx, cy, r = 25, on }) => on ? (
+    <g>
+      <circle cx={cx} cy={cy} r={r * 2.5} fill="#FFA500" opacity="0.08" />
+      <circle cx={cx} cy={cy} r={r * 1.6} fill="#FFB84D" opacity="0.12" />
+      <circle cx={cx} cy={cy} r={r} fill="#FFCC66" opacity="0.2" />
+      <circle cx={cx} cy={cy} r="3" fill="#FFE4A0" opacity="0.95" />
+      {[0, 45, 90, 135, 180, 225, 270, 315].map(a => (
+        <line key={a} x1={cx} y1={cy} x2={cx + Math.cos(a * Math.PI / 180) * 8} y2={cy + Math.sin(a * Math.PI / 180) * 8} stroke="#FFD700" strokeWidth="0.5" opacity="0.4" />
+      ))}
+    </g>
+  ) : null;
+
+  const wallColor = '#2a2a2a';
+  const wallStroke = '#3a3a3a';
+  const floorDark = '#0c0c0c';
+  const floorLit = '#1a1408';
 
   return (
     <div className="relative w-full" data-testid="live-floorplan">
-      <svg viewBox="0 0 560 390" className="w-full h-auto" style={{ filter: 'drop-shadow(0 0 40px rgba(0,0,0,0.5))' }}>
-        <defs>
-          {/* Warm light gradient for ON rooms */}
-          <radialGradient id="warmLight" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#FFA500" stopOpacity="0.7" />
-            <stop offset="60%" stopColor="#FF8C00" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#FF6600" stopOpacity="0.05" />
-          </radialGradient>
-          {/* Glow filter */}
-          <filter id="roomGlow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="8" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-          {/* Dark room filter */}
-          <filter id="darkRoom">
-            <feColorMatrix type="matrix" values="0.15 0 0 0 0  0 0.15 0 0 0  0 0 0.2 0 0  0 0 0 1 0" />
-          </filter>
-        </defs>
+      {/* Perspective wrapper for 3D feel */}
+      <div style={{ perspective: '1200px' }}>
+        <div style={{ transform: 'rotateX(8deg) rotateY(-2deg)', transformOrigin: 'center center' }}>
+          <svg viewBox="-10 -10 600 440" className="w-full h-auto" style={{ filter: 'drop-shadow(0 20px 60px rgba(0,0,0,0.7))' }}>
+            <defs>
+              <radialGradient id="lightGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#FFA500" stopOpacity="0.5" />
+                <stop offset="50%" stopColor="#FF8C00" stopOpacity="0.15" />
+                <stop offset="100%" stopColor="#FF6600" stopOpacity="0" />
+              </radialGradient>
+              <pattern id="woodFloor" width="20" height="20" patternUnits="userSpaceOnUse">
+                <rect width="20" height="20" fill="#1a1510" />
+                <line x1="0" y1="10" x2="20" y2="10" stroke="#221c14" strokeWidth="0.3" />
+                <line x1="10" y1="0" x2="10" y2="20" stroke="#1e1812" strokeWidth="0.15" />
+              </pattern>
+              <pattern id="tileFloor" width="15" height="15" patternUnits="userSpaceOnUse">
+                <rect width="15" height="15" fill="#141414" />
+                <rect width="14" height="14" x="0.5" y="0.5" fill="#181818" rx="1" />
+              </pattern>
+              <linearGradient id="wallShadow" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#000" stopOpacity="0.3" />
+                <stop offset="100%" stopColor="#000" stopOpacity="0" />
+              </linearGradient>
+              <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="12" />
+              </filter>
+            </defs>
 
-        {/* Background */}
-        <rect x="0" y="0" width="560" height="390" rx="16" fill="#111111" stroke="#222" strokeWidth="2" />
+            {/* ═══ OUTER STRUCTURE ═══ */}
+            <rect x="0" y="0" width="580" height="420" rx="8" fill="#080808" />
+            {/* Outer wall shadow for 3D depth */}
+            <rect x="2" y="2" width="576" height="416" rx="6" fill="none" stroke="#444" strokeWidth="4" />
+            <rect x="6" y="6" width="568" height="408" rx="4" fill="none" stroke="#222" strokeWidth="1" />
 
-        {/* Outer walls */}
-        <rect x="5" y="5" width="550" height="380" rx="12" fill="none" stroke="#333" strokeWidth="3" />
-
-        {/* Room shapes */}
-        {Object.entries(roomAreas).map(([id, room]) => {
-          const isOn = !!roomStates[id];
-          return (
-            <g key={id}>
-              {/* Room base */}
-              <rect
-                x={room.x}
-                y={room.y}
-                width={room.w}
-                height={room.h}
-                rx="4"
-                fill={isOn ? '#1a1408' : '#0d0d0d'}
-                stroke={isOn ? '#FF8C00' : '#222'}
-                strokeWidth={isOn ? 1.5 : 1}
-                style={{ transition: 'all 0.6s ease' }}
-              />
-
-              {/* Light overlay when ON */}
-              {isOn && (
-                <>
-                  <rect
-                    x={room.x}
-                    y={room.y}
-                    width={room.w}
-                    height={room.h}
-                    rx="4"
-                    fill="url(#warmLight)"
-                    style={{ transition: 'opacity 0.6s ease' }}
-                  />
-                  {/* Light point (ceiling light) */}
-                  <circle
-                    cx={room.x + room.w / 2}
-                    cy={room.y + room.h / 2}
-                    r={Math.min(room.w, room.h) * 0.2}
-                    fill="#FFA500"
-                    opacity="0.25"
-                    filter="url(#roomGlow)"
-                  />
-                  {/* Small light icon */}
-                  <circle
-                    cx={room.x + room.w / 2}
-                    cy={room.y + room.h / 2 - 10}
-                    r="4"
-                    fill="#FFD700"
-                    opacity="0.9"
-                  />
-                  {/* Light rays */}
-                  {[0, 60, 120, 180, 240, 300].map(angle => (
-                    <line
-                      key={angle}
-                      x1={room.x + room.w / 2}
-                      y1={room.y + room.h / 2 - 10}
-                      x2={room.x + room.w / 2 + Math.cos(angle * Math.PI / 180) * 12}
-                      y2={room.y + room.h / 2 - 10 + Math.sin(angle * Math.PI / 180) * 12}
-                      stroke="#FFD700"
-                      strokeWidth="0.8"
-                      opacity="0.5"
-                    />
-                  ))}
-                </>
-              )}
-
-              {/* Room label */}
-              {room.label.split('\n').map((line, li) => (
-                <text
-                  key={li}
-                  x={room.x + room.w / 2}
-                  y={room.y + room.h - 14 + li * 12}
-                  textAnchor="middle"
-                  fill={isOn ? '#FFD700' : '#555'}
-                  fontSize="9"
-                  fontWeight="600"
-                  fontFamily="sans-serif"
-                  style={{ transition: 'fill 0.6s ease' }}
-                >
-                  {line}
-                </text>
-              ))}
-
-              {/* Status indicator */}
-              <circle
-                cx={room.x + room.w - 10}
-                cy={room.y + 10}
-                r="4"
-                fill={isOn ? '#22c55e' : '#333'}
-                stroke={isOn ? '#22c55e' : '#444'}
-                strokeWidth="1"
-                style={{ transition: 'all 0.3s ease' }}
-              />
+            {/* ═══ HALL (top-left, large) ═══ */}
+            <g data-room="hall">
+              <rect x="10" y="10" width="210" height="170" rx="2" fill={isOn('hall') ? floorLit : floorDark} stroke={wallColor} strokeWidth="3" style={{ transition: 'fill 0.6s' }} />
+              {isOn('hall') && <rect x="10" y="10" width="210" height="170" rx="2" fill="url(#lightGlow)" />}
+              {/* Floor pattern */}
+              <rect x="12" y="12" width="206" height="166" rx="1" fill="url(#woodFloor)" opacity={isOn('hall') ? 0.4 : 0.15} style={{ transition: 'opacity 0.6s' }} />
+              {/* Sofa */}
+              <rect x="30" y="90" width="70" height="30" rx="6" fill={isOn('hall') ? '#3d3520' : '#1a1a1a'} stroke={isOn('hall') ? '#554a30' : '#222'} strokeWidth="1.5" style={{ transition: 'all 0.6s' }} />
+              <rect x="30" y="85" width="70" height="8" rx="4" fill={isOn('hall') ? '#4a3f28' : '#1e1e1e'} style={{ transition: 'fill 0.6s' }} />
+              {/* Coffee table */}
+              <rect x="55" y="130" width="30" height="18" rx="3" fill={isOn('hall') ? '#2a2418' : '#151515'} stroke={isOn('hall') ? '#3d3520' : '#1e1e1e'} strokeWidth="1" style={{ transition: 'all 0.6s' }} />
+              {/* TV unit */}
+              <rect x="150" y="25" width="55" height="8" rx="2" fill={isOn('hall') ? '#333' : '#1a1a1a'} style={{ transition: 'fill 0.6s' }} />
+              {/* Rug */}
+              <ellipse cx="80" cy="135" rx="45" ry="25" fill={isOn('hall') ? '#2a2015' : '#111'} opacity="0.5" style={{ transition: 'fill 0.6s' }} />
+              <RoomLight cx={115} cy={90} r={30} on={isOn('hall')} />
+              <text x="115" y="170" textAnchor="middle" fill={isOn('hall') ? '#FFD700' : '#444'} fontSize="11" fontWeight="700" fontFamily="sans-serif" style={{ transition: 'fill 0.6s' }}>Hall</text>
             </g>
-          );
-        })}
 
-        {/* Door openings (gaps in walls) */}
-        <rect x="170" y="50" width="40" height="3" fill="#111111" /> {/* Hall to Kitchen */}
-        <rect x="335" y="50" width="3" height="40" fill="#111111" /> {/* Kitchen to Master */}
-        <rect x="170" y="190" width="40" height="3" fill="#111111" /> {/* Hall to Stairs */}
-        <rect x="440" y="165" width="3" height="25" fill="#111111" /> {/* Master to Small Bedroom */}
+            {/* ═══ KITCHEN (top-center) ═══ */}
+            <g data-room="kitchen">
+              <rect x="226" y="10" width="140" height="170" rx="2" fill={isOn('kitchen') ? floorLit : floorDark} stroke={wallColor} strokeWidth="3" style={{ transition: 'fill 0.6s' }} />
+              {isOn('kitchen') && <rect x="226" y="10" width="140" height="170" rx="2" fill="url(#lightGlow)" />}
+              <rect x="228" y="12" width="136" height="166" rx="1" fill="url(#tileFloor)" opacity={isOn('kitchen') ? 0.4 : 0.15} style={{ transition: 'opacity 0.6s' }} />
+              {/* Counter top */}
+              <rect x="232" y="16" width="128" height="12" rx="2" fill={isOn('kitchen') ? '#3a3025' : '#1a1a1a'} stroke={isOn('kitchen') ? '#4a3f28' : '#222'} strokeWidth="1" style={{ transition: 'all 0.6s' }} />
+              {/* Stove */}
+              <rect x="260" y="16" width="24" height="12" rx="1" fill={isOn('kitchen') ? '#444' : '#1e1e1e'} style={{ transition: 'fill 0.6s' }} />
+              <circle cx="268" cy="22" r="3" fill={isOn('kitchen') ? '#666' : '#222'} style={{ transition: 'fill 0.6s' }} />
+              <circle cx="278" cy="22" r="3" fill={isOn('kitchen') ? '#666' : '#222'} style={{ transition: 'fill 0.6s' }} />
+              {/* Sink */}
+              <rect x="310" y="17" width="16" height="10" rx="3" fill="none" stroke={isOn('kitchen') ? '#555' : '#222'} strokeWidth="1" style={{ transition: 'stroke 0.6s' }} />
+              {/* Island */}
+              <rect x="260" y="100" width="80" height="30" rx="4" fill={isOn('kitchen') ? '#2a2418' : '#151515'} stroke={isOn('kitchen') ? '#3d3520' : '#1e1e1e'} strokeWidth="1" style={{ transition: 'all 0.6s' }} />
+              {/* Fridge */}
+              <rect x="340" y="40" width="18" height="35" rx="3" fill={isOn('kitchen') ? '#3a3a3a' : '#1a1a1a'} stroke={isOn('kitchen') ? '#4a4a4a' : '#222'} strokeWidth="1" style={{ transition: 'all 0.6s' }} />
+              <RoomLight cx={296} cy={85} r={22} on={isOn('kitchen')} />
+              <text x="296" y="170" textAnchor="middle" fill={isOn('kitchen') ? '#FFD700' : '#444'} fontSize="11" fontWeight="700" fontFamily="sans-serif" style={{ transition: 'fill 0.6s' }}>Kitchen</text>
+            </g>
 
-        {/* "LIVE FLOORPLAN" badge */}
-        <rect x="200" y="355" width="160" height="28" rx="14" fill="#1a1a1a" stroke="#333" strokeWidth="1" />
-        <text x="280" y="373" textAnchor="middle" fill="#888" fontSize="10" fontWeight="600" letterSpacing="2" fontFamily="sans-serif">
-          LIVE FLOORPLAN
-        </text>
-      </svg>
+            {/* ═══ MASTER BEDROOM (top-right) ═══ */}
+            <g data-room="master">
+              <rect x="372" y="10" width="200" height="195" rx="2" fill={isOn('master') ? floorLit : floorDark} stroke={wallColor} strokeWidth="3" style={{ transition: 'fill 0.6s' }} />
+              {isOn('master') && <rect x="372" y="10" width="200" height="195" rx="2" fill="url(#lightGlow)" />}
+              <rect x="374" y="12" width="196" height="191" rx="1" fill="url(#woodFloor)" opacity={isOn('master') ? 0.4 : 0.15} style={{ transition: 'opacity 0.6s' }} />
+              {/* Bed */}
+              <rect x="420" y="50" width="100" height="75" rx="6" fill={isOn('master') ? '#3d3520' : '#1a1a1a'} stroke={isOn('master') ? '#554a30' : '#222'} strokeWidth="1.5" style={{ transition: 'all 0.6s' }} />
+              {/* Pillows */}
+              <rect x="430" y="55" width="35" height="18" rx="6" fill={isOn('master') ? '#4a4030' : '#1e1e1e'} style={{ transition: 'fill 0.6s' }} />
+              <rect x="475" y="55" width="35" height="18" rx="6" fill={isOn('master') ? '#4a4030' : '#1e1e1e'} style={{ transition: 'fill 0.6s' }} />
+              {/* Blanket fold */}
+              <rect x="425" y="95" width="90" height="5" rx="2" fill={isOn('master') ? '#5a4d35' : '#222'} style={{ transition: 'fill 0.6s' }} />
+              {/* Wardrobe */}
+              <rect x="542" y="30" width="22" height="80" rx="3" fill={isOn('master') ? '#2a2418' : '#151515'} stroke={isOn('master') ? '#3d3520' : '#1e1e1e'} strokeWidth="1" style={{ transition: 'all 0.6s' }} />
+              {/* Bedside tables */}
+              <rect x="395" y="65" width="18" height="18" rx="3" fill={isOn('master') ? '#2a2418' : '#151515'} style={{ transition: 'fill 0.6s' }} />
+              <rect x="527" y="65" width="18" height="18" rx="3" fill={isOn('master') ? '#2a2418' : '#151515'} style={{ transition: 'fill 0.6s' }} />
+              <RoomLight cx={472} cy={100} r={28} on={isOn('master')} />
+              <text x="472" y="190" textAnchor="middle" fill={isOn('master') ? '#FFD700' : '#444'} fontSize="11" fontWeight="700" fontFamily="sans-serif" style={{ transition: 'fill 0.6s' }}>Master Bedroom</text>
+            </g>
+
+            {/* ═══ PARKING (bottom-left) ═══ */}
+            <g data-room="parking">
+              <rect x="10" y="186" width="210" height="140" rx="2" fill={isOn('parking') ? '#141210' : floorDark} stroke={wallColor} strokeWidth="3" style={{ transition: 'fill 0.6s' }} />
+              {isOn('parking') && <rect x="10" y="186" width="210" height="140" rx="2" fill="url(#lightGlow)" />}
+              {/* Concrete floor */}
+              <rect x="12" y="188" width="206" height="136" rx="1" fill={isOn('parking') ? '#1a1815' : '#0e0e0e'} style={{ transition: 'fill 0.6s' }} />
+              {/* Car body */}
+              <rect x="50" y="210" width="120" height="60" rx="12" fill={isOn('parking') ? '#333' : '#191919'} stroke={isOn('parking') ? '#444' : '#222'} strokeWidth="1.5" style={{ transition: 'all 0.6s' }} />
+              {/* Windshield */}
+              <rect x="55" y="215" width="45" height="25" rx="6" fill={isOn('parking') ? '#4a5568' : '#1a1a1a'} style={{ transition: 'fill 0.6s' }} />
+              {/* Car roof */}
+              <rect x="70" y="222" width="70" height="38" rx="8" fill={isOn('parking') ? '#3a3a3a' : '#1c1c1c'} style={{ transition: 'fill 0.6s' }} />
+              {/* Wheels */}
+              <circle cx="75" cy="275" r="8" fill={isOn('parking') ? '#222' : '#111'} stroke={isOn('parking') ? '#333' : '#1a1a1a'} strokeWidth="2" style={{ transition: 'all 0.6s' }} />
+              <circle cx="145" cy="275" r="8" fill={isOn('parking') ? '#222' : '#111'} stroke={isOn('parking') ? '#333' : '#1a1a1a'} strokeWidth="2" style={{ transition: 'all 0.6s' }} />
+              {/* Bike */}
+              <circle cx="190" cy="295" r="7" fill="none" stroke={isOn('parking') ? '#c0392b' : '#222'} strokeWidth="1.5" style={{ transition: 'stroke 0.6s' }} />
+              <circle cx="175" cy="295" r="7" fill="none" stroke={isOn('parking') ? '#c0392b' : '#222'} strokeWidth="1.5" style={{ transition: 'stroke 0.6s' }} />
+              <RoomLight cx={115} cy={240} r={25} on={isOn('parking')} />
+              <text x="115" y="318" textAnchor="middle" fill={isOn('parking') ? '#FFD700' : '#444'} fontSize="11" fontWeight="700" fontFamily="sans-serif" style={{ transition: 'fill 0.6s' }}>Parking</text>
+            </g>
+
+            {/* ═══ STAIRS (center) ═══ */}
+            <g data-room="stairs">
+              <rect x="226" y="186" width="70" height="90" rx="2" fill={isOn('stairs') ? floorLit : floorDark} stroke={wallColor} strokeWidth="3" style={{ transition: 'fill 0.6s' }} />
+              {isOn('stairs') && <rect x="226" y="186" width="70" height="90" rx="2" fill="url(#lightGlow)" />}
+              {/* Stair treads */}
+              {[0, 1, 2, 3, 4, 5, 6].map(i => (
+                <rect key={i} x="232" y={192 + i * 11} width="58" height="9" rx="1" fill={isOn('stairs') ? '#2a2418' : '#141414'} stroke={isOn('stairs') ? '#3d3520' : '#1a1a1a'} strokeWidth="0.5" style={{ transition: 'all 0.6s' }} />
+              ))}
+              {/* Railing */}
+              <line x1="232" y1="192" x2="232" y2="270" stroke={isOn('stairs') ? '#554a30' : '#222'} strokeWidth="2" style={{ transition: 'stroke 0.6s' }} />
+              <RoomLight cx={261} cy={230} r={12} on={isOn('stairs')} />
+              <text x="261" y="268" textAnchor="middle" fill={isOn('stairs') ? '#FFD700' : '#444'} fontSize="8" fontWeight="700" fontFamily="sans-serif" style={{ transition: 'fill 0.6s' }}>Stairs</text>
+            </g>
+
+            {/* ═══ MASTER BATH (center-right) ═══ */}
+            <g data-room="masterbath">
+              <rect x="302" y="186" width="64" height="90" rx="2" fill={isOn('masterbath') ? floorLit : floorDark} stroke={wallColor} strokeWidth="3" style={{ transition: 'fill 0.6s' }} />
+              {isOn('masterbath') && <rect x="302" y="186" width="64" height="90" rx="2" fill="url(#lightGlow)" />}
+              <rect x="304" y="188" width="60" height="86" rx="1" fill="url(#tileFloor)" opacity={isOn('masterbath') ? 0.4 : 0.15} style={{ transition: 'opacity 0.6s' }} />
+              {/* Bathtub */}
+              <rect x="308" y="195" width="50" height="25" rx="8" fill="none" stroke={isOn('masterbath') ? '#555' : '#222'} strokeWidth="1.5" style={{ transition: 'stroke 0.6s' }} />
+              {/* Toilet */}
+              <ellipse cx="320" cy="245" rx="8" ry="10" fill={isOn('masterbath') ? '#333' : '#181818'} stroke={isOn('masterbath') ? '#444' : '#222'} strokeWidth="1" style={{ transition: 'all 0.6s' }} />
+              {/* Sink */}
+              <rect x="345" y="240" width="14" height="10" rx="4" fill="none" stroke={isOn('masterbath') ? '#555' : '#222'} strokeWidth="1" style={{ transition: 'stroke 0.6s' }} />
+              <RoomLight cx={334} cy={225} r={12} on={isOn('masterbath')} />
+              <text x="334" y="268" textAnchor="middle" fill={isOn('masterbath') ? '#FFD700' : '#444'} fontSize="7" fontWeight="700" fontFamily="sans-serif" style={{ transition: 'fill 0.6s' }}>Master Bath</text>
+            </g>
+
+            {/* ═══ SMALL BEDROOM (right-middle) ═══ */}
+            <g data-room="bedroom2">
+              <rect x="372" y="211" width="200" height="130" rx="2" fill={isOn('bedroom2') ? floorLit : floorDark} stroke={wallColor} strokeWidth="3" style={{ transition: 'fill 0.6s' }} />
+              {isOn('bedroom2') && <rect x="372" y="211" width="200" height="130" rx="2" fill="url(#lightGlow)" />}
+              <rect x="374" y="213" width="196" height="126" rx="1" fill="url(#woodFloor)" opacity={isOn('bedroom2') ? 0.4 : 0.15} style={{ transition: 'opacity 0.6s' }} />
+              {/* Bed */}
+              <rect x="410" y="235" width="80" height="55" rx="5" fill={isOn('bedroom2') ? '#3d3520' : '#1a1a1a'} stroke={isOn('bedroom2') ? '#554a30' : '#222'} strokeWidth="1.5" style={{ transition: 'all 0.6s' }} />
+              {/* Pillow */}
+              <rect x="420" y="240" width="25" height="14" rx="5" fill={isOn('bedroom2') ? '#4a4030' : '#1e1e1e'} style={{ transition: 'fill 0.6s' }} />
+              <rect x="455" y="240" width="25" height="14" rx="5" fill={isOn('bedroom2') ? '#4a4030' : '#1e1e1e'} style={{ transition: 'fill 0.6s' }} />
+              {/* Desk */}
+              <rect x="520" y="240" width="40" height="20" rx="3" fill={isOn('bedroom2') ? '#2a2418' : '#151515'} stroke={isOn('bedroom2') ? '#3d3520' : '#1e1e1e'} strokeWidth="1" style={{ transition: 'all 0.6s' }} />
+              {/* Chair */}
+              <circle cx="540" cy="270" r="7" fill={isOn('bedroom2') ? '#2a2418' : '#141414'} style={{ transition: 'fill 0.6s' }} />
+              <RoomLight cx={472} cy={270} r={22} on={isOn('bedroom2')} />
+              <text x="472" y="333" textAnchor="middle" fill={isOn('bedroom2') ? '#FFD700' : '#444'} fontSize="11" fontWeight="700" fontFamily="sans-serif" style={{ transition: 'fill 0.6s' }}>Small Bedroom</text>
+            </g>
+
+            {/* ═══ HANGING LIGHTS (center-bottom) ═══ */}
+            <g data-room="hanging">
+              <rect x="226" y="282" width="140" height="60" rx="2" fill={isOn('hanging') ? floorLit : floorDark} stroke={wallColor} strokeWidth="3" style={{ transition: 'fill 0.6s' }} />
+              {isOn('hanging') && <rect x="226" y="282" width="140" height="60" rx="2" fill="url(#lightGlow)" />}
+              {/* Hanging pendants */}
+              {[260, 296, 332].map((cx, i) => (
+                <g key={i}>
+                  <line x1={cx} y1="285" x2={cx} y2="300" stroke={isOn('hanging') ? '#FFD700' : '#333'} strokeWidth="0.8" style={{ transition: 'stroke 0.6s' }} />
+                  <circle cx={cx} cy={303} r="5" fill={isOn('hanging') ? '#FFB84D' : '#1a1a1a'} stroke={isOn('hanging') ? '#FFD700' : '#333'} strokeWidth="1" style={{ transition: 'all 0.6s' }} />
+                  {isOn('hanging') && <circle cx={cx} cy={303} r="12" fill="#FFA500" opacity="0.15" />}
+                </g>
+              ))}
+              <RoomLight cx={296} cy={312} r={18} on={isOn('hanging')} />
+              <text x="296" y="335" textAnchor="middle" fill={isOn('hanging') ? '#FFD700' : '#444'} fontSize="8" fontWeight="700" fontFamily="sans-serif" style={{ transition: 'fill 0.6s' }}>Hanging Lights</text>
+            </g>
+
+            {/* ═══ GUEST BATH (bottom-left) ═══ */}
+            <g data-room="guestbath">
+              <rect x="10" y="332" width="210" height="80" rx="2" fill={isOn('guestbath') ? floorLit : floorDark} stroke={wallColor} strokeWidth="3" style={{ transition: 'fill 0.6s' }} />
+              {isOn('guestbath') && <rect x="10" y="332" width="210" height="80" rx="2" fill="url(#lightGlow)" />}
+              <rect x="12" y="334" width="206" height="76" rx="1" fill="url(#tileFloor)" opacity={isOn('guestbath') ? 0.4 : 0.15} style={{ transition: 'opacity 0.6s' }} />
+              {/* Shower area */}
+              <rect x="20" y="342" width="40" height="40" rx="4" fill="none" stroke={isOn('guestbath') ? '#555' : '#222'} strokeWidth="1" strokeDasharray="3,3" style={{ transition: 'stroke 0.6s' }} />
+              {/* Toilet */}
+              <ellipse cx="90" cy="365" rx="8" ry="10" fill={isOn('guestbath') ? '#333' : '#181818'} stroke={isOn('guestbath') ? '#444' : '#222'} strokeWidth="1" style={{ transition: 'all 0.6s' }} />
+              {/* Vanity */}
+              <rect x="130" y="345" width="60" height="12" rx="2" fill={isOn('guestbath') ? '#2a2418' : '#151515'} stroke={isOn('guestbath') ? '#3d3520' : '#1e1e1e'} strokeWidth="1" style={{ transition: 'all 0.6s' }} />
+              {/* Mirror */}
+              <rect x="140" y="338" width="40" height="5" rx="1" fill={isOn('guestbath') ? '#4a5568' : '#1a1a1a'} style={{ transition: 'fill 0.6s' }} />
+              <RoomLight cx={115} cy={370} r={18} on={isOn('guestbath')} />
+              <text x="115" y="403" textAnchor="middle" fill={isOn('guestbath') ? '#FFD700' : '#444'} fontSize="11" fontWeight="700" fontFamily="sans-serif" style={{ transition: 'fill 0.6s' }}>Guest Bath</text>
+            </g>
+
+            {/* ═══ BOTTOM-RIGHT AREA (Hanging continuation / corridor) ═══ */}
+            <g>
+              <rect x="372" y="347" width="200" height="65" rx="2" fill="#080808" stroke={wallColor} strokeWidth="3" />
+              <text x="472" y="385" textAnchor="middle" fill="#333" fontSize="9" fontWeight="600" fontFamily="sans-serif">Balcony / Terrace</text>
+            </g>
+
+            {/* ═══ DOOR OPENINGS ═══ */}
+            <rect x="185" y="75" width="45" height="5" fill="#080808" /> {/* Hall to Kitchen */}
+            <rect x="366" y="80" width="5" height="45" fill="#080808" /> {/* Kitchen to Master */}
+            <rect x="185" y="220" width="45" height="5" fill="#080808" /> {/* Parking to Stairs */}
+            <rect x="460" y="202" width="40" height="5" fill="#080808" /> {/* Master to Small Bedroom */}
+            <rect x="100" y="178" width="5" height="15" fill="#080808" /> {/* Hall to Parking */}
+            <rect x="226" y="340" width="5" height="30" fill="#080808" /> {/* Guest Bath to Hanging */}
+
+            {/* ═══ LIVE FLOORPLAN BADGE ═══ */}
+            <rect x="372" y="355" width="200" height="0" rx="0" fill="none" />
+          </svg>
+
+          {/* LIVE FLOORPLAN badge overlay */}
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full bg-black/70 border border-white/10 backdrop-blur-sm">
+            <span className="text-[10px] font-semibold tracking-[3px] text-neutral-400 uppercase">Live Floorplan</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
