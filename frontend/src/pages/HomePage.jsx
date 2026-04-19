@@ -172,38 +172,36 @@ const ImageFloorplan = ({ roomStates }) => {
         })}
       </div>
 
-      {/* Badge */}
-      <div className="flex justify-center mt-4">
-        <div className="px-6 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
-          <span className="text-[9px] font-bold tracking-[4px] text-neutral-500 uppercase">Interactive Floorplan</span>
+      {/* LIVE FLOORPLAN badge — inside image, bottom-left (NOVIQ style) */}
+      <div className="absolute bottom-4 left-4 z-10">
+        <div className="px-5 py-2 rounded-lg bg-black/60 border border-white/10 backdrop-blur-sm">
+          <span className="text-[10px] font-bold tracking-[3px] text-neutral-300 uppercase">Live Floorplan</span>
         </div>
       </div>
     </div>
   );
 };
 
-// ─── ROOM TILE — NOVIQ STYLE ────────────────────────────────────
+// ─── ROOM TILE — NOVIQ CARD STYLE (2-col grid) ─────────────────
 const RoomTile = ({ room, isOn, onToggle }) => {
   return (
     <div
-      className={`flex items-center justify-between p-4 rounded-2xl backdrop-blur-md transition-all duration-500 ${
+      className={`flex flex-col p-4 rounded-2xl backdrop-blur-md transition-all duration-500 ${
         isOn
-          ? 'bg-gradient-to-r from-orange-500/20 to-amber-500/15 border border-orange-500/30 shadow-[0_0_20px_rgba(249,115,22,0.1)]'
+          ? 'bg-gradient-to-br from-orange-500/15 to-amber-500/10 border border-orange-500/30 shadow-[0_0_20px_rgba(249,115,22,0.1)]'
           : 'bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.06]'
       }`}
       data-testid={`room-tile-${room.id}`}
     >
-      <div>
-        <div className="font-semibold text-white text-sm mb-0.5">{room.name}</div>
-        <div className={`text-xs uppercase tracking-wider font-medium ${isOn ? 'text-orange-400' : 'text-neutral-600'}`}>
-          Lighting {isOn ? 'on' : 'off'}
-        </div>
+      <div className="font-semibold text-white text-sm mb-1">{room.name}</div>
+      <div className={`text-[10px] uppercase tracking-widest font-medium mb-3 ${isOn ? 'text-orange-400' : 'text-neutral-600'}`}>
+        Lighting {isOn ? 'on' : 'off'}
       </div>
       <button
         onClick={() => onToggle(room.id)}
-        className={`px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+        className={`w-full py-2 rounded-full text-xs font-bold tracking-wider transition-all duration-300 ${
           isOn
-            ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-[0_4px_20px_rgba(249,115,22,0.35)] hover:shadow-[0_4px_25px_rgba(249,115,22,0.5)]'
+            ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-[0_4px_16px_rgba(249,115,22,0.3)] hover:shadow-[0_4px_20px_rgba(249,115,22,0.5)]'
             : 'bg-white/10 text-neutral-300 hover:bg-white/15 border border-white/10'
         }`}
         data-testid={`room-toggle-${room.id}`}
@@ -288,19 +286,31 @@ const HomePage = () => {
     {
       title: 'Smart Living',
       desc: 'Automate daily life with intelligent scenes across lighting, curtains, locks, and more.',
-      features: ['At Home routines', 'Away Mode security', 'Custom configurations'],
+      features: [
+        { label: 'At Home', detail: 'Lights, curtains, and locks respond to your routines for comfort and convenience.' },
+        { label: 'Away Mode', detail: 'Security and energy-saving automations activate when you\'re away.' },
+        { label: 'Custom Configurations', detail: 'Personalized scene setups tailored to your lifestyle needs.' },
+      ],
       link: '/products',
     },
     {
       title: 'Why InHaus?',
       desc: 'A modern blend of elevated design and robust engineering for a truly connected lifestyle.',
-      features: ['Signature aesthetic', 'Intelligent core', 'Always-on care'],
+      features: [
+        { label: 'Signature Aesthetic', detail: 'Immersive lighting, polished surfaces, and purposeful motion.' },
+        { label: 'Intelligent Core', detail: 'Zigbee, Wi-Fi, and voice tech for instant responses and rock-solid security.' },
+        { label: 'Always-On Care', detail: 'Concierge support, predictive maintenance, and adaptive scenes.' },
+      ],
       link: '/about',
     },
     {
       title: 'Premium Devices',
       desc: 'From intelligent lighting to advanced security, our collection transforms ordinary spaces.',
-      features: ['Smart Switches', 'Security Systems', 'Climate Control'],
+      features: [
+        { label: 'Smart Switches', detail: 'Touch panels and modular switches with elegant glass finish.' },
+        { label: 'Security Systems', detail: 'Smart locks, cameras, and motion sensors for complete peace of mind.' },
+        { label: 'Climate Control', detail: 'Automated curtains, IR blasters, and thermostat integration.' },
+      ],
       link: '/products',
     },
   ];
@@ -310,103 +320,70 @@ const HomePage = () => {
       <Navbar />
 
       {/* ═══ HERO SECTION ═══ */}
-      <section className="relative min-h-screen flex items-center pt-32 pb-20" data-testid="hero-section">
+      <section className="relative min-h-screen flex items-center justify-center" data-testid="hero-section">
         <div className="absolute inset-0 z-0">
           <img
             src="https://images.pexels.com/photos/30441226/pexels-photo-30441226.jpeg?auto=compress&cs=tinysrgb&w=1920"
             alt="Modern smart home interior"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A]/70 via-[#0A0A0A]/80 to-[#0A0A0A]" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A]/90 via-transparent to-[#0A0A0A]/50" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A]/60 via-[#0A0A0A]/70 to-[#0A0A0A]" />
         </div>
 
-        <div className="container mx-auto px-4 md:px-8 lg:px-12 relative z-10">
-          <div className="max-w-4xl">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="mb-6"
-            >
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-500 text-sm font-medium">
-                <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
-                Smart Living Platform
-              </span>
-            </motion.div>
+        <div className="container mx-auto px-4 md:px-8 lg:px-12 relative z-10 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-6"
+          >
+            <span className="text-xs text-neutral-400 uppercase tracking-[5px] font-medium">
+              Smart Living Platform
+            </span>
+          </motion.div>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-5xl md:text-7xl lg:text-8xl font-bold leading-none mb-4"
-              data-testid="hero-title"
-            >
-              Home,{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-400">
-                Reimagined
-              </span>
-            </motion.h1>
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-5xl md:text-7xl lg:text-8xl font-bold leading-none mb-6"
+            data-testid="hero-title"
+          >
+            InHaus — Home,{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500">
+              Reimagined
+            </span>
+          </motion.h1>
 
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.15 }}
-              className="text-lg md:text-xl text-neutral-500 mb-2 font-medium"
-            >
-              by InHaus
-            </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-lg md:text-xl text-neutral-400 max-w-2xl mx-auto mb-10 leading-relaxed"
+          >
+            Seamless control of lights, locks, curtains and more.
+            Designed with precision. Powered by intelligence. Feels like the future.
+          </motion.p>
 
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg md:text-xl text-neutral-400 max-w-2xl mb-8 leading-relaxed"
-            >
-              Seamless control of lights, locks, curtains and more.
-              Designed with precision. Powered by intelligence. Feels like the future.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-col sm:flex-row gap-4 mb-8"
-            >
-              <Link to="/products" data-testid="hero-cta-primary">
-                <button className="group flex items-center justify-center gap-3 bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-full font-medium transition-all duration-300 shadow-[0_0_30px_rgba(249,115,22,0.3)] hover:shadow-[0_0_40px_rgba(249,115,22,0.5)] hover:scale-105">
-                  Explore Products
-                  <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                </button>
-              </Link>
-              <Link to="/contact" data-testid="hero-cta-secondary">
-                <button className="flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white px-8 py-4 rounded-full font-medium transition-all duration-300 backdrop-blur-sm">
-                  <Play size={18} className="text-orange-500" />
-                  Get a Free Quote
-                </button>
-              </Link>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex flex-wrap items-center gap-6 text-sm text-neutral-400"
-            >
-              <div className="flex items-center gap-2">
-                <CheckCircle className="text-green-500" size={18} />
-                <span>Free Installation</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="text-green-500" size={18} />
-                <span>2-Year Warranty</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="text-green-500" size={18} />
-                <span>24/7 Support</span>
-              </div>
-            </motion.div>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+          >
+            <Link to="/products" data-testid="hero-cta-primary">
+              <button className="group flex items-center justify-center gap-3 bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-full font-medium transition-all duration-300 shadow-[0_0_30px_rgba(249,115,22,0.3)] hover:shadow-[0_0_40px_rgba(249,115,22,0.5)] hover:scale-105">
+                Explore Products
+                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+            </Link>
+            <Link to="/contact" data-testid="hero-cta-secondary">
+              <button className="flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white px-8 py-4 rounded-full font-medium transition-all duration-300 backdrop-blur-sm">
+                <Play size={18} className="text-orange-500" />
+                Get a Free Quote
+              </button>
+            </Link>
+          </motion.div>
         </div>
 
         {/* Scroll Indicator */}
@@ -416,7 +393,6 @@ const HomePage = () => {
           transition={{ delay: 1, duration: 1 }}
           className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
         >
-          <span className="text-xs text-neutral-500 uppercase tracking-widest">Scroll</span>
           <div className="w-6 h-10 rounded-full border-2 border-neutral-600 flex justify-center p-2">
             <motion.div
               animate={{ y: [0, 12, 0] }}
@@ -484,6 +460,20 @@ const HomePage = () => {
             >
               <div className="rounded-3xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-md p-5 shadow-[0_0_80px_rgba(0,0,0,0.3)]">
                 
+                {/* Phone Dynamic Island */}
+                <div className="flex justify-center mb-5">
+                  <div className="flex items-center gap-2 px-6 py-1.5 rounded-full bg-black/60 border border-white/10">
+                    <div className="w-2 h-2 rounded-full bg-orange-500/70" />
+                    <div className="w-16 h-1 rounded-full bg-white/10" />
+                  </div>
+                </div>
+
+                {/* Smart Home Header */}
+                <div className="mb-5">
+                  <h3 className="text-xl font-bold text-white">Smart Home</h3>
+                  <p className="text-sm text-neutral-500">Tap to illuminate each space</p>
+                </div>
+                
                 {/* All On/Off */}
                 <div className="grid grid-cols-2 gap-3 mb-5">
                   <button
@@ -495,7 +485,7 @@ const HomePage = () => {
                   </button>
                   <button
                     onClick={() => toggleAll(true)}
-                    className="py-3 rounded-2xl text-sm font-semibold bg-gradient-to-r from-orange-500 to-amber-500 text-white hover:from-orange-600 hover:to-amber-600 transition-all shadow-[0_4px_20px_rgba(249,115,22,0.3)]"
+                    className="py-3 rounded-2xl text-sm font-semibold bg-white/[0.04] border border-white/[0.08] text-neutral-300 hover:bg-white/[0.08] transition-all backdrop-blur-sm"
                     data-testid="all-on-btn"
                   >
                     All On
@@ -517,8 +507,8 @@ const HomePage = () => {
                   </div>
                 </div>
 
-                {/* Room Tiles */}
-                <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1 custom-scrollbar">
+                {/* Room Tiles — 2 Column Grid (NOVIQ style) */}
+                <div className="grid grid-cols-2 gap-3 max-h-[450px] overflow-y-auto pr-1 custom-scrollbar">
                   {rooms.map((room) => (
                     <RoomTile
                       key={room.id}
@@ -660,13 +650,16 @@ const HomePage = () => {
                   <h3 className="text-2xl font-bold text-white mb-3">{cap.title}</h3>
                   <p className="text-neutral-400 mb-6 leading-relaxed">{cap.desc}</p>
 
-                  <div className="space-y-3 mb-8">
+                  <div className="space-y-4 mb-8">
                     {cap.features.map((feat, j) => (
-                      <div key={j} className="flex items-center gap-3 text-neutral-300 text-sm">
-                        <div className="w-6 h-6 rounded-full bg-orange-500/10 flex items-center justify-center shrink-0">
-                          <ChevronRight size={12} className="text-orange-500" />
+                      <div key={j}>
+                        <div className="flex items-center gap-3 text-white text-sm font-semibold mb-1">
+                          <div className="w-6 h-6 rounded-full bg-orange-500/10 flex items-center justify-center shrink-0">
+                            <ChevronRight size={12} className="text-orange-500" />
+                          </div>
+                          {feat.label}
                         </div>
-                        {feat}
+                        <p className="text-neutral-500 text-xs pl-9 leading-relaxed">{feat.detail}</p>
                       </div>
                     ))}
                   </div>
