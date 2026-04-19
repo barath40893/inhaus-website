@@ -315,8 +315,8 @@ const HomePage = () => {
                         <Home size={16} className="text-white" />
                       </div>
                       <div>
-                        <h3 className="text-sm font-bold text-white tracking-wide" style={{ fontFamily: 'Outfit, sans-serif' }}>InHaus Home</h3>
-                        <p className="text-[10px] text-zinc-500">Tap to illuminate each space</p>
+                        <h3 className="text-sm font-bold text-white tracking-[0.1em] uppercase" style={{ fontFamily: 'Outfit, sans-serif' }}>INHAUS</h3>
+                        <p className="text-[9px] text-zinc-500 tracking-[0.15em] uppercase">Smart Automation</p>
                       </div>
                     </div>
                     
