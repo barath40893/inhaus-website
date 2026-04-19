@@ -560,28 +560,73 @@ const HomePage = () => {
   const [cmdInput, setCmdInput] = useState('');
   const [userInteracted, setUserInteracted] = useState(false);
   const [heroAnimDone, setHeroAnimDone] = useState(false);
+  const [heroPhase, setHeroPhase] = useState(0); // 0=walk-in, 1=lit, 2=walk-out, 3=resting
 
-  // Hero auto-demo: lights cascade on then off when page loads
+  // Hero auto-demo: LOOPING "walk-in / walk-out" narrative
+  // Phase 0: walk-in (lights cascade ON)   → ~1.8s
+  // Phase 1: lit / wakes up                → ~1.5s
+  // Phase 2: walk-out (lights cascade OFF) → ~1.5s
+  // Phase 3: resting / energy saved        → ~1.5s
+  // Stops when user interacts with the demo below
   useEffect(() => {
+    if (userInteracted) return;
     const timers = [];
-    const t1 = setTimeout(() => {
+    let cancelled = false;
+
+    const runLoop = () => {
+      if (cancelled) return;
+
+      // ── PHASE 0: Walk-in — lights cascade ON ─────────────────
+      setHeroPhase(0);
       rooms.forEach((r, i) => {
-        const t = setTimeout(() => setRoomStates((p) => ({ ...p, [r.id]: true })), i * 200);
+        const t = setTimeout(() => {
+          if (!cancelled) setRoomStates((p) => ({ ...p, [r.id]: true }));
+        }, i * 130);
         timers.push(t);
       });
-      const offDelay = setTimeout(() => {
+
+      // ── PHASE 1: Fully lit ───────────────────────────────────
+      const phase1 = setTimeout(() => {
+        if (!cancelled) setHeroPhase(1);
+      }, rooms.length * 130 + 200);
+      timers.push(phase1);
+
+      // ── PHASE 2: Walk-out — lights cascade OFF ───────────────
+      const phase2 = setTimeout(() => {
+        if (cancelled) return;
+        setHeroPhase(2);
         rooms.forEach((r, i) => {
-          const t = setTimeout(() => setRoomStates((p) => ({ ...p, [r.id]: false })), i * 140);
+          const t = setTimeout(() => {
+            if (!cancelled) setRoomStates((p) => ({ ...p, [r.id]: false }));
+          }, i * 110);
           timers.push(t);
         });
-        const done = setTimeout(() => setHeroAnimDone(true), rooms.length * 140 + 300);
-        timers.push(done);
-      }, rooms.length * 200 + 1200);
-      timers.push(offDelay);
-    }, 800);
-    timers.push(t1);
-    return () => timers.forEach(t => clearTimeout(t));
-  }, []);
+      }, rooms.length * 130 + 1700);
+      timers.push(phase2);
+
+      // ── PHASE 3: Rest state (energy saved) ───────────────────
+      const phase3 = setTimeout(() => {
+        if (cancelled) return;
+        setHeroPhase(3);
+        setHeroAnimDone(true); // show scroll hint after first complete loop
+      }, rooms.length * 130 + 1700 + rooms.length * 110 + 200);
+      timers.push(phase3);
+
+      // ── Loop again ────────────────────────────────────────────
+      const loopAgain = setTimeout(() => {
+        if (!cancelled) runLoop();
+      }, rooms.length * 130 + 1700 + rooms.length * 110 + 1700);
+      timers.push(loopAgain);
+    };
+
+    const start = setTimeout(runLoop, 600);
+    timers.push(start);
+
+    return () => {
+      cancelled = true;
+      timers.forEach((t) => clearTimeout(t));
+    };
+  }, [userInteracted]);
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white overflow-x-hidden" style={{ fontFamily: 'Manrope, sans-serif' }}>
@@ -616,18 +661,18 @@ const HomePage = () => {
 
               {/* Typewriter line */}
               <div className="flex justify-center lg:justify-start">
-                <TypewriterLine text="SMARTER THAN EVER" delay={0.9} />
+                <TypewriterLine text="SMARTER THAN EVER" delay={0.2} />
               </div>
 
               {/* Subtitle */}
-              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 2.2 }}
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 1.4 }}
                 className="text-sm md:text-base text-zinc-500 max-w-xl mx-auto lg:mx-0 mt-5 mb-7 leading-relaxed">
                 Convenience, safety, security, and energy savings seamlessly integrated
                 — your space listens, adapts and responds. That's InHaus.
               </motion.p>
 
               {/* CTA buttons */}
-              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 2.5 }}
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 1.7 }}
                 className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start items-center">
                 <button
                   onClick={() => document.getElementById('interactive-demo')?.scrollIntoView({ behavior: 'smooth' })}
@@ -653,7 +698,7 @@ const HomePage = () => {
               </motion.div>
 
               {/* Stats strip */}
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 2.8 }}
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 2 }}
                 className="mt-8 pt-6 border-t border-white/[0.06] grid grid-cols-3 gap-4 max-w-md mx-auto lg:mx-0">
                 <div className="text-center lg:text-left">
                   <div className="text-xl md:text-2xl font-semibold text-white" style={{ fontFamily: 'Outfit, sans-serif' }}>9</div>
@@ -670,7 +715,7 @@ const HomePage = () => {
               </motion.div>
             </div>
 
-            {/* RIGHT COLUMN — Live Floorplan */}
+            {/* RIGHT COLUMN — Live Floorplan with Walk-In/Out Narrative */}
             <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
               ref={demoRef} className="lg:col-span-6 order-1 lg:order-2 relative">
@@ -678,16 +723,79 @@ const HomePage = () => {
               <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-transparent to-transparent blur-2xl -z-10" />
               <Floorplan roomStates={roomStates} />
 
-              {/* Animated prompt after auto-demo */}
+              {/* ── WALK-IN / WALK-OUT NARRATIVE CAPTION ─────────────── */}
+              {!userInteracted && (
+                <div className="mt-5 flex items-center justify-center gap-3" data-testid="hero-narrative">
+                  {/* Walking person icon */}
+                  <motion.div
+                    key={`icon-${heroPhase}`}
+                    initial={{
+                      x: heroPhase === 0 ? -30 : heroPhase === 2 ? 0 : 0,
+                      opacity: heroPhase === 3 ? 0.3 : 1,
+                    }}
+                    animate={{
+                      x: heroPhase === 0 ? 0 : heroPhase === 2 ? 30 : heroPhase === 1 ? 0 : 0,
+                      opacity: heroPhase === 3 ? 0.3 : 1,
+                    }}
+                    transition={{ duration: 1.4, ease: 'easeInOut' }}
+                    className="flex items-center justify-center w-8 h-8 rounded-full bg-orange-500/15 border border-orange-500/30"
+                  >
+                    {heroPhase === 3 ? (
+                      <BatteryCharging size={14} className="text-orange-400" />
+                    ) : (
+                      <motion.div
+                        animate={heroPhase === 1 ? { scale: [1, 1.15, 1] } : {}}
+                        transition={{ duration: 1.2, repeat: heroPhase === 1 ? Infinity : 0 }}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-orange-400 ${heroPhase === 2 ? 'scale-x-[-1]' : ''}`}>
+                          <circle cx="12" cy="5" r="2" />
+                          <path d="M9 20l3-6 3 6" />
+                          <path d="M6 8l6 2 6-2" />
+                          <path d="M12 7v7" />
+                        </svg>
+                      </motion.div>
+                    )}
+                  </motion.div>
+
+                  {/* Caption text (crossfades between phases) */}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={heroPhase}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      transition={{ duration: 0.4 }}
+                      className="flex flex-col items-start"
+                    >
+                      <span className={`text-[9px] tracking-[3px] uppercase font-bold ${
+                        heroPhase === 3 ? 'text-emerald-400' : 'text-orange-400'
+                      }`}>
+                        {heroPhase === 0 && 'Walking In'}
+                        {heroPhase === 1 && 'Your Space Wakes Up'}
+                        {heroPhase === 2 && 'Walking Out'}
+                        {heroPhase === 3 && 'Energy Saved'}
+                      </span>
+                      <span className="text-sm text-zinc-300 font-medium" style={{ fontFamily: 'Outfit, sans-serif' }}>
+                        {heroPhase === 0 && 'Lights follow your path…'}
+                        {heroPhase === 1 && 'Every room, instantly ready.'}
+                        {heroPhase === 2 && 'Fading gracefully as you leave.'}
+                        {heroPhase === 3 && 'Ready when you return.'}
+                      </span>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              )}
+
+              {/* Scroll-down nudge after first loop */}
               <AnimatePresence>
                 {heroAnimDone && !userInteracted && (
                   <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                    className="text-xs text-orange-400 font-medium mt-4 flex items-center justify-center gap-2"
+                    className="text-[11px] text-zinc-500 font-medium mt-3 flex items-center justify-center gap-2"
                     data-testid="hero-scroll-hint">
                     <motion.span animate={{ y: [0, -3, 0] }} transition={{ duration: 1, repeat: Infinity }}>
-                      <ArrowRight size={12} className="rotate-90" />
+                      <ArrowRight size={11} className="rotate-90" />
                     </motion.span>
-                    See those lights? Scroll down to control them yourself
+                    Scroll to control it yourself
                   </motion.p>
                 )}
               </AnimatePresence>

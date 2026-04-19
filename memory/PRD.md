@@ -139,3 +139,21 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
 - `/app/test_reports/iteration_1.json` - E-commerce backend tests
 - `/app/test_reports/iteration_2.json` - Admin navigation fix verification
 - `/app/test_reports/iteration_3.json` - Homepage floorplan + full regression (100% pass)
+- `/app/test_reports/iteration_4.json` / `iteration_5.json` - Touch/Tap/Talk demo iterations
+- `/app/test_reports/iteration_6.json` - Split hero + voice + products + admin regression (Backend 26/26, Frontend ~95%)
+
+---
+
+## February 2026
+
+### Hero Section Cinematic Refresh (Feb 2026) — COMPLETED
+- [x] Split hero layout: headline + CTAs on left, live floorplan on right (desktop); stacked on mobile (floorplan first)
+- [x] Headline + typewriter "SMARTER THAN EVER" appears immediately (delay reduced to 0.2s)
+- [x] Hero stats strip: 9 Live Rooms / 3 Control Modes / 60+ Products
+- [x] **Walk-In / Walk-Out Looping Narrative** on live floorplan:
+  - Phase 0 (Walk-in): Lights cascade ON with "Walking In / Lights follow your path..."
+  - Phase 1 (Lit): All lights glow with "Your Space Wakes Up / Every room, instantly ready."
+  - Phase 2 (Walk-out): Lights cascade OFF with "Walking Out / Fading gracefully as you leave."
+  - Phase 3 (Rest): "Energy Saved / Ready when you return." (emerald accent)
+- [x] Animated walking person silhouette moves with phase direction (LTR walk-in, RTL walk-out)
+- [x] Loop auto-stops when user interacts with Touch/Tap/Talk demo section below
