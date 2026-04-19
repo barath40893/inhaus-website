@@ -452,7 +452,7 @@ const Floorplan = ({ roomStates }) => (
           data-testid={`light-overlay-${r.id}`}
           className="absolute inset-0 w-full h-full object-contain select-none pointer-events-none"
           draggable={false}
-          style={{ opacity: roomStates[r.id] ? 1 : 0, transition: 'opacity 0.2s ease' }}
+          style={{ opacity: roomStates[r.id] ? 1 : 0, transition: 'opacity 0.6s ease-in-out' }}
         />
       ))}
       <div className="absolute bottom-4 right-4 z-10">
@@ -562,16 +562,27 @@ const HomePage = () => {
   const [heroAnimDone, setHeroAnimDone] = useState(false);
   const [heroPhase, setHeroPhase] = useState(0); // 0=walk-in, 1=lit, 2=walk-out, 3=resting
 
-  // Hero auto-demo: LOOPING "walk-in / walk-out" narrative
-  // Phase 0: walk-in (lights cascade ON)   → ~1.8s
-  // Phase 1: lit / wakes up                → ~1.5s
-  // Phase 2: walk-out (lights cascade OFF) → ~1.5s
-  // Phase 3: resting / energy saved        → ~1.5s
-  // Stops when user interacts with the demo below
+  // Hero auto-demo: LOOPING "walk-in / walk-out" narrative (slow, human-readable pace)
+  // Phase 0: walk-in (lights cascade ON)   → ~3.2s — reads "Lights follow your path…"
+  // Phase 1: lit / wakes up                → ~3s   — reads "Every room, instantly ready."
+  // Phase 2: walk-out (lights cascade OFF) → ~3s   — reads "Fading gracefully as you leave."
+  // Phase 3: resting / energy saved        → ~3s   — reads "Ready when you return."
+  // Total loop ~12s. Stops when user interacts with the demo below.
   useEffect(() => {
     if (userInteracted) return;
     const timers = [];
     let cancelled = false;
+
+    // Pace constants (ms)
+    const WALK_IN_STEP = 240;      // per-room cascade interval on
+    const WALK_IN_PAUSE = 500;     // pause after cascade before "lit"
+    const LIT_HOLD = 2400;         // how long we dwell on "Your Space Wakes Up"
+    const WALK_OUT_STEP = 220;     // per-room cascade interval off
+    const WALK_OUT_PAUSE = 500;    // pause after cascade before "rest"
+    const REST_HOLD = 2800;        // how long we dwell on "Energy Saved"
+
+    const walkInDuration = rooms.length * WALK_IN_STEP + WALK_IN_PAUSE;
+    const walkOutDuration = rooms.length * WALK_OUT_STEP + WALK_OUT_PAUSE;
 
     const runLoop = () => {
       if (cancelled) return;
@@ -581,14 +592,14 @@ const HomePage = () => {
       rooms.forEach((r, i) => {
         const t = setTimeout(() => {
           if (!cancelled) setRoomStates((p) => ({ ...p, [r.id]: true }));
-        }, i * 130);
+        }, i * WALK_IN_STEP);
         timers.push(t);
       });
 
       // ── PHASE 1: Fully lit ───────────────────────────────────
       const phase1 = setTimeout(() => {
         if (!cancelled) setHeroPhase(1);
-      }, rooms.length * 130 + 200);
+      }, walkInDuration);
       timers.push(phase1);
 
       // ── PHASE 2: Walk-out — lights cascade OFF ───────────────
@@ -598,28 +609,28 @@ const HomePage = () => {
         rooms.forEach((r, i) => {
           const t = setTimeout(() => {
             if (!cancelled) setRoomStates((p) => ({ ...p, [r.id]: false }));
-          }, i * 110);
+          }, i * WALK_OUT_STEP);
           timers.push(t);
         });
-      }, rooms.length * 130 + 1700);
+      }, walkInDuration + LIT_HOLD);
       timers.push(phase2);
 
       // ── PHASE 3: Rest state (energy saved) ───────────────────
       const phase3 = setTimeout(() => {
         if (cancelled) return;
         setHeroPhase(3);
-        setHeroAnimDone(true); // show scroll hint after first complete loop
-      }, rooms.length * 130 + 1700 + rooms.length * 110 + 200);
+        setHeroAnimDone(true);
+      }, walkInDuration + LIT_HOLD + walkOutDuration);
       timers.push(phase3);
 
       // ── Loop again ────────────────────────────────────────────
       const loopAgain = setTimeout(() => {
         if (!cancelled) runLoop();
-      }, rooms.length * 130 + 1700 + rooms.length * 110 + 1700);
+      }, walkInDuration + LIT_HOLD + walkOutDuration + REST_HOLD);
       timers.push(loopAgain);
     };
 
-    const start = setTimeout(runLoop, 600);
+    const start = setTimeout(runLoop, 900);
     timers.push(start);
 
     return () => {
