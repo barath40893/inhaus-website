@@ -13,33 +13,44 @@ const rooms = [
   { id: 'office', name: 'Office / Study', icon: Lightbulb },
   { id: 'garage', name: 'Garage', icon: Power },
   { id: 'hallway', name: 'Hallway', icon: Lightbulb },
+  { id: 'bath1', name: 'Bathroom 1', icon: Lightbulb },
+  { id: 'bath2', name: 'Bathroom 2', icon: Lightbulb },
 ];
 
 // ─── ROOM LIGHT OVERLAY POSITIONS (% of image 1000x678) ────────
+// Light color: cool/neutral white with slight per-room variation
 const roomOverlays = {
   living: {
-    cx: 47.5, cy: 65, rx: 18, ry: 12,
-    color: '255,180,60',
+    cx: 44.3, cy: 53.7, rx: 12, ry: 12.5,
+    color: '220,230,255',
   },
   kitchen: {
-    cx: 29, cy: 30, rx: 11, ry: 16,
-    color: '255,200,100',
+    cx: 28.6, cy: 29, rx: 9, ry: 11,
+    color: '230,240,255',
   },
   bedroom: {
-    cx: 76, cy: 67, rx: 14, ry: 10,
-    color: '255,170,50',
+    cx: 74.3, cy: 50.3, rx: 9, ry: 11.8,
+    color: '215,225,250',
   },
   office: {
-    cx: 13, cy: 28, rx: 9, ry: 12,
-    color: '255,190,80',
+    cx: 14.3, cy: 42.5, rx: 5, ry: 5.9,
+    color: '225,235,255',
   },
   garage: {
-    cx: 71, cy: 90, rx: 18, ry: 14,
-    color: '255,210,130',
+    cx: 71.8, cy: 94.7, rx: 13, ry: 10.3,
+    color: '235,240,250',
   },
   hallway: {
-    cx: 50, cy: 46, rx: 10, ry: 10,
-    color: '255,185,70',
+    cx: 43.2, cy: 41.3, rx: 6, ry: 11,
+    color: '220,228,248',
+  },
+  bath1: {
+    cx: 32.5, cy: 45.7, rx: 3.5, ry: 5.2,
+    color: '230,240,255',
+  },
+  bath2: {
+    cx: 65, cy: 35.1, rx: 4, ry: 5.9,
+    color: '230,240,255',
   },
 };
 
@@ -88,25 +99,25 @@ const ImageFloorplan = ({ roomStates }) => {
           className="absolute inset-0 w-full h-full object-contain select-none pointer-events-none transition-all duration-700"
           draggable={false}
           style={{
-            filter: anyOn ? 'brightness(0.55) saturate(0.7)' : 'brightness(0.35) saturate(0.4)',
+            filter: anyOn ? 'brightness(0.5) saturate(0.6)' : 'brightness(0.3) saturate(0.3)',
           }}
         />
 
-        {/* Large diffuse ambient glow per room (wide spread) */}
+        {/* Wide ambient spill per room */}
         {Object.entries(roomOverlays).map(([id, ov]) => {
           const isOn = !!roomStates[id];
           return (
             <div
-              key={`ambient-${id}`}
+              key={`spill-${id}`}
               className="absolute pointer-events-none"
               style={{
-                left: `${ov.cx - ov.rx * 1.5}%`,
-                top: `${ov.cy - ov.ry * 1.5}%`,
-                width: `${ov.rx * 3}%`,
-                height: `${ov.ry * 3}%`,
-                background: `radial-gradient(ellipse at center, rgba(${ov.color},0.35) 0%, rgba(${ov.color},0.12) 40%, transparent 70%)`,
+                left: `${ov.cx - ov.rx * 1.8}%`,
+                top: `${ov.cy - ov.ry * 1.8}%`,
+                width: `${ov.rx * 3.6}%`,
+                height: `${ov.ry * 3.6}%`,
+                background: `radial-gradient(ellipse at center, rgba(${ov.color},0.25) 0%, rgba(${ov.color},0.08) 45%, transparent 75%)`,
                 opacity: isOn ? 1 : 0,
-                transition: 'opacity 0.7s ease-in-out',
+                transition: 'opacity 0.6s ease-in-out',
                 mixBlendMode: 'screen',
                 borderRadius: '50%',
               }}
@@ -114,7 +125,7 @@ const ImageFloorplan = ({ roomStates }) => {
           );
         })}
 
-        {/* Core room glow (concentrated warm light) */}
+        {/* Core room illumination — fills the room floor */}
         {Object.entries(roomOverlays).map(([id, ov]) => {
           const isOn = !!roomStates[id];
           return (
@@ -127,18 +138,18 @@ const ImageFloorplan = ({ roomStates }) => {
                 top: `${ov.cy - ov.ry}%`,
                 width: `${ov.rx * 2}%`,
                 height: `${ov.ry * 2}%`,
-                background: `radial-gradient(ellipse at center, rgba(${ov.color},0.65) 0%, rgba(${ov.color},0.3) 40%, rgba(${ov.color},0.08) 70%, transparent 100%)`,
+                background: `radial-gradient(ellipse at center, rgba(${ov.color},0.7) 0%, rgba(${ov.color},0.4) 35%, rgba(${ov.color},0.12) 65%, transparent 100%)`,
                 opacity: isOn ? 1 : 0,
-                transition: 'opacity 0.6s ease-in-out',
+                transition: 'opacity 0.5s ease-in-out',
                 mixBlendMode: 'screen',
-                filter: 'blur(6px)',
+                filter: 'blur(4px)',
                 borderRadius: '50%',
               }}
             />
           );
         })}
 
-        {/* Hot center point (light bulb) */}
+        {/* Hot center bulb point — brightest spot */}
         {Object.entries(roomOverlays).map(([id, ov]) => {
           const isOn = !!roomStates[id];
           return (
@@ -146,11 +157,11 @@ const ImageFloorplan = ({ roomStates }) => {
               key={`bulb-${id}`}
               className="absolute pointer-events-none"
               style={{
-                left: `${ov.cx - 1.5}%`,
-                top: `${ov.cy - 2}%`,
-                width: '3%',
-                height: '4%',
-                background: `radial-gradient(circle, rgba(255,240,200,0.9) 0%, rgba(${ov.color},0.4) 50%, transparent 100%)`,
+                left: `${ov.cx - 1.2}%`,
+                top: `${ov.cy - 1.8}%`,
+                width: '2.4%',
+                height: '3.6%',
+                background: `radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(${ov.color},0.5) 40%, transparent 100%)`,
                 opacity: isOn ? 1 : 0,
                 transition: 'opacity 0.4s ease-in-out',
                 mixBlendMode: 'screen',

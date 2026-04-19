@@ -1,7 +1,7 @@
 # InHaus Smart Home - Product Requirements Document
 
 ## Original Problem Statement
-Build and refine an internal tool for the "InHaus" e-commerce business. This includes product management, generating customized PDF quotations, and a complete e-commerce system with customer authentication.
+Build and refine an internal tool for the "InHaus" e-commerce business. This includes product management, generating customized PDF quotations, and a complete e-commerce system with customer authentication. The public homepage features an interactive 3D floorplan demo inspired by the competitor site NOVIQ.
 
 ## Core Requirements
 - **Product Management**: Admin panel to manage smart home products with image upload (PNG, max 2MB)
@@ -9,9 +9,10 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
 - **E-commerce System**: Customer authentication, room-based cart, checkout, and order management
 - **User & Role Management**: Admin and Customer authentication with JWT
 - **Invoice System**: PDF invoices with room-wise product grouping, shipping/billing address, company branding
+- **Interactive Homepage**: NOVIQ-inspired 3D floorplan with toggleable room lights using user's NoLights.png
 
 ## Tech Stack
-- **Frontend**: React, Tailwind CSS, Shadcn UI
+- **Frontend**: React, Tailwind CSS, Shadcn UI, Framer Motion
 - **Backend**: FastAPI, Motor (async MongoDB)
 - **Database**: MongoDB
 - **PDF Generation**: ReportLab, Pillow
@@ -34,28 +35,18 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
 - [x] Checkout with shipping/billing address
 - [x] Cash on Delivery payment method
 - [x] Order placement and confirmation
-- [x] PDF invoice generation with:
-  - InHaus logo/address on left
-  - Customer details on right
-  - Room-wise product listing with images
-  - Tax calculation (GST)
-  - Discount display
+- [x] PDF invoice generation with InHaus branding
 - [x] Invoice download and email sending
 - [x] Customer orders history page
 - [x] Admin customer management (manual user creation)
 - [x] Admin shop orders with profit margins
 
-#### Admin Order Editing (NEW - Completed)
-- [x] Edit individual product prices in orders
-- [x] Edit product quantities
-- [x] Apply percentage discount (e.g., 10% off)
-- [x] Apply fixed amount discount (e.g., Rs. 500 off)
-- [x] Toggle GST inclusion (on/off)
-- [x] Change GST percentage (default 18%)
-- [x] Live preview of updated totals
+#### Admin Order Editing (Completed)
+- [x] Edit individual product prices/quantities in orders
+- [x] Apply percentage/fixed amount discount
+- [x] Toggle GST inclusion, change GST percentage
 - [x] Convert customer orders to quotations
 - [x] Download invoice with applied discounts
-- [x] Changed Rs symbol from ₹ to Rs. for PDF compatibility
 
 #### Core Features (Completed)
 - [x] Admin authentication (JWT-based)
@@ -66,43 +57,33 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
 - [x] Contact form submission
 - [x] Responsive UI with InHaus branding
 
-#### Bug Fixes Applied
-- [x] Fixed "Response.clone: Body has already been consumed" error in quotations
-- [x] Added cache-control headers to prevent stale PDF downloads
-- [x] Fixed PDF discount rendering
-- [x] Fixed product image rendering in PDFs
-- [x] Fixed PDF invoice generation (_create_footer method)
-- [x] Reverted website redesign (HomePage, AboutPage, ContactPage)
-- [x] **P0 Fixed: Admin navigation bug** - All admin pages now use AdminHeader component with Customers and Shop Orders links
-- [x] Fixed AdminCustomersPage token bug - was using 'token' instead of 'adminToken'
-- [x] **Fixed duplicate headers** - Removed duplicate AdminHeader from individual pages (ProtectedRoute handles it)
-- [x] **UI/UX Redesign** - Complete dark theme redesign of public pages (Home, Products, About, Contact)
-- [x] **Fixed account page link** - Changed /account to /customer/orders in Navbar
-- [x] **Added partner logos** - Added "Works Seamlessly With" section (Amazon Alexa, Google Home, Apple HomeKit, Matter)
-- [x] **Updated startup animation** - Dark theme welcome screen with animated grid and glowing effects
-- [x] **Added trust indicators** - Free Installation, 2-Year Warranty, 24/7 Support badges on hero
-- [x] **Dark theme for CustomerOrdersPage** - Updated order cards and status badges for dark mode
-- [x] **P0 Fixed: Blank /login page** - Added redirect from `/login` to `/customer/login` in App.js (Feb 2026)
-- [x] **P0 Fixed: Quotations not saving/loading** - Fixed `convert_order_to_quotation` endpoint creating wrong schema (used `quotation_number`/`customer`/`rooms` instead of `quote_number`/`customer_name`/`items`). Added legacy data migration in GET endpoint. (Feb 2026)
-- [x] **Price Calculator embed** - Added Price Calculator iframe as a popup modal (triggered by button) on both Create/Edit Quotation and Create/Edit Invoice pages (Feb 2026)
-- [x] **Invoice Payment Tracking** - Added Amount Paid input, auto-calculated Balance Due, and auto Payment Status (PENDING/PARTIAL/PAID) to Invoice create/edit form. Backend now correctly computes amount_due and payment_status on create and update. (Mar 2026)
-- [x] **Product Image Display** - Added Image column with thumbnails to quotation and invoice item tables. Added onError fallback for broken images. Product selector on invoice page now shows product images. (Mar 2026)
-- [x] **Homepage Redesign v2 (NOVIQ-inspired)** - Complete redesign with true 3D isometric SVG floorplan (3BHK layout with 9 rooms: Living Room, Kitchen, Dining, Master Bedroom, Master Bath, Bedroom 2, Bedroom 3, Bathroom, Balcony). Isometric projection with visible wall heights, detailed furniture, warm glow lighting, NOVIQ-style controller panel. Scrolling tech ticker, glass-morphism capability cards, new InHaus logo, "Home, Reimagined by InHaus" tagline. (Mar 2026)
+### February-March 2026
 
----
+#### Bug Fixes (Completed)
+- [x] Fixed blank /login page (redirects to /customer/login)
+- [x] Fixed GET /api/quotations 500 error (legacy schema migration)
+- [x] Fixed convert_order_to_quotation schema mismatch
+- [x] Fixed broken product images in admin quotation/invoice tables
 
-## Predefined Rooms
-- Living Room
-- Master Bedroom
-- Bedroom 2
-- Bedroom 3
-- Kitchen
-- Bathroom
-- Office/Study
-- Dining Room
-- Balcony
-- Hall
-- (Custom rooms can be added by users)
+#### Feature Additions (Completed)
+- [x] Price Calculator iframe modal on Quotation & Invoice pages
+- [x] Invoice Payment Tracking (Amount Paid, Balance Due, Payment Status)
+- [x] Product image thumbnails in quotation/invoice item tables
+
+### April 2026
+
+#### Homepage Interactive Floorplan (Completed)
+- [x] NOVIQ-inspired homepage redesign with cinematic dark theme
+- [x] Replaced SVG-based 3D isometric floorplan with user-provided NoLights.png image
+- [x] Image-based interactive floorplan with CSS radial gradient overlays
+- [x] 8 toggleable rooms: Living Room, Kitchen, Bedroom, Office/Study, Garage, Hallway, Bathroom 1, Bathroom 2
+- [x] Cool/neutral white light color (changed from warm amber per user request)
+- [x] Three-layer light effect: ambient spill + core illumination + bright bulb center
+- [x] mix-blend-mode: screen for realistic light overlay
+- [x] Image brightness transitions (0.3 all-off → 0.5 any-on) for dramatic contrast
+- [x] Auto-animation on scroll-into-view with proper timer cleanup
+- [x] NOVIQ-style phone controller panel with All On/Off, individual room toggles, voice command UI
+- [x] Scrolling tech ticker, glass-morphism capability cards, partner logos section
 
 ---
 
@@ -118,102 +99,38 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
 - `POST /api/customer/login` - Customer login
 - `POST /api/customer/google-session` - Process Google OAuth
 - `GET /api/customer/me` - Get customer profile
-- `POST /api/customer/logout` - Logout customer
 
 ### Customer Cart & Orders
-- `GET /api/customer/rooms` - Get customer's rooms (predefined + custom)
+- `GET /api/customer/rooms` - Get customer's rooms
 - `POST /api/customer/rooms` - Add custom room
 - `POST /api/customer/checkout` - Place order
 - `GET /api/customer/orders` - Get order history
-- `GET /api/customer/orders/{id}` - Get order details
 - `GET /api/customer/orders/{id}/invoice` - Download invoice PDF
-- `POST /api/customer/orders/{id}/send-invoice` - Email invoice
 
 ### Admin (JWT Required)
 - `POST /api/auth/login` - Admin login
 - `GET/POST/DELETE /api/products` - Product CRUD
 - `GET/POST /api/quotations` - Quotation management
 - `GET /api/admin/customers` - View all customers
-- `POST /api/admin/customers` - Create customer account
-- `GET /api/admin/customer-orders` - View all orders with profit
-- `PUT /api/admin/customer-orders/{id}/status` - Update order status
-
----
-
-## Database Schema
-
-### Customers Collection
-```json
-{
-  "user_id": "cust_xxx",
-  "email": "string",
-  "name": "string",
-  "picture": "string (optional)",
-  "phone": "string (optional)",
-  "shipping_address": "string (optional)",
-  "billing_address": "string (optional)",
-  "auth_provider": "email|google",
-  "password_hash": "string (for email auth)",
-  "status": "active|inactive",
-  "created_at": "datetime",
-  "last_login": "datetime"
-}
-```
-
-### Customer Orders Collection
-```json
-{
-  "id": "uuid",
-  "order_number": "INV-2025-0001",
-  "user_id": "cust_xxx",
-  "customer_name": "string",
-  "customer_email": "string",
-  "customer_phone": "string",
-  "shipping_address": "string",
-  "billing_address": "string",
-  "items": [{
-    "product_id": "string",
-    "product_name": "string",
-    "model_no": "string",
-    "image_url": "string",
-    "list_price": "number",
-    "quantity": "number",
-    "total_price": "number",
-    "room_name": "string",
-    "room_type": "predefined|custom"
-  }],
-  "subtotal": "number",
-  "tax_percentage": 18,
-  "tax_amount": "number",
-  "total": "number",
-  "total_cost": "number",
-  "profit_margin": "number",
-  "payment_method": "cod|bank_transfer",
-  "payment_status": "pending|paid|failed",
-  "order_status": "pending|confirmed|processing|shipped|delivered|cancelled",
-  "created_at": "datetime"
-}
-```
+- `GET /api/admin/customer-orders` - View all orders
+- `POST /api/admin/invoices` - Create invoice
 
 ---
 
 ## Prioritized Backlog
 
-### P0 - Critical
-- [x] E-commerce system implementation ✅
-
 ### P1 - High Priority
+- [ ] GST calculation logic on backend + frontend + PDF invoices
+- [ ] Auto-email invoices to customers after checkout
 - [ ] Payment gateway integration (Razorpay/Stripe)
-- [x] Product deletion button works correctly (verified in testing)
-- [ ] Product image upload improvements
 
 ### P2 - Medium Priority
-- [ ] Performance optimization
+- [ ] Performance optimization (app reported as "too slow")
 - [ ] User profile management
 - [ ] Order tracking notifications
+- [ ] Refactor server.py (~3000 lines) into separate route/model files
 
 ### P3 - Low Priority
-- [ ] In-Quotation Product Cloning testing
 - [ ] Role-Based Access Control (RBAC)
 - [ ] Auto-logout functionality
 
@@ -223,19 +140,7 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
 - **Admin**: barath40893@gmail.com / InHaus@2024
 - **Customer**: test@inhaus.co.in / Test1234
 
----
-
-## Test Files
-- `/app/backend/tests/test_ecommerce.py` - 22 backend API tests
-- `/app/test_reports/iteration_1.json` - Test report
-
----
-
-## Known Issues
-- Products show "No Image" placeholder - need to upload product images via admin
-
----
-
 ## Test Reports
 - `/app/test_reports/iteration_1.json` - E-commerce backend tests
 - `/app/test_reports/iteration_2.json` - Admin navigation fix verification
+- `/app/test_reports/iteration_3.json` - Homepage floorplan + full regression (100% pass)
