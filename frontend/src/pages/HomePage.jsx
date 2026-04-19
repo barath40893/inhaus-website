@@ -39,108 +39,191 @@ const roomAliases = {
   guestbath: ['guest bath', 'guest bathroom', 'small bath', 'second bathroom'],
 };
 
-// ─── VOICE COMMAND HOOK (Whisper Backend) ───────────────────────
+// ─── VOICE HELPERS ──────────────────────────────────────────────
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 1.1;
+  u.pitch = 1;
+  u.volume = 1;
+  window.speechSynthesis.speak(u);
+}
+
+// ─── VOICE COMMAND HOOK (Whisper + Wake Word + TTS) ─────────────
 const useVoiceCommand = ({ onToggleAll, onSetRoom }) => {
-  const [isListening, setIsListening] = useState(false);
+  const [mode, setMode] = useState('idle');        // idle | wakeListening | recording | processing
+  const [wakeEnabled, setWakeEnabled] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [feedback, setFeedback] = useState('');
   const [supported, setSupported] = useState(true);
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
   const feedbackTimer = useRef(null);
+  const wakeLoopRef = useRef(null);
+  const streamRef = useRef(null);
   const callbacksRef = useRef({ onToggleAll, onSetRoom });
   callbacksRef.current = { onToggleAll, onSetRoom };
 
+  // Execute a parsed command + speak "OK"
+  const executeCommand = useCallback((cmd) => {
+    if (cmd.type === 'all') callbacksRef.current.onToggleAll(cmd.state);
+    else if (cmd.type === 'room') callbacksRef.current.onSetRoom(cmd.roomId, cmd.state);
+    speak('OK. ' + cmd.feedback);
+    setFeedback(cmd.feedback);
+  }, []);
+
+  // Process transcribed text
   const processText = useCallback((text) => {
     const cmd = parseVoiceCommand(text.toLowerCase().trim());
     if (cmd) {
-      if (cmd.type === 'all') callbacksRef.current.onToggleAll(cmd.state);
-      else if (cmd.type === 'room') callbacksRef.current.onSetRoom(cmd.roomId, cmd.state);
-      setFeedback(cmd.feedback);
+      executeCommand(cmd);
     } else {
       setFeedback('Try: "turn on hall" or "all lights off"');
+      speak('Sorry, I didn\'t understand.');
     }
     setTranscript(text);
     clearTimeout(feedbackTimer.current);
     feedbackTimer.current = setTimeout(() => { setFeedback(''); setTranscript(''); }, 4000);
-  }, []);
+  }, [executeCommand]);
 
   useEffect(() => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) setSupported(false);
-    return () => clearTimeout(feedbackTimer.current);
+    return () => {
+      clearTimeout(feedbackTimer.current);
+      clearTimeout(wakeLoopRef.current);
+      if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
+    };
   }, []);
 
-  const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      mediaRecorderRef.current.stop();
-    }
+  // Send audio blob to Whisper and return text
+  const transcribeBlob = useCallback(async (blob) => {
+    const formData = new FormData();
+    formData.append('file', blob, 'voice.webm');
+    const res = await fetch(`${API_URL}/api/voice/transcribe`, { method: 'POST', body: formData });
+    const data = await res.json();
+    return data.text?.trim() || '';
   }, []);
 
-  const startRecording = useCallback(async () => {
+  // Record a short clip and return blob
+  const recordClip = useCallback((stream, duration) => {
+    return new Promise((resolve) => {
+      const chunks = [];
+      const mr = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
+      mr.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+      mr.onstop = () => resolve(new Blob(chunks, { type: 'audio/webm' }));
+      mr.start();
+      setTimeout(() => { if (mr.state === 'recording') mr.stop(); }, duration);
+    });
+  }, []);
+
+  // ── WAKE WORD LOOP ────────────────────────────────────────────
+  const runWakeLoop = useCallback(async (stream) => {
+    if (!wakeEnabled) return;
+    setMode('wakeListening');
     try {
-      setTranscript('');
+      const blob = await recordClip(stream, 2500);
+      if (blob.size < 200) { wakeLoopRef.current = setTimeout(() => runWakeLoop(stream), 300); return; }
+      const text = await transcribeBlob(blob);
+      const lower = text.toLowerCase().replace(/[^a-z ]/g, '');
+
+      if (lower.includes('hey inhaus') || lower.includes('hey in house') || lower.includes('hey in haus') || lower.includes('a inhaus') || lower.includes('he inhaus')) {
+        // Wake word detected! Play beep and record command
+        speak('OK');
+        setFeedback('Listening for command...');
+        setMode('recording');
+        await new Promise(r => setTimeout(r, 800)); // Wait for "OK" to finish
+
+        const cmdBlob = await recordClip(stream, 4000);
+        setMode('processing');
+        setFeedback('Processing...');
+        const cmdText = await transcribeBlob(cmdBlob);
+
+        if (cmdText) {
+          // Check if the command text ALSO starts with "hey inhaus" and strip it
+          const cleaned = cmdText.toLowerCase().replace(/^(hey\s*(in\s*haus|inhaus|in\s*house)[,.\s]*)/, '').trim();
+          processText(cleaned || cmdText);
+        } else {
+          setFeedback('No command heard. Say "Hey InHaus" again.');
+          speak('No command heard.');
+        }
+        // Resume wake loop after a pause
+        wakeLoopRef.current = setTimeout(() => runWakeLoop(stream), 3000);
+      } else {
+        // No wake word — loop again
+        wakeLoopRef.current = setTimeout(() => runWakeLoop(stream), 200);
+      }
+    } catch (err) {
+      setFeedback('Voice error. Retrying...');
+      wakeLoopRef.current = setTimeout(() => runWakeLoop(stream), 2000);
+    }
+  }, [wakeEnabled, recordClip, transcribeBlob, processText]);
+
+  // ── START / STOP WAKE WORD ────────────────────────────────────
+  const toggleWake = useCallback(async () => {
+    if (wakeEnabled) {
+      // Stop
+      setWakeEnabled(false);
+      clearTimeout(wakeLoopRef.current);
+      if (streamRef.current) { streamRef.current.getTracks().forEach(t => t.stop()); streamRef.current = null; }
+      setMode('idle');
       setFeedback('');
-      chunksRef.current = [];
+      setTranscript('');
+    } else {
+      // Start
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        streamRef.current = stream;
+        setWakeEnabled(true);
+        setFeedback('Say "Hey InHaus" to start...');
+        speak('Wake word activated. Say Hey InHaus.');
+        // Small delay then start loop
+        wakeLoopRef.current = setTimeout(() => runWakeLoop(stream), 500);
+      } catch (err) {
+        setFeedback('Microphone access denied.');
+      }
+    }
+  }, [wakeEnabled, runWakeLoop]);
+
+  // Restart wake loop when wakeEnabled changes
+  useEffect(() => {
+    if (!wakeEnabled && streamRef.current) {
+      clearTimeout(wakeLoopRef.current);
+    }
+  }, [wakeEnabled]);
+
+  // ── MANUAL MIC (single command) ───────────────────────────────
+  const toggleMic = useCallback(async () => {
+    if (mode === 'recording') {
+      if (mediaRecorderRef.current?.state === 'recording') mediaRecorderRef.current.stop();
+      return;
+    }
+    try {
+      setTranscript(''); setFeedback(''); chunksRef.current = [];
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
-      mediaRecorderRef.current = mediaRecorder;
-
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
-      };
-
-      mediaRecorder.onstop = async () => {
+      const mr = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
+      mediaRecorderRef.current = mr;
+      mr.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
+      mr.onstop = async () => {
         stream.getTracks().forEach(t => t.stop());
         const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
-        if (blob.size < 100) {
-          setFeedback('No audio captured. Try again.');
-          setIsListening(false);
-          return;
-        }
-        setFeedback('Processing...');
+        if (blob.size < 100) { setFeedback('No audio. Try again.'); setMode('idle'); return; }
+        setMode('processing'); setFeedback('Processing...');
         try {
-          const formData = new FormData();
-          formData.append('file', blob, 'voice.webm');
-          const res = await fetch(`${API_URL}/api/voice/transcribe`, { method: 'POST', body: formData });
-          const data = await res.json();
-          if (data.text && data.text.trim()) {
-            processText(data.text.trim());
-          } else {
-            setFeedback(data.error || 'No speech detected. Try again.');
-            clearTimeout(feedbackTimer.current);
-            feedbackTimer.current = setTimeout(() => { setFeedback(''); }, 3000);
-          }
-        } catch (err) {
-          setFeedback('Connection error. Use text input.');
-          clearTimeout(feedbackTimer.current);
-          feedbackTimer.current = setTimeout(() => { setFeedback(''); }, 3000);
-        }
-        setIsListening(false);
+          const text = await transcribeBlob(blob);
+          if (text) processText(text);
+          else { setFeedback('No speech detected.'); speak('No speech detected.'); }
+        } catch { setFeedback('Connection error.'); }
+        setMode('idle');
       };
+      mr.start(); setMode('recording');
+      setTimeout(() => { if (mr.state === 'recording') mr.stop(); }, 4000);
+    } catch { setFeedback('Mic access denied.'); setMode('idle'); }
+  }, [mode, transcribeBlob, processText]);
 
-      mediaRecorder.start();
-      setIsListening(true);
-
-      // Auto-stop after 4 seconds
-      setTimeout(() => {
-        if (mediaRecorder.state === 'recording') mediaRecorder.stop();
-      }, 4000);
-    } catch (err) {
-      setFeedback('Microphone access denied. Use text input.');
-      setIsListening(false);
-      clearTimeout(feedbackTimer.current);
-      feedbackTimer.current = setTimeout(() => { setFeedback(''); }, 3000);
-    }
-  }, [processText]);
-
-  const toggleMic = useCallback(() => {
-    if (isListening) stopRecording();
-    else startRecording();
-  }, [isListening, startRecording, stopRecording]);
-
-  return { isListening, transcript, feedback, supported, toggleMic, processText };
+  return { mode, wakeEnabled, transcript, feedback, supported, toggleMic, toggleWake, processText };
 };
 
 // ─── PARSE VOICE COMMAND ────────────────────────────────────────
@@ -473,30 +556,45 @@ const HomePage = () => {
 
                     {/* Voice Command — Interactive */}
                     <div className={`relative p-2.5 rounded-xl mb-3 transition-all duration-300 ${
-                      voice.isListening 
-                        ? 'bg-orange-500/10 border border-orange-500/30 shadow-[0_0_20px_rgba(249,115,22,0.15)]' 
+                      voice.mode === 'recording' 
+                        ? 'bg-orange-500/10 border border-orange-500/30 shadow-[0_0_20px_rgba(249,115,22,0.15)]'
+                        : voice.wakeEnabled
+                        ? 'bg-indigo-500/[0.06] border border-indigo-500/20'
                         : 'bg-white/[0.03] border border-white/[0.05]'
                     }`} data-testid="voice-command-panel">
                       <div className="flex items-center gap-3">
+                        {/* Mic button — single command */}
                         <button
                           onClick={voice.toggleMic}
                           className={`relative w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 cursor-pointer ${
-                            voice.isListening
+                            voice.mode === 'recording'
                               ? 'bg-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.4)]'
+                              : voice.mode === 'processing'
+                              ? 'bg-amber-600 animate-pulse'
                               : 'bg-gradient-to-br from-orange-500/80 to-amber-500/80 shadow-[0_0_12px_rgba(249,115,22,0.2)] hover:shadow-[0_0_18px_rgba(249,115,22,0.35)]'
                           }`}
                           data-testid="voice-mic-btn"
                         >
-                          {voice.isListening && (
+                          {voice.mode === 'recording' && (
                             <span className="absolute inset-0 rounded-full border-2 border-orange-400/40 animate-ping" />
                           )}
-                          <Mic size={voice.isListening ? 16 : 14} className={`text-white ${voice.isListening ? 'animate-pulse' : ''}`} />
+                          <Mic size={voice.mode === 'recording' ? 16 : 14} className={`text-white ${voice.mode === 'recording' ? 'animate-pulse' : ''}`} />
                         </button>
                         <div className="flex-1 min-w-0">
-                          {voice.isListening ? (
+                          {voice.mode === 'recording' ? (
                             <>
                               <div className="text-[9px] text-orange-400 uppercase tracking-[2px] font-semibold">Listening...</div>
-                              <div className="text-[11px] text-white truncate">{voice.transcript || 'Say a command...'}</div>
+                              <div className="text-[11px] text-white truncate">{voice.transcript || 'Speak your command...'}</div>
+                            </>
+                          ) : voice.mode === 'processing' ? (
+                            <>
+                              <div className="text-[9px] text-amber-400 uppercase tracking-[2px] font-semibold">Processing...</div>
+                              <div className="text-[11px] text-zinc-300">Transcribing audio...</div>
+                            </>
+                          ) : voice.mode === 'wakeListening' ? (
+                            <>
+                              <div className="text-[9px] text-indigo-400 uppercase tracking-[2px] font-semibold">Waiting for wake word</div>
+                              <div className="text-[11px] text-zinc-400">Say "Hey InHaus"...</div>
                             </>
                           ) : voice.feedback ? (
                             <>
@@ -511,9 +609,9 @@ const HomePage = () => {
                           )}
                         </div>
                       </div>
-                      {/* Waveform when listening */}
+                      {/* Waveform when recording */}
                       <AnimatePresence>
-                        {voice.isListening && (
+                        {voice.mode === 'recording' && (
                           <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
@@ -531,30 +629,50 @@ const HomePage = () => {
                           </motion.div>
                         )}
                       </AnimatePresence>
-                      {/* Text command input */}
-                      {!voice.isListening && (
-                        <form
-                          className="mt-2 pt-2 border-t border-white/[0.04]"
-                          onSubmit={(e) => { e.preventDefault(); if (cmdInput.trim()) { voice.processText(cmdInput.trim()); setCmdInput(''); } }}
-                        >
-                          <div className="flex gap-1.5">
-                            <input
-                              type="text"
-                              value={cmdInput}
-                              onChange={(e) => setCmdInput(e.target.value)}
-                              placeholder='e.g. "turn on hall"'
-                              className="flex-1 bg-white/[0.04] border border-white/[0.06] rounded-lg px-2.5 py-1.5 text-[11px] text-white placeholder-zinc-600 outline-none focus:border-orange-500/40 transition-colors"
-                              data-testid="voice-text-input"
-                            />
-                            <button
-                              type="submit"
-                              className="px-3 py-1.5 rounded-lg bg-orange-500/20 border border-orange-500/30 text-[10px] font-semibold text-orange-400 hover:bg-orange-500/30 transition-all"
-                              data-testid="voice-text-submit"
-                            >
-                              Go
-                            </button>
-                          </div>
-                        </form>
+                      {/* "Hey InHaus" wake word toggle + text input */}
+                      {voice.mode !== 'recording' && (
+                        <div className="mt-2 pt-2 border-t border-white/[0.04] space-y-2">
+                          {/* Wake word toggle */}
+                          <button
+                            onClick={voice.toggleWake}
+                            className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-[11px] font-medium transition-all ${
+                              voice.wakeEnabled
+                                ? 'bg-indigo-500/15 border border-indigo-500/30 text-indigo-300'
+                                : 'bg-white/[0.03] border border-white/[0.06] text-zinc-500 hover:text-zinc-300'
+                            }`}
+                            data-testid="wake-word-toggle"
+                          >
+                            <span className="flex items-center gap-2">
+                              <Volume2 size={12} />
+                              "Hey InHaus" mode
+                            </span>
+                            <span className={`text-[9px] uppercase tracking-wider font-bold ${voice.wakeEnabled ? 'text-green-400' : 'text-zinc-600'}`}>
+                              {voice.wakeEnabled ? 'ON' : 'OFF'}
+                            </span>
+                          </button>
+                          {/* Text input */}
+                          <form
+                            onSubmit={(e) => { e.preventDefault(); if (cmdInput.trim()) { voice.processText(cmdInput.trim()); setCmdInput(''); } }}
+                          >
+                            <div className="flex gap-1.5">
+                              <input
+                                type="text"
+                                value={cmdInput}
+                                onChange={(e) => setCmdInput(e.target.value)}
+                                placeholder='e.g. "turn on hall"'
+                                className="flex-1 bg-white/[0.04] border border-white/[0.06] rounded-lg px-2.5 py-1.5 text-[11px] text-white placeholder-zinc-600 outline-none focus:border-orange-500/40 transition-colors"
+                                data-testid="voice-text-input"
+                              />
+                              <button
+                                type="submit"
+                                className="px-3 py-1.5 rounded-lg bg-orange-500/20 border border-orange-500/30 text-[10px] font-semibold text-orange-400 hover:bg-orange-500/30 transition-all"
+                                data-testid="voice-text-submit"
+                              >
+                                Go
+                              </button>
+                            </div>
+                          </form>
+                        </div>
                       )}
                     </div>
 
