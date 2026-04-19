@@ -72,13 +72,13 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
 
 ### April 2026
 
-#### Homepage Interactive Floorplan (Completed)
-- [x] NOVIQ-matching homepage with pre-rendered PNG overlay lighting approach
-- [x] NoLights.png base + 9 transparent PNG overlays per room (same approach as NOVIQ)
-- [x] 9 rooms: Hall, Kitchen, Master Bedroom, Small Bedroom, Parking, Stairs, Hanging Lights, Master Bath, Guest Bath
-- [x] NOVIQ-matching controller: dark blue gradient, phone dynamic island, "Smart Life" header
-- [x] 2-column grid room tiles, indigo left-border accent when ON, white/blue Turn On button
-- [x] Centered hero, "LIVE FLOORPLAN" badge, scrolling ticker, capability cards, partner logos
+#### Homepage Complete Redesign (April 2026)
+- [x] New "Jewel & Luxury" dark theme with Outfit + Manrope Google Fonts
+- [x] Hero: Left copy ("Automation for Every Space") + Right interactive floorplan with mini toggle bar
+- [x] Tech Ticker: react-fast-marquee scrolling tech labels
+- [x] Service Categories: "Homes. Offices. Hotels." with 3 image cards (Residential, Commercial, Hotels)
+- [x] Interactive Demo: NOVIQ-style controller + 9-room PNG overlay floorplan (realistic pre-rendered lighting)
+- [x] Stats (5000+ homes, 50K+ devices), Partners marquee, Feature cards, CTA section
 
 ---
 

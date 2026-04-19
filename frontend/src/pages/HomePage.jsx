@@ -80,7 +80,7 @@ const Floorplan = ({ roomStates }) => (
 const ServiceCard = ({ icon: Icon, title, desc, img, link }) => (
   <Link to={link} data-testid={`service-${title.toLowerCase()}`}>
     <div className="group relative h-[380px] rounded-2xl overflow-hidden border border-white/10 hover:border-orange-500/40 transition-all duration-500">
-      <img src={img} alt={title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+      <img src={img} alt={title} loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
       <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-black/70 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-6">
         <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center mb-3 group-hover:bg-orange-500/20 transition-colors">
@@ -211,7 +211,7 @@ const HomePage = () => {
                     className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-all duration-200 ${
                       roomStates[r.id] ? 'bg-orange-500/15 border border-orange-500/30 text-orange-400' : 'bg-white/5 border border-white/10 text-zinc-500 hover:text-zinc-300'
                     }`}
-                    data-testid={`room-toggle-${r.id}`}
+                    data-testid={`hero-toggle-${r.id}`}
                   >{r.name}</button>
                 ))}
                 <span className="text-[10px] text-zinc-600">+{rooms.length - 5} more</span>
