@@ -74,7 +74,7 @@ const WelcomeScreen = ({ onComplete }) => {
               className="mb-8"
             >
               <img
-                src="/inhaus/fulllogo_transparent.png"
+                src="/inhaus_logo_white.png"
                 alt="InHaus Logo"
                 className="w-48 h-auto"
               />
