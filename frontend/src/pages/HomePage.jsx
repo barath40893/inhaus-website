@@ -311,9 +311,7 @@ const HomePage = () => {
                     
                     {/* InHaus App Header */}
                     <div className="flex items-center gap-3 mb-5">
-                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-[0_2px_10px_rgba(249,115,22,0.3)]">
-                        <Home size={16} className="text-white" />
-                      </div>
+                      <img src="/inhaus_logo_white.png" alt="InHaus" className="w-9 h-9 object-contain" />
                       <div>
                         <h3 className="text-sm font-bold text-white tracking-[0.1em] uppercase" style={{ fontFamily: 'Outfit, sans-serif' }}>INHAUS</h3>
                         <p className="text-[9px] text-zinc-500 tracking-[0.15em] uppercase">Smart Automation</p>
