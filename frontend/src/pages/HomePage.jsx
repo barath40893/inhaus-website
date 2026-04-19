@@ -715,8 +715,8 @@ const HomePage = () => {
                   <p className="text-[9px] text-zinc-500">InHaus app</p>
                 </div>
               </div>
-              <div className="relative mx-auto max-w-[280px]">
-                <div className="rounded-[36px] border-[3px] border-zinc-700/50 overflow-hidden shadow-[0_20px_70px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.03)]" style={{ background: 'linear-gradient(175deg, #0e1225, #070810)' }}>
+              <div className="relative mx-auto" style={{ width: '215px' }}>
+                <div className="rounded-[36px] border-[3px] border-zinc-700/50 overflow-hidden shadow-[0_20px_70px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.03)]" style={{ background: 'linear-gradient(175deg, #0e1225, #070810)', aspectRatio: '71.9 / 150' }}>
                   {/* Status bar with logo in center */}
                   <div className="flex items-center justify-between px-5 pt-2.5 pb-0.5">
                     <span className="text-[9px] text-white/70 font-semibold" style={{ fontFamily: 'Outfit, sans-serif' }}>9:41</span>
