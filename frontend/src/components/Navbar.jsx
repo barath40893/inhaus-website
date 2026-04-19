@@ -40,16 +40,17 @@ const Navbar = () => {
         <div className="px-6 py-3">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2.5 group" data-testid="nav-logo">
+            <Link to="/" className="flex items-center gap-3 group" data-testid="nav-logo">
               <img 
                 src="/inhaus_icon_white.png" 
-                alt="InHaus" 
-                className="h-10 w-auto"
+                alt="InHaus Icon" 
+                className="h-11 w-auto"
               />
-              <div className="hidden sm:block">
-                <div className="text-sm font-bold text-white tracking-[0.12em] uppercase leading-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>INHAUS</div>
-                <div className="text-[8px] text-zinc-500 tracking-[0.18em] uppercase leading-tight">Smart Automation</div>
-              </div>
+              <img 
+                src="/inhaus_text_logo_white.png" 
+                alt="INHAUS Smart Automation" 
+                className="h-8 w-auto hidden sm:block"
+              />
             </Link>
 
             {/* Desktop Navigation */}
