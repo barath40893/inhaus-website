@@ -102,6 +102,7 @@ const ProductsPage = () => {
   const saveCart = (newCart) => {
     localStorage.setItem('customer_cart', JSON.stringify(newCart));
     setCart(newCart);
+    window.dispatchEvent(new Event('cart-updated'));
   };
 
   const handleAddToCart = (product) => {

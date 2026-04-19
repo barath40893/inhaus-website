@@ -36,6 +36,7 @@ const CustomerCartPage = () => {
   const saveCart = (newCart) => {
     localStorage.setItem('customer_cart', JSON.stringify(newCart));
     setCart(newCart);
+    window.dispatchEvent(new Event('cart-updated'));
   };
 
   const updateQuantity = (productId, roomName, change) => {
@@ -61,6 +62,7 @@ const CustomerCartPage = () => {
   const clearCart = () => {
     localStorage.removeItem('customer_cart');
     setCart([]);
+    window.dispatchEvent(new Event('cart-updated'));
   };
 
   const getSubtotal = () => {

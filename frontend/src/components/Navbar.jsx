@@ -45,7 +45,39 @@ const Navbar = () => {
     { name: 'Contact', path: '/contact' },
   ];
 
-  const cartItemCount = cart?.rooms?.reduce((total, room) => total + room.items.length, 0) || 0;
+  // Live cart badge — read from localStorage (source of truth)
+  // and listen for 'cart-updated' custom event + cross-tab 'storage' events.
+  const [cartItemCount, setCartItemCount] = useState(0);
+
+  useEffect(() => {
+    const readCartCount = () => {
+      try {
+        const saved = localStorage.getItem('customer_cart');
+        if (!saved) { setCartItemCount(0); return; }
+        const items = JSON.parse(saved);
+        const total = Array.isArray(items)
+          ? items.reduce((sum, it) => sum + (it.quantity || 0), 0)
+          : 0;
+        setCartItemCount(total);
+      } catch {
+        setCartItemCount(0);
+      }
+    };
+
+    readCartCount();
+
+    const onStorage = (e) => {
+      if (!e || e.key === 'customer_cart' || e.key === null) readCartCount();
+    };
+    const onCartUpdated = () => readCartCount();
+
+    window.addEventListener('storage', onStorage);
+    window.addEventListener('cart-updated', onCartUpdated);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('cart-updated', onCartUpdated);
+    };
+  }, []);
 
   return (
     <>
@@ -98,7 +130,7 @@ const Navbar = () => {
             <div className="hidden md:flex items-center gap-3">
               {/* Cart */}
               <Link 
-                to="/cart" 
+                to="/customer/cart" 
                 className="relative p-2 rounded-full text-neutral-300 hover:text-white hover:bg-white/5 transition-all duration-300"
                 data-testid="nav-cart"
               >
@@ -210,7 +242,7 @@ const Navbar = () => {
               
               <div className="flex items-center gap-3">
                 <Link 
-                  to="/cart"
+                  to="/customer/cart"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/5 text-white font-medium"
                 >
