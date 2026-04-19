@@ -1003,7 +1003,7 @@ const HomePage = () => {
                     <div className="w-20 h-5 rounded-full bg-black/80 border border-white/[0.04]" />
                   </div>
                   {/* App content — no separate bg, flows from phone bg */}
-                  <div className="px-3.5 pb-4 flex-1 flex flex-col">
+                  <div className="px-3.5 pb-4 flex-1 flex flex-col min-h-0">
                     {/* All On/Off */}
                     <div className="grid grid-cols-2 gap-1.5 mb-2">
                       <button onClick={() => toggleAll(false)} className="py-1.5 rounded-lg text-[9px] font-semibold bg-white/[0.04] border border-white/[0.06] text-zinc-400 hover:bg-white/[0.07] transition-all" style={{ fontFamily: 'Outfit, sans-serif' }} data-testid="controller-all-off">All Off</button>
@@ -1039,8 +1039,12 @@ const HomePage = () => {
                         style={{ fontFamily: 'Outfit, sans-serif' }}
                         data-testid="voice-text-submit">Go</button>
                     </form>
-                    {/* Room tiles */}
-                    <div className="grid grid-cols-2 gap-1.5 flex-1 overflow-y-auto custom-scrollbar">
+                    {/* Room tiles — scrollable (9 rooms, 2 cols) */}
+                    <div
+                      className="grid grid-cols-2 gap-1.5 flex-1 min-h-0 overflow-y-auto pr-1"
+                      style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'thin', scrollbarColor: 'rgba(249,115,22,0.4) transparent' }}
+                      data-testid="phone-room-tiles"
+                    >
                       {rooms.map((r) => (
                         <RoomTile key={r.id} room={r} isOn={!!roomStates[r.id]} onToggle={toggleRoom} />
                       ))}
