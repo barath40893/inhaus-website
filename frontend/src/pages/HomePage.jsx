@@ -567,19 +567,45 @@ const HomePage = () => {
             <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
               className="lg:col-span-7" ref={demoRef}>
               <Floorplan roomStates={roomStates} />
-              {/* Mini toggle bar */}
-              <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
-                <button onClick={() => toggleAll(true)} className="px-4 py-1.5 rounded-full text-[11px] font-semibold bg-white/5 border border-white/10 text-zinc-400 hover:bg-white/10 transition-all" data-testid="all-on-btn">All On</button>
-                <button onClick={() => toggleAll(false)} className="px-4 py-1.5 rounded-full text-[11px] font-semibold bg-white/5 border border-white/10 text-zinc-400 hover:bg-white/10 transition-all" data-testid="all-off-btn">All Off</button>
-                {rooms.slice(0, 5).map((r) => (
-                  <button key={r.id} onClick={() => toggleRoom(r.id)}
-                    className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-all duration-200 ${
-                      roomStates[r.id] ? 'bg-orange-500/15 border border-orange-500/30 text-orange-400' : 'bg-white/5 border border-white/10 text-zinc-500 hover:text-zinc-300'
-                    }`}
-                    data-testid={`hero-toggle-${r.id}`}
-                  >{r.name}</button>
-                ))}
-                <span className="text-[10px] text-zinc-600">+{rooms.length - 5} more</span>
+              {/* 8-Module Smart Switch Panel */}
+              <div className="mt-5 rounded-2xl overflow-hidden" data-testid="hero-switch-panel"
+                style={{
+                  background: 'linear-gradient(160deg, #1a1a1f 0%, #111114 100%)',
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04), 0 0 0 1px rgba(255,255,255,0.03)',
+                }}
+              >
+                {/* Glass reflection */}
+                <div className="absolute top-0 left-0 right-0 h-1/4 bg-gradient-to-b from-white/[0.015] to-transparent rounded-t-2xl pointer-events-none" />
+                <div className="grid grid-cols-4 sm:grid-cols-8 divide-x divide-white/[0.04]">
+                  {rooms.slice(0, 8).map((r) => {
+                    const isOn = !!roomStates[r.id];
+                    return (
+                      <button
+                        key={r.id}
+                        onClick={() => toggleRoom(r.id)}
+                        className="group relative flex flex-col items-center justify-center py-4 px-1 hover:bg-white/[0.03] transition-all duration-200"
+                        data-testid={`hero-switch-${r.id}`}
+                      >
+                        {/* Switch indicator line */}
+                        <div className={`w-5 h-[2px] rounded-full mb-3 transition-all duration-300 ${
+                          isOn ? 'bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.6)]' : 'bg-zinc-800'
+                        }`} />
+                        {/* Switch button */}
+                        <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                          isOn
+                            ? 'bg-orange-500 shadow-[0_0_16px_rgba(249,115,22,0.4),0_2px_8px_rgba(249,115,22,0.3)]'
+                            : 'bg-zinc-800/60 group-hover:bg-zinc-700/60'
+                        }`}>
+                          <Power size={16} className={`transition-colors duration-300 ${isOn ? 'text-white' : 'text-zinc-600 group-hover:text-zinc-400'}`} />
+                        </div>
+                        {/* Label */}
+                        <span className={`mt-2 text-[8px] sm:text-[9px] uppercase tracking-[1px] font-medium text-center leading-tight transition-colors duration-300 ${
+                          isOn ? 'text-orange-400' : 'text-zinc-600'
+                        }`}>{r.name.length > 8 ? r.name.split(' ')[0] : r.name}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </motion.div>
           </div>
@@ -627,7 +653,7 @@ const HomePage = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-7 gap-8 max-w-7xl mx-auto items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 max-w-6xl mx-auto items-start">
             {/* Controller — Mobile Phone Frame */}
             <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="lg:col-span-2">
               {/* Phone outer shell */}
@@ -808,12 +834,6 @@ const HomePage = () => {
                   </div>
                 </div>
               </div>
-            </motion.div>
-
-            {/* Touch Panel */}
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
-              className="lg:col-span-2 flex items-center">
-              <TouchPanel roomStates={roomStates} onToggle={toggleRoom} onAllOn={() => toggleAll(true)} onAllOff={() => toggleAll(false)} />
             </motion.div>
 
             {/* Floorplan */}
