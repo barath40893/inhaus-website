@@ -226,7 +226,7 @@ const useVoiceCommand = ({ onToggleAll, onSetRoom }) => {
     }
   }, [wakeEnabled, runWakeLoop]);
 
-  // ── MANUAL MIC (single command, 3 seconds) ────────────────────
+  // ── MANUAL MIC (auto-stop on silence) ──────────────────────────
   const toggleMic = useCallback(async () => {
     if (mode === 'recording') {
       if (mediaRecorderRef.current?.state === 'recording') mediaRecorderRef.current.stop();
@@ -250,8 +250,48 @@ const useVoiceCommand = ({ onToggleAll, onSetRoom }) => {
         } catch { setFeedback('Connection error.'); }
         setMode('idle');
       };
-      mr.start(); setMode('recording');
-      setTimeout(() => { if (mr.state === 'recording') mr.stop(); }, 3000);
+      mr.start(250); // collect chunks every 250ms
+      setMode('recording');
+
+      // Silence detection: auto-stop when user stops speaking
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const source = audioCtx.createMediaStreamSource(stream);
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 512;
+      source.connect(analyser);
+      const dataArr = new Uint8Array(analyser.frequencyBinCount);
+      let speechDetected = false;
+      let silenceStart = 0;
+      const SILENCE_THRESHOLD = 15; // volume level considered silence
+      const SILENCE_DURATION = 700; // ms of silence before auto-stop
+      const MAX_DURATION = 5000;    // absolute max recording time
+      const startTime = Date.now();
+
+      const checkSilence = () => {
+        if (mr.state !== 'recording') { audioCtx.close(); return; }
+        // Hard timeout
+        if (Date.now() - startTime > MAX_DURATION) {
+          mr.stop(); audioCtx.close(); return;
+        }
+        analyser.getByteFrequencyData(dataArr);
+        let sum = 0;
+        for (let i = 0; i < dataArr.length; i++) sum += dataArr[i];
+        const avg = sum / dataArr.length;
+
+        if (avg > SILENCE_THRESHOLD) {
+          speechDetected = true;
+          silenceStart = 0;
+        } else if (speechDetected) {
+          // User was speaking and now silent
+          if (!silenceStart) silenceStart = Date.now();
+          else if (Date.now() - silenceStart > SILENCE_DURATION) {
+            mr.stop(); audioCtx.close(); return;
+          }
+        }
+        requestAnimationFrame(checkSilence);
+      };
+      // Start checking after a small initial delay (let user start speaking)
+      setTimeout(checkSilence, 300);
     } catch { setFeedback('Mic access denied.'); setMode('idle'); }
   }, [mode, transcribeBlob, processText]);
 
