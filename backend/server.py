@@ -3062,6 +3062,63 @@ async def voice_transcribe(file: UploadFile = File(...)):
     except Exception as e:
         return {"text": "", "error": str(e)}
 
+
+# ═══════════════════════════════════════════════════════════════════
+# ADMIN: One-time product catalogue reseed (used after fresh deploy)
+# ═══════════════════════════════════════════════════════════════════
+@api_router.post("/admin/reseed-products")
+async def admin_reseed_products(payload: dict = Depends(verify_token)):
+    """Delete all existing products and reseed from seed_products.PRODUCTS list.
+    Admin-only. Idempotent — safe to run multiple times.
+    """
+    try:
+        is_admin = await check_admin(payload)
+        if not is_admin:
+            raise HTTPException(status_code=403, detail="Admin access required")
+
+        # Import the seed data (list of dicts)
+        from seed_products import PRODUCTS
+        import uuid as _uuid
+
+        old_count = await db.products.count_documents({})
+        if old_count > 0:
+            await db.products.delete_many({})
+
+        now = datetime.now(timezone.utc).isoformat()
+        docs = []
+        for p in PRODUCTS:
+            docs.append({
+                "id": str(_uuid.uuid4()),
+                "name": p["name"],
+                "model_no": p.get("model_no", p["name"].upper().replace(" ", "-")[:20]),
+                "description": p["description"],
+                "category": p.get("category", "Uncategorized"),
+                "image_url": p["image_url"],
+                "list_price": float(p["price"]),
+                "company_cost": float(p["price"]) * 0.6,
+                "created_at": now,
+                "updated_at": now,
+            })
+
+        if docs:
+            await db.products.insert_many(docs)
+
+        new_count = await db.products.count_documents({})
+        categories = await db.products.distinct("category")
+        return {
+            "ok": True,
+            "deleted": old_count,
+            "inserted": len(docs),
+            "total": new_count,
+            "categories": sorted(categories),
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Reseed failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 app.include_router(api_router)
 
 # CORS configuration for production
