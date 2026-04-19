@@ -713,10 +713,10 @@ const HomePage = () => {
                             )}
                             <div className="w-12 h-12 flex items-center justify-center">
                               <Icon size={24} strokeWidth={1.5} className={`transition-all duration-300 ${
-                                isOn ? 'text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.7)]' : 'text-zinc-700 group-hover:text-zinc-500'
+                                isOn ? 'text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.7)]' : 'text-zinc-700 group-hover:text-zinc-500'
                               }`} />
                             </div>
-                            <span className={`mt-1 text-[7px] uppercase tracking-[0.5px] font-medium ${isOn ? 'text-cyan-400' : 'text-zinc-700'}`}>
+                            <span className={`mt-1 text-[7px] uppercase tracking-[0.5px] font-medium ${isOn ? 'text-white' : 'text-zinc-700'}`}>
                               {r.name.length > 7 ? r.name.split(' ')[0] : r.name}
                             </span>
                           </button>
@@ -725,8 +725,8 @@ const HomePage = () => {
                     </div>
                     <div className="mx-4 h-px bg-gradient-to-r from-transparent via-amber-700/20 to-transparent" />
                     <div className="grid grid-cols-2 gap-2 px-4 py-3">
-                      <button onClick={() => { toggleAll(false); setUserInteracted(true); }} className="py-2 rounded-xl text-[10px] font-semibold uppercase tracking-wider bg-white/[0.03] border border-white/[0.06] text-zinc-500 hover:text-cyan-400 hover:border-cyan-500/20 transition-all" data-testid="touch-all-off">All Off</button>
-                      <button onClick={() => { toggleAll(true); setUserInteracted(true); }} className="py-2 rounded-xl text-[10px] font-semibold uppercase tracking-wider bg-cyan-500/5 border border-cyan-500/15 text-cyan-400 hover:bg-cyan-500/10 transition-all" data-testid="touch-all-on">All On</button>
+                      <button onClick={() => { toggleAll(false); setUserInteracted(true); }} className="py-2 rounded-xl text-[10px] font-semibold uppercase tracking-wider bg-white/[0.03] border border-white/[0.06] text-zinc-500 hover:text-white hover:border-white/20 transition-all" data-testid="touch-all-off">All Off</button>
+                      <button onClick={() => { toggleAll(true); setUserInteracted(true); }} className="py-2 rounded-xl text-[10px] font-semibold uppercase tracking-wider bg-white/5 border border-white/15 text-white hover:bg-white/10 transition-all" data-testid="touch-all-on">All On</button>
                     </div>
                   </div>
                 </div>
