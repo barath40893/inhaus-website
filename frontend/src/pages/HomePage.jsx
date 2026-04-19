@@ -506,6 +506,37 @@ const FeatureCard = ({ icon: Icon, title, items, delay }) => (
   </motion.div>
 );
 
+// ─── TYPEWRITER EFFECT ──────────────────────────────────────────
+const TypewriterLine = ({ text, delay = 0.8 }) => {
+  const [displayed, setDisplayed] = useState('');
+  const [started, setStarted] = useState(false);
+
+  useEffect(() => {
+    const startTimer = setTimeout(() => setStarted(true), delay * 1000);
+    return () => clearTimeout(startTimer);
+  }, [delay]);
+
+  useEffect(() => {
+    if (!started) return;
+    if (displayed.length >= text.length) return;
+    const t = setTimeout(() => {
+      setDisplayed(text.slice(0, displayed.length + 1));
+    }, 60);
+    return () => clearTimeout(t);
+  }, [started, displayed, text]);
+
+  return (
+    <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight font-medium text-zinc-600" style={{ fontFamily: 'Outfit, sans-serif' }}>
+      {displayed}
+      <motion.span
+        animate={{ opacity: [1, 0] }}
+        transition={{ duration: 0.6, repeat: Infinity }}
+        className="inline-block w-[3px] h-[0.85em] bg-orange-500 ml-1 align-text-bottom"
+      />
+    </div>
+  );
+};
+
 // ═════════════════════════════════════════════════════════════════
 // ─── MAIN HOMEPAGE ──────────────────────────────────────────────
 // ═════════════════════════════════════════════════════════════════
@@ -556,73 +587,80 @@ const HomePage = () => {
     <div className="min-h-screen bg-[#0A0A0A] text-white overflow-x-hidden" style={{ fontFamily: 'Manrope, sans-serif' }}>
       <Navbar />
 
-      {/* ═══ HERO ═══ */}
-      <section className="relative pt-28 pb-20 md:pt-36 md:pb-28" data-testid="hero-section">
-        <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] bg-orange-500/[0.06] rounded-full blur-[120px] pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Left — Copy */}
-            <div className="lg:col-span-5">
-              <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-                className="text-xs tracking-[0.2em] uppercase text-orange-500 font-semibold mb-4">
-                Smart Automation
-              </motion.p>
-              <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.05 }}
-                className="text-4xl sm:text-5xl lg:text-6xl tracking-tighter font-medium leading-[1.1] mb-5"
-                style={{ fontFamily: 'Outfit, sans-serif' }} data-testid="hero-title">
-                Your Space.{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500">Your Control.</span>
-              </motion.h1>
-              <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-base text-zinc-400 leading-relaxed mb-4 max-w-md">
-                Imagine walking into your space and it listens, adapts and responds — lights, curtains, climate, security — all from your touch, your phone, or just your voice. That's InHaus.
-              </motion.p>
+      {/* ═══ HERO — Centered Typewriter + Floorplan ═══ */}
+      <section className="relative pt-28 pb-10 md:pt-36 md:pb-14" data-testid="hero-section">
+        {/* Background glow */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-orange-500/[0.04] rounded-full blur-[150px] pointer-events-none" />
+        
+        <div className="max-w-6xl mx-auto px-6 md:px-12 lg:px-16 text-center relative z-10">
+          {/* Pill badge */}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+            className="inline-flex items-center px-5 py-2 rounded-full bg-white/[0.04] border border-white/[0.08] mb-8">
+            <span className="text-[11px] tracking-[0.2em] uppercase text-zinc-400 font-medium">
+              Smart Automation for Every Space
+            </span>
+          </motion.div>
 
-              {/* Animated prompt after auto-demo */}
-              <AnimatePresence>
-                {heroAnimDone && !userInteracted && (
-                  <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                    className="text-sm text-orange-400 font-medium mb-4 flex items-center gap-2">
-                    <motion.span animate={{ x: [0, 4, 0] }} transition={{ duration: 1.2, repeat: Infinity }}>
-                      <ArrowRight size={14} />
-                    </motion.span>
-                    See how the lights turned on? Try it yourself below
-                  </motion.p>
-                )}
-              </AnimatePresence>
+          {/* Main headline */}
+          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight font-semibold leading-[1.05] mb-4"
+            style={{ fontFamily: 'Outfit, sans-serif' }} data-testid="hero-title">
+            YOUR SPACE
+          </motion.h1>
 
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15 }}
-                className="flex flex-col gap-4 mb-2">
-                <button
-                  onClick={() => document.getElementById('interactive-demo')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="group flex items-center gap-3 bg-orange-500 hover:bg-orange-600 text-white rounded-full px-8 py-4 font-semibold text-base transition-all duration-300 shadow-[0_0_30px_rgba(249,115,22,0.3)] hover:shadow-[0_0_45px_rgba(249,115,22,0.5)] hover:scale-[1.02] w-fit"
-                  data-testid="try-demo-cta"
-                >
-                  <Lightbulb size={18} />
-                  Try our Interactive Demo
-                  <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+          {/* Typewriter line */}
+          <TypewriterLine text="SMARTER THAN EVER" delay={0.8} />
+
+          {/* Subtitle */}
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 2.5 }}
+            className="text-base md:text-lg text-zinc-500 max-w-2xl mx-auto mt-6 mb-8 leading-relaxed">
+            Convenience, safety, security, and energy savings seamlessly integrated
+            — your space listens, adapts and responds. That's InHaus.
+          </motion.p>
+
+          {/* CTA buttons */}
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 2.8 }}
+            className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-12">
+            <button
+              onClick={() => document.getElementById('interactive-demo')?.scrollIntoView({ behavior: 'smooth' })}
+              className="group flex items-center gap-3 bg-orange-500 hover:bg-orange-600 text-white rounded-full px-8 py-4 font-semibold text-base transition-all duration-300 shadow-[0_0_30px_rgba(249,115,22,0.3)] hover:shadow-[0_0_45px_rgba(249,115,22,0.5)] hover:scale-[1.02]"
+              data-testid="try-demo-cta"
+            >
+              <Lightbulb size={18} />
+              Try our Interactive Demo
+              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+            <div className="flex gap-3">
+              <Link to="/products" data-testid="hero-cta-primary">
+                <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-full px-6 py-3.5 text-sm font-medium transition-all">
+                  Explore Products
                 </button>
-                <div className="flex flex-wrap gap-3">
-                  <Link to="/products" data-testid="hero-cta-primary">
-                    <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-full px-6 py-3 text-sm font-medium transition-all">
-                      Explore Products <ArrowRight size={14} />
-                    </button>
-                  </Link>
-                  <Link to="/contact" data-testid="hero-cta-secondary">
-                    <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-full px-6 py-3 text-sm font-medium transition-all">
-                      Contact Us
-                    </button>
-                  </Link>
-                </div>
-              </motion.div>
+              </Link>
+              <Link to="/contact" data-testid="hero-cta-secondary">
+                <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-full px-6 py-3.5 text-sm font-medium transition-all">
+                  Contact Us
+                </button>
+              </Link>
             </div>
+          </motion.div>
 
-            {/* Right — Interactive Demo */}
-            <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
-              className="lg:col-span-7" ref={demoRef}>
-              <Floorplan roomStates={roomStates} />
-            </motion.div>
-          </div>
+          {/* Floorplan auto-demo */}
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.3 }}
+            ref={demoRef} className="max-w-4xl mx-auto">
+            <Floorplan roomStates={roomStates} />
+            {/* Animated prompt after auto-demo */}
+            <AnimatePresence>
+              {heroAnimDone && !userInteracted && (
+                <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  className="text-sm text-orange-400 font-medium mt-4 flex items-center justify-center gap-2">
+                  <motion.span animate={{ y: [0, -3, 0] }} transition={{ duration: 1, repeat: Infinity }}>
+                    <ArrowRight size={14} className="rotate-90" />
+                  </motion.span>
+                  See those lights? Scroll down to control them yourself
+                </motion.p>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </div>
       </section>
 
