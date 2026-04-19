@@ -137,6 +137,7 @@ const ProductsPage = () => {
     saveCart(newCart);
     setShowRoomModal(false);
     setSelectedProduct(null);
+    navigate('/customer/cart');
   };
 
   const addCustomRoom = async () => {
@@ -180,77 +181,8 @@ const ProductsPage = () => {
     <div className="min-h-screen bg-[#0A0A0A] text-white">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-16 relative overflow-hidden" data-testid="products-hero">
-        <div className="absolute inset-0 bg-gradient-to-b from-orange-500/5 via-transparent to-transparent" />
-        <div className="container mx-auto px-4 md:px-8 lg:px-12 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.span 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="inline-block px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-500 text-sm font-medium mb-6"
-            >
-              Smart Home Collection
-            </motion.span>
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-4xl md:text-6xl font-bold mb-6"
-            >
-              Smart
-              <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-400">
-                Devices
-              </span>
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-lg text-neutral-400 mb-10 max-w-2xl mx-auto"
-            >
-              Discover our curated range of smart products designed to transform any space into an intelligent environment.
-            </motion.p>
-            
-            {/* Cart Summary — always visible */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="flex justify-center gap-4"
-            >
-              <button
-                onClick={() => navigate('/customer/cart')}
-                className="relative flex items-center gap-3 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-full font-medium transition-all duration-300 shadow-[0_0_20px_rgba(249,115,22,0.3)] hover:shadow-[0_0_30px_rgba(249,115,22,0.5)]"
-                data-testid="cart-button"
-              >
-                <ShoppingCart className="h-5 w-5" />
-                <span>{getCartCount() > 0 ? 'View Cart' : 'Shop Now'}</span>
-                {getCartCount() > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-white text-orange-600 text-sm font-bold rounded-full h-6 w-6 flex items-center justify-center shadow-lg">
-                    {getCartCount()}
-                  </span>
-                )}
-              </button>
-            </motion.div>
-            
-            {isAuthenticated && (
-              <motion.p 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="text-neutral-500 mt-6"
-              >
-                Welcome, <span className="text-orange-500 font-medium">{customer?.name}</span>
-              </motion.p>
-            )}
-          </div>
-        </div>
-      </section>
-
       {/* Search Bar */}
-      <section className="py-4 border-b border-white/5 sticky top-16 z-30 bg-[#0A0A0A]/95 backdrop-blur-sm">
+      <section className="pt-24 pb-4 border-b border-white/5 sticky top-16 z-30 bg-[#0A0A0A]/95 backdrop-blur-sm">
         <div className="container mx-auto px-4 md:px-8 lg:px-12">
           <div className="flex items-center gap-3 max-w-3xl">
             <div className="relative flex-1">
