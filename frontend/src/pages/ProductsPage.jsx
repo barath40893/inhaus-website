@@ -289,8 +289,9 @@ const ProductsPage = () => {
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ duration: 0.3, delay: index * 0.03 }}
-                              className="group flex items-center gap-4 p-3 bg-white/[0.02] border border-white/5 rounded-xl hover:border-orange-500/20 hover:bg-white/[0.04] transition-all"
+                              className="group flex items-center gap-4 p-3 bg-white/[0.02] border border-white/5 rounded-xl hover:border-orange-500/20 hover:bg-white/[0.04] transition-all cursor-pointer"
                               data-testid={`product-card-${product.id}`}
+                              onClick={() => navigate(`/product/${product.id}`)}
                             >
                               {/* Image */}
                               <div className="w-20 h-20 rounded-lg bg-neutral-800/50 overflow-hidden shrink-0">
@@ -320,7 +321,7 @@ const ProductsPage = () => {
                               </div>
                               {/* Add to Cart */}
                               <button
-                                onClick={() => handleAddToCart(product)}
+                                onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
                                 className="shrink-0 flex items-center gap-1.5 px-4 py-2 bg-orange-500/10 hover:bg-orange-500 border border-orange-500/30 hover:border-orange-500 text-orange-500 hover:text-white rounded-full text-xs font-semibold transition-all duration-300"
                                 data-testid={`add-to-cart-${product.id}`}
                               >
