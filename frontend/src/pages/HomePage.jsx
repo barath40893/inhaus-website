@@ -7,14 +7,15 @@ import { ArrowRight, Wifi, Bluetooth, Shield, Lightbulb, Lock, Mic, Power, Sun, 
 
 // ─── ROOM DATA FOR FLOORPLAN ────────────────────────────────────
 const rooms = [
-  { id: 'hall', name: 'Hall', icon: Lightbulb, col: 'col-span-2', row: 'row-span-2' },
-  { id: 'kitchen', name: 'Kitchen', icon: Sun, col: 'col-span-1', row: 'row-span-1' },
-  { id: 'master', name: 'Master Bedroom', icon: Moon, col: 'col-span-2', row: 'row-span-1' },
-  { id: 'bedroom2', name: 'Small Bedroom', icon: Lightbulb, col: 'col-span-1', row: 'row-span-1' },
-  { id: 'parking', name: 'Parking', icon: Power, col: 'col-span-1', row: 'row-span-1' },
-  { id: 'stairs', name: 'Stairs', icon: Lightbulb, col: 'col-span-1', row: 'row-span-1' },
-  { id: 'masterbath', name: 'Master Bath', icon: Lightbulb, col: 'col-span-1', row: 'row-span-1' },
-  { id: 'guestbath', name: 'Guest Bath', icon: Lightbulb, col: 'col-span-1', row: 'row-span-1' },
+  { id: 'hall', name: 'Hall', icon: Lightbulb },
+  { id: 'kitchen', name: 'Kitchen', icon: Sun },
+  { id: 'master', name: 'Master Bedroom', icon: Moon },
+  { id: 'bedroom2', name: 'Small Bedroom', icon: Lightbulb },
+  { id: 'parking', name: 'Parking', icon: Power },
+  { id: 'stairs', name: 'Stairs', icon: Lightbulb },
+  { id: 'hanging', name: 'Hanging Lights', icon: Lightbulb },
+  { id: 'masterbath', name: 'Master Bath', icon: Lightbulb },
+  { id: 'guestbath', name: 'Guest Bath', icon: Lightbulb },
 ];
 
 // ─── TICKER ITEMS ───────────────────────────────────────────────
@@ -47,54 +48,203 @@ const ScrollingTicker = () => (
   </div>
 );
 
-// ─── ROOM CARD COMPONENT ────────────────────────────────────────
-const RoomCard = ({ room, isOn, onToggle }) => {
+// ─── SVG FLOORPLAN WITH INTERACTIVE LIGHTING ────────────────────
+const FloorplanSVG = ({ roomStates }) => {
+  // Room positions in the SVG floorplan (x, y, width, height)
+  const roomAreas = {
+    hall:      { x: 10,  y: 10,  w: 180, h: 140, label: 'Hall' },
+    kitchen:   { x: 200, y: 10,  w: 140, h: 140, label: 'Kitchen' },
+    master:    { x: 350, y: 10,  w: 200, h: 160, label: 'Master\nBedroom' },
+    bedroom2:  { x: 350, y: 180, w: 200, h: 130, label: 'Small\nBedroom' },
+    parking:   { x: 10,  y: 160, w: 180, h: 150, label: 'Parking' },
+    stairs:    { x: 200, y: 160, w: 70,  h: 80,  label: 'Stairs' },
+    hanging:   { x: 200, y: 248, w: 140, h: 62,  label: 'Hanging\nLights' },
+    masterbath:{ x: 280, y: 160, w: 60,  h: 80,  label: 'Master\nBath' },
+    guestbath: { x: 10,  y: 318, w: 100, h: 62,  label: 'Guest\nBath' },
+  };
+
+  return (
+    <div className="relative w-full" data-testid="live-floorplan">
+      <svg viewBox="0 0 560 390" className="w-full h-auto" style={{ filter: 'drop-shadow(0 0 40px rgba(0,0,0,0.5))' }}>
+        <defs>
+          {/* Warm light gradient for ON rooms */}
+          <radialGradient id="warmLight" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#FFA500" stopOpacity="0.7" />
+            <stop offset="60%" stopColor="#FF8C00" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#FF6600" stopOpacity="0.05" />
+          </radialGradient>
+          {/* Glow filter */}
+          <filter id="roomGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="8" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          {/* Dark room filter */}
+          <filter id="darkRoom">
+            <feColorMatrix type="matrix" values="0.15 0 0 0 0  0 0.15 0 0 0  0 0 0.2 0 0  0 0 0 1 0" />
+          </filter>
+        </defs>
+
+        {/* Background */}
+        <rect x="0" y="0" width="560" height="390" rx="16" fill="#111111" stroke="#222" strokeWidth="2" />
+
+        {/* Outer walls */}
+        <rect x="5" y="5" width="550" height="380" rx="12" fill="none" stroke="#333" strokeWidth="3" />
+
+        {/* Room shapes */}
+        {Object.entries(roomAreas).map(([id, room]) => {
+          const isOn = !!roomStates[id];
+          return (
+            <g key={id}>
+              {/* Room base */}
+              <rect
+                x={room.x}
+                y={room.y}
+                width={room.w}
+                height={room.h}
+                rx="4"
+                fill={isOn ? '#1a1408' : '#0d0d0d'}
+                stroke={isOn ? '#FF8C00' : '#222'}
+                strokeWidth={isOn ? 1.5 : 1}
+                style={{ transition: 'all 0.6s ease' }}
+              />
+
+              {/* Light overlay when ON */}
+              {isOn && (
+                <>
+                  <rect
+                    x={room.x}
+                    y={room.y}
+                    width={room.w}
+                    height={room.h}
+                    rx="4"
+                    fill="url(#warmLight)"
+                    style={{ transition: 'opacity 0.6s ease' }}
+                  />
+                  {/* Light point (ceiling light) */}
+                  <circle
+                    cx={room.x + room.w / 2}
+                    cy={room.y + room.h / 2}
+                    r={Math.min(room.w, room.h) * 0.2}
+                    fill="#FFA500"
+                    opacity="0.25"
+                    filter="url(#roomGlow)"
+                  />
+                  {/* Small light icon */}
+                  <circle
+                    cx={room.x + room.w / 2}
+                    cy={room.y + room.h / 2 - 10}
+                    r="4"
+                    fill="#FFD700"
+                    opacity="0.9"
+                  />
+                  {/* Light rays */}
+                  {[0, 60, 120, 180, 240, 300].map(angle => (
+                    <line
+                      key={angle}
+                      x1={room.x + room.w / 2}
+                      y1={room.y + room.h / 2 - 10}
+                      x2={room.x + room.w / 2 + Math.cos(angle * Math.PI / 180) * 12}
+                      y2={room.y + room.h / 2 - 10 + Math.sin(angle * Math.PI / 180) * 12}
+                      stroke="#FFD700"
+                      strokeWidth="0.8"
+                      opacity="0.5"
+                    />
+                  ))}
+                </>
+              )}
+
+              {/* Room label */}
+              {room.label.split('\n').map((line, li) => (
+                <text
+                  key={li}
+                  x={room.x + room.w / 2}
+                  y={room.y + room.h - 14 + li * 12}
+                  textAnchor="middle"
+                  fill={isOn ? '#FFD700' : '#555'}
+                  fontSize="9"
+                  fontWeight="600"
+                  fontFamily="sans-serif"
+                  style={{ transition: 'fill 0.6s ease' }}
+                >
+                  {line}
+                </text>
+              ))}
+
+              {/* Status indicator */}
+              <circle
+                cx={room.x + room.w - 10}
+                cy={room.y + 10}
+                r="4"
+                fill={isOn ? '#22c55e' : '#333'}
+                stroke={isOn ? '#22c55e' : '#444'}
+                strokeWidth="1"
+                style={{ transition: 'all 0.3s ease' }}
+              />
+            </g>
+          );
+        })}
+
+        {/* Door openings (gaps in walls) */}
+        <rect x="170" y="50" width="40" height="3" fill="#111111" /> {/* Hall to Kitchen */}
+        <rect x="335" y="50" width="3" height="40" fill="#111111" /> {/* Kitchen to Master */}
+        <rect x="170" y="190" width="40" height="3" fill="#111111" /> {/* Hall to Stairs */}
+        <rect x="440" y="165" width="3" height="25" fill="#111111" /> {/* Master to Small Bedroom */}
+
+        {/* "LIVE FLOORPLAN" badge */}
+        <rect x="200" y="355" width="160" height="28" rx="14" fill="#1a1a1a" stroke="#333" strokeWidth="1" />
+        <text x="280" y="373" textAnchor="middle" fill="#888" fontSize="10" fontWeight="600" letterSpacing="2" fontFamily="sans-serif">
+          LIVE FLOORPLAN
+        </text>
+      </svg>
+    </div>
+  );
+};
+
+// ─── ROOM CONTROL PANEL (LEFT SIDE) ─────────────────────────────
+const RoomControl = ({ room, isOn, onToggle }) => {
   const Icon = room.icon;
   return (
-    <button
-      onClick={() => onToggle(room.id)}
-      className={`relative group rounded-2xl border p-5 transition-all duration-500 text-left overflow-hidden ${
+    <div
+      className={`flex items-center justify-between p-3 rounded-xl border transition-all duration-300 ${
         isOn
-          ? 'bg-orange-500/10 border-orange-500/40 shadow-[0_0_30px_rgba(249,115,22,0.15)]'
-          : 'bg-white/[0.02] border-white/5 hover:border-white/10 hover:bg-white/[0.04]'
+          ? 'bg-orange-500/10 border-orange-500/30'
+          : 'bg-white/[0.02] border-white/5 hover:border-white/10'
       }`}
-      data-testid={`room-toggle-${room.id}`}
     >
-      {/* Glow effect when on */}
-      {isOn && (
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-orange-500/20 rounded-full blur-3xl" />
-        </div>
-      )}
-
-      <div className="relative z-10">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-all duration-500 ${
-          isOn ? 'bg-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.5)]' : 'bg-white/5'
+      <div className="flex items-center gap-3">
+        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
+          isOn ? 'bg-orange-500 shadow-[0_0_12px_rgba(249,115,22,0.4)]' : 'bg-white/5'
         }`}>
-          <Icon size={18} className={isOn ? 'text-white' : 'text-neutral-500'} />
+          <Icon size={14} className={isOn ? 'text-white' : 'text-neutral-500'} />
         </div>
-        <div className="font-medium text-sm text-white mb-1">{room.name}</div>
-        <div className={`text-xs transition-colors duration-300 ${isOn ? 'text-orange-400' : 'text-neutral-600'}`}>
-          {isOn ? 'ON' : 'OFF'}
+        <div>
+          <div className="text-sm font-medium text-white">{room.name}</div>
+          <div className={`text-xs ${isOn ? 'text-orange-400' : 'text-neutral-600'}`}>
+            Lighting {isOn ? 'on' : 'off'}
+          </div>
         </div>
       </div>
-
-      {/* Toggle indicator */}
-      <div className={`absolute top-4 right-4 w-8 h-4 rounded-full transition-all duration-300 ${
-        isOn ? 'bg-orange-500' : 'bg-neutral-700'
-      }`}>
-        <div className={`w-3 h-3 rounded-full bg-white absolute top-0.5 transition-all duration-300 ${
-          isOn ? 'left-4' : 'left-0.5'
-        }`} />
-      </div>
-    </button>
+      <button
+        onClick={() => onToggle(room.id)}
+        className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${
+          isOn
+            ? 'bg-orange-500 text-white shadow-[0_0_15px_rgba(249,115,22,0.3)]'
+            : 'bg-white/10 text-neutral-300 hover:bg-white/15'
+        }`}
+        data-testid={`room-toggle-${room.id}`}
+      >
+        {isOn ? 'Turn Off' : 'Turn On'}
+      </button>
+    </div>
   );
 };
 
 // ─── MAIN HOMEPAGE ──────────────────────────────────────────────
 const HomePage = () => {
   const [roomStates, setRoomStates] = useState({});
-  const [voiceActive, setVoiceActive] = useState(false);
   const demoRef = useRef(null);
   const demoInView = useInView(demoRef, { once: true, margin: '-100px' });
 
@@ -313,7 +463,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* ═══ SMART HOME DEMO — NOVIQ-STYLE FLOORPLAN ═══ */}
+      {/* ═══ SMART HOME DEMO — LIVE FLOORPLAN ═══ */}
       <section className="py-24 md:py-32 relative" ref={demoRef} data-testid="smart-demo-section">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-orange-500/[0.03] to-transparent" />
 
@@ -332,81 +482,79 @@ const HomePage = () => {
               <span className="text-neutral-500">Demo</span>
             </h2>
             <p className="text-neutral-400 text-base md:text-lg max-w-2xl mx-auto">
-              Toggle each room to see how InHaus automations respond in real time.
-              Lights brighten instantly, showing seamless smart control.
+              Use the controls to toggle each room. Lights brighten the floorplan instantly,
+              showing how InHaus automations respond in real time.
             </p>
           </motion.div>
 
-          {/* Controls */}
-          <div className="flex items-center justify-center gap-4 mb-8">
-            <button
-              onClick={() => toggleAll(false)}
-              className="px-6 py-2.5 rounded-full text-sm font-medium bg-white/5 border border-white/10 text-neutral-300 hover:bg-white/10 transition-all"
-              data-testid="all-off-btn"
-            >
-              All Off
-            </button>
-            <button
-              onClick={() => toggleAll(true)}
-              className="px-6 py-2.5 rounded-full text-sm font-medium bg-orange-500 text-white hover:bg-orange-600 transition-all shadow-[0_0_20px_rgba(249,115,22,0.3)]"
-              data-testid="all-on-btn"
-            >
-              All On
-            </button>
-            <button
-              onClick={() => setVoiceActive(!voiceActive)}
-              className={`px-6 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-all ${
-                voiceActive
-                  ? 'bg-orange-500/20 border border-orange-500/40 text-orange-400'
-                  : 'bg-white/5 border border-white/10 text-neutral-300 hover:bg-white/10'
-              }`}
-              data-testid="voice-cmd-btn"
-            >
-              <Mic size={14} />
-              Voice Command
-            </button>
-            <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-neutral-500 text-sm">
-              <Power size={14} className={activeCount > 0 ? 'text-orange-500' : ''} />
-              {activeCount}/{rooms.length} Active
-            </div>
-          </div>
-
-          {/* Voice Command Overlay */}
-          {voiceActive && (
+          {/* Two-column layout: Controls + Floorplan */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto items-start">
+            {/* LEFT — Control Panel */}
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-center justify-center gap-3 mb-6 p-4 rounded-2xl bg-orange-500/10 border border-orange-500/20 max-w-md mx-auto"
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
             >
-              <div className="w-3 h-3 bg-orange-500 rounded-full animate-pulse" />
-              <span className="text-orange-400 text-sm font-medium">Listening... "Hey InHaus, turn on all lights"</span>
-            </motion.div>
-          )}
+              {/* Voice Command Banner */}
+              <div className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20 mb-5">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-purple-500 flex items-center justify-center shrink-0">
+                  <Mic size={18} className="text-white" />
+                </div>
+                <div>
+                  <div className="text-xs text-neutral-400 uppercase tracking-wider font-medium">Voice Command</div>
+                  <div className="text-sm text-neutral-300">Tap mic and say "Hey InHaus..."</div>
+                </div>
+              </div>
 
-          {/* Room Grid — Floorplan Style */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 max-w-4xl mx-auto"
-          >
-            {rooms.map((room, i) => (
-              <motion.div
-                key={room.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.05 }}
-              >
-                <RoomCard
-                  room={room}
-                  isOn={!!roomStates[room.id]}
-                  onToggle={toggleRoom}
-                />
-              </motion.div>
-            ))}
-          </motion.div>
+              {/* All On/Off */}
+              <div className="flex gap-3 mb-5">
+                <button
+                  onClick={() => toggleAll(false)}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-medium bg-white/5 border border-white/10 text-neutral-300 hover:bg-white/10 transition-all"
+                  data-testid="all-off-btn"
+                >
+                  All Off
+                </button>
+                <button
+                  onClick={() => toggleAll(true)}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-medium bg-orange-500 text-white hover:bg-orange-600 transition-all shadow-[0_0_20px_rgba(249,115,22,0.3)]"
+                  data-testid="all-on-btn"
+                >
+                  All On
+                </button>
+              </div>
+
+              {/* Room Controls */}
+              <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
+                {rooms.map((room) => (
+                  <RoomControl
+                    key={room.id}
+                    room={room}
+                    isOn={!!roomStates[room.id]}
+                    onToggle={toggleRoom}
+                  />
+                ))}
+              </div>
+            </motion.div>
+
+            {/* RIGHT — Live Floorplan */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="sticky top-32"
+            >
+              <FloorplanSVG roomStates={roomStates} />
+              
+              {/* Active count */}
+              <div className="flex items-center justify-center gap-2 mt-4 text-sm text-neutral-500">
+                <Power size={14} className={activeCount > 0 ? 'text-orange-500' : ''} />
+                <span>{activeCount}/{rooms.length} rooms active</span>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
