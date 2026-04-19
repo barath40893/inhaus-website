@@ -23,12 +23,6 @@ const CustomerCartPage = () => {
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      navigate('/customer/login?redirect=/customer/cart');
-    }
-  }, [authLoading, isAuthenticated, navigate]);
-
-  useEffect(() => {
     loadCart();
   }, []);
 
@@ -96,10 +90,6 @@ const CustomerCartPage = () => {
         <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
       </div>
     );
-  }
-
-  if (!isAuthenticated) {
-    return null;
   }
 
   return (
@@ -266,12 +256,27 @@ const CustomerCartPage = () => {
                   </div>
                 </div>
 
+                {!isAuthenticated && (
+                  <div className="mt-6 p-3 rounded-lg bg-amber-50 border border-amber-200 flex items-start gap-2" data-testid="cart-login-notice">
+                    <svg className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <p className="text-xs text-amber-800 leading-relaxed">
+                      You&apos;ll be asked to sign in or create an account before placing your order.
+                    </p>
+                  </div>
+                )}
+
                 <Button
-                  onClick={() => navigate('/customer/checkout')}
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      navigate('/customer/login?redirect=/customer/checkout');
+                    } else {
+                      navigate('/customer/checkout');
+                    }
+                  }}
                   className="w-full mt-6 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 py-6 text-lg"
                   data-testid="proceed-checkout-btn"
                 >
-                  Proceed to Checkout
+                  {isAuthenticated ? 'Proceed to Checkout' : 'Sign In & Checkout'}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
 

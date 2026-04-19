@@ -57,8 +57,8 @@ const ProductsPage = () => {
 
   useEffect(() => {
     fetchProducts();
+    loadCart(); // Always load cart — guests can shop too
     if (isAuthenticated) {
-      loadCart();
       fetchCustomRooms();
     }
   }, [isAuthenticated]);
@@ -105,11 +105,6 @@ const ProductsPage = () => {
   };
 
   const handleAddToCart = (product) => {
-    if (!isAuthenticated) {
-      setSelectedProduct(product);
-      setShowLoginPrompt(true);
-      return;
-    }
     setSelectedProduct(product);
     setShowRoomModal(true);
   };
@@ -218,37 +213,26 @@ const ProductsPage = () => {
               Discover our curated range of smart products designed to transform any space into an intelligent environment.
             </motion.p>
             
-            {/* Auth Status & Cart */}
+            {/* Cart Summary — always visible */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
               className="flex justify-center gap-4"
             >
-              {isAuthenticated ? (
-                <button
-                  onClick={() => navigate('/customer/cart')}
-                  className="relative flex items-center gap-3 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-full font-medium transition-all duration-300 shadow-[0_0_20px_rgba(249,115,22,0.3)] hover:shadow-[0_0_30px_rgba(249,115,22,0.5)]"
-                  data-testid="cart-button"
-                >
-                  <ShoppingCart className="h-5 w-5" />
-                  <span>View Cart</span>
-                  {getCartCount() > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-white text-orange-600 text-sm font-bold rounded-full h-6 w-6 flex items-center justify-center shadow-lg">
-                      {getCartCount()}
-                    </span>
-                  )}
-                </button>
-              ) : (
-                <button
-                  onClick={() => navigate('/customer/login?redirect=/products')}
-                  className="flex items-center gap-3 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-full font-medium transition-all duration-300 shadow-[0_0_20px_rgba(249,115,22,0.3)]"
-                  data-testid="login-to-shop-btn"
-                >
-                  <LogIn className="h-5 w-5" />
-                  <span>Login to Shop</span>
-                </button>
-              )}
+              <button
+                onClick={() => navigate('/customer/cart')}
+                className="relative flex items-center gap-3 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-full font-medium transition-all duration-300 shadow-[0_0_20px_rgba(249,115,22,0.3)] hover:shadow-[0_0_30px_rgba(249,115,22,0.5)]"
+                data-testid="cart-button"
+              >
+                <ShoppingCart className="h-5 w-5" />
+                <span>{getCartCount() > 0 ? 'View Cart' : 'Shop Now'}</span>
+                {getCartCount() > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-white text-orange-600 text-sm font-bold rounded-full h-6 w-6 flex items-center justify-center shadow-lg">
+                    {getCartCount()}
+                  </span>
+                )}
+              </button>
             </motion.div>
             
             {isAuthenticated && (
@@ -442,41 +426,8 @@ const ProductsPage = () => {
         </div>
       </section>
 
-      {/* Login Prompt Modal */}
-      {showLoginPrompt && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-neutral-900 border border-white/10 rounded-2xl shadow-2xl max-w-md w-full p-8 text-center"
-          >
-            <div className="w-16 h-16 bg-orange-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <LogIn className="h-8 w-8 text-orange-500" />
-            </div>
-            <h3 className="text-xl font-bold text-white mb-2">Login Required</h3>
-            <p className="text-neutral-400 mb-8">
-              Please login or create an account to add products to your cart and place orders.
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => {
-                  setShowLoginPrompt(false);
-                  setSelectedProduct(null);
-                }}
-                className="flex-1 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl font-medium transition-all"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => navigate('/customer/login?redirect=/products')}
-                className="flex-1 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-medium transition-all shadow-[0_0_20px_rgba(249,115,22,0.3)]"
-              >
-                Login / Sign Up
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
+      {/* Login Prompt Modal removed — guests can now add to cart freely.
+          Login is enforced at the checkout stage in CustomerCartPage. */}
 
       {/* Room Selection Modal */}
       {showRoomModal && selectedProduct && (
