@@ -52,9 +52,24 @@ function speak(text) {
   window.speechSynthesis.speak(u);
 }
 
+function matchesWakeWord(text) {
+  const t = text.toLowerCase().replace(/[^a-z ]/g, '').trim();
+  const patterns = [
+    'hey inhaus', 'hey in house', 'hey in haus', 'hey inhous',
+    'a inhaus', 'he inhaus', 'hey in has', 'hey inhos',
+    'hey and house', 'hey in-house', 'hey en house', 'hey enhaus',
+    'hey n house', 'hey in hose', 'hey inhouse',
+  ];
+  return patterns.some(p => t.includes(p));
+}
+
+function stripWakeWord(text) {
+  return text.replace(/^(hey\s*(in\s*haus|inhaus|in\s*house|inhous|in\s*has|inhouse)[,.\s!?]*)/i, '').trim();
+}
+
 // ─── VOICE COMMAND HOOK (Whisper + Wake Word + TTS) ─────────────
 const useVoiceCommand = ({ onToggleAll, onSetRoom }) => {
-  const [mode, setMode] = useState('idle');        // idle | wakeListening | recording | processing
+  const [mode, setMode] = useState('idle');
   const [wakeEnabled, setWakeEnabled] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [feedback, setFeedback] = useState('');
@@ -62,12 +77,15 @@ const useVoiceCommand = ({ onToggleAll, onSetRoom }) => {
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
   const feedbackTimer = useRef(null);
-  const wakeLoopRef = useRef(null);
+  const wakeEnabledRef = useRef(false);
   const streamRef = useRef(null);
+  const wakeLoopActive = useRef(false);
   const callbacksRef = useRef({ onToggleAll, onSetRoom });
   callbacksRef.current = { onToggleAll, onSetRoom };
 
-  // Execute a parsed command + speak "OK"
+  // Keep ref in sync with state
+  useEffect(() => { wakeEnabledRef.current = wakeEnabled; }, [wakeEnabled]);
+
   const executeCommand = useCallback((cmd) => {
     if (cmd.type === 'all') callbacksRef.current.onToggleAll(cmd.state);
     else if (cmd.type === 'room') callbacksRef.current.onSetRoom(cmd.roomId, cmd.state);
@@ -75,14 +93,13 @@ const useVoiceCommand = ({ onToggleAll, onSetRoom }) => {
     setFeedback(cmd.feedback);
   }, []);
 
-  // Process transcribed text
   const processText = useCallback((text) => {
     const cmd = parseVoiceCommand(text.toLowerCase().trim());
     if (cmd) {
       executeCommand(cmd);
     } else {
       setFeedback('Try: "turn on hall" or "all lights off"');
-      speak('Sorry, I didn\'t understand.');
+      speak("Sorry, I didn't understand.");
     }
     setTranscript(text);
     clearTimeout(feedbackTimer.current);
@@ -93,12 +110,12 @@ const useVoiceCommand = ({ onToggleAll, onSetRoom }) => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) setSupported(false);
     return () => {
       clearTimeout(feedbackTimer.current);
-      clearTimeout(wakeLoopRef.current);
+      wakeEnabledRef.current = false;
+      wakeLoopActive.current = false;
       if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
     };
   }, []);
 
-  // Send audio blob to Whisper and return text
   const transcribeBlob = useCallback(async (blob) => {
     const formData = new FormData();
     formData.append('file', blob, 'voice.webm');
@@ -107,94 +124,97 @@ const useVoiceCommand = ({ onToggleAll, onSetRoom }) => {
     return data.text?.trim() || '';
   }, []);
 
-  // Record a short clip and return blob
   const recordClip = useCallback((stream, duration) => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
+      if (!stream.active) { reject(new Error('Stream closed')); return; }
       const chunks = [];
       const mr = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
       mr.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
       mr.onstop = () => resolve(new Blob(chunks, { type: 'audio/webm' }));
+      mr.onerror = () => reject(new Error('Recorder error'));
       mr.start();
       setTimeout(() => { if (mr.state === 'recording') mr.stop(); }, duration);
     });
   }, []);
 
-  // ── WAKE WORD LOOP ────────────────────────────────────────────
+  // ── WAKE WORD LOOP (uses ref, not state) ──────────────────────
   const runWakeLoop = useCallback(async (stream) => {
-    if (!wakeEnabled) return;
+    if (!wakeEnabledRef.current || !stream.active) {
+      wakeLoopActive.current = false;
+      return;
+    }
+    wakeLoopActive.current = true;
     setMode('wakeListening');
-    try {
-      const blob = await recordClip(stream, 2500);
-      if (blob.size < 200) { wakeLoopRef.current = setTimeout(() => runWakeLoop(stream), 300); return; }
-      const text = await transcribeBlob(blob);
-      const lower = text.toLowerCase().replace(/[^a-z ]/g, '');
 
-      if (lower.includes('hey inhaus') || lower.includes('hey in house') || lower.includes('hey in haus') || lower.includes('a inhaus') || lower.includes('he inhaus')) {
-        // Wake word detected! Play beep and record command
+    try {
+      // Record 3 seconds for wake word detection
+      const blob = await recordClip(stream, 3000);
+      if (!wakeEnabledRef.current) { wakeLoopActive.current = false; return; }
+      if (blob.size < 200) { setTimeout(() => runWakeLoop(stream), 200); return; }
+
+      const text = await transcribeBlob(blob);
+      if (!wakeEnabledRef.current) { wakeLoopActive.current = false; return; }
+
+      if (matchesWakeWord(text)) {
+        // Wake word detected!
         speak('OK');
         setFeedback('Listening for command...');
         setMode('recording');
-        await new Promise(r => setTimeout(r, 800)); // Wait for "OK" to finish
+        await new Promise(r => setTimeout(r, 900));
 
-        const cmdBlob = await recordClip(stream, 4000);
+        // Record command for 3 seconds
+        const cmdBlob = await recordClip(stream, 3000);
         setMode('processing');
         setFeedback('Processing...');
         const cmdText = await transcribeBlob(cmdBlob);
 
         if (cmdText) {
-          // Check if the command text ALSO starts with "hey inhaus" and strip it
-          const cleaned = cmdText.toLowerCase().replace(/^(hey\s*(in\s*haus|inhaus|in\s*house)[,.\s]*)/, '').trim();
+          const cleaned = stripWakeWord(cmdText);
           processText(cleaned || cmdText);
         } else {
           setFeedback('No command heard. Say "Hey InHaus" again.');
           speak('No command heard.');
         }
-        // Resume wake loop after a pause
-        wakeLoopRef.current = setTimeout(() => runWakeLoop(stream), 3000);
+        // Resume after pause
+        if (wakeEnabledRef.current) setTimeout(() => runWakeLoop(stream), 3000);
+        else wakeLoopActive.current = false;
       } else {
-        // No wake word — loop again
-        wakeLoopRef.current = setTimeout(() => runWakeLoop(stream), 200);
+        // No wake word, keep looping immediately
+        if (wakeEnabledRef.current) setTimeout(() => runWakeLoop(stream), 100);
+        else wakeLoopActive.current = false;
       }
     } catch (err) {
-      setFeedback('Voice error. Retrying...');
-      wakeLoopRef.current = setTimeout(() => runWakeLoop(stream), 2000);
+      if (wakeEnabledRef.current) setTimeout(() => runWakeLoop(stream), 1500);
+      else wakeLoopActive.current = false;
     }
-  }, [wakeEnabled, recordClip, transcribeBlob, processText]);
+  }, [recordClip, transcribeBlob, processText]);
 
-  // ── START / STOP WAKE WORD ────────────────────────────────────
+  // ── TOGGLE WAKE WORD ──────────────────────────────────────────
   const toggleWake = useCallback(async () => {
     if (wakeEnabled) {
-      // Stop
       setWakeEnabled(false);
-      clearTimeout(wakeLoopRef.current);
+      wakeEnabledRef.current = false;
+      wakeLoopActive.current = false;
       if (streamRef.current) { streamRef.current.getTracks().forEach(t => t.stop()); streamRef.current = null; }
       setMode('idle');
       setFeedback('');
       setTranscript('');
     } else {
-      // Start
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         streamRef.current = stream;
         setWakeEnabled(true);
+        wakeEnabledRef.current = true;
         setFeedback('Say "Hey InHaus" to start...');
         speak('Wake word activated. Say Hey InHaus.');
-        // Small delay then start loop
-        wakeLoopRef.current = setTimeout(() => runWakeLoop(stream), 500);
-      } catch (err) {
+        setTimeout(() => runWakeLoop(stream), 800);
+      } catch {
         setFeedback('Microphone access denied.');
       }
     }
   }, [wakeEnabled, runWakeLoop]);
 
-  // Restart wake loop when wakeEnabled changes
-  useEffect(() => {
-    if (!wakeEnabled && streamRef.current) {
-      clearTimeout(wakeLoopRef.current);
-    }
-  }, [wakeEnabled]);
-
-  // ── MANUAL MIC (single command) ───────────────────────────────
+  // ── MANUAL MIC (single command, 3 seconds) ────────────────────
   const toggleMic = useCallback(async () => {
     if (mode === 'recording') {
       if (mediaRecorderRef.current?.state === 'recording') mediaRecorderRef.current.stop();
@@ -219,7 +239,7 @@ const useVoiceCommand = ({ onToggleAll, onSetRoom }) => {
         setMode('idle');
       };
       mr.start(); setMode('recording');
-      setTimeout(() => { if (mr.state === 'recording') mr.stop(); }, 4000);
+      setTimeout(() => { if (mr.state === 'recording') mr.stop(); }, 3000);
     } catch { setFeedback('Mic access denied.'); setMode('idle'); }
   }, [mode, transcribeBlob, processText]);
 
