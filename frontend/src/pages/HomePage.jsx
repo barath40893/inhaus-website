@@ -587,82 +587,113 @@ const HomePage = () => {
     <div className="min-h-screen bg-[#0A0A0A] text-white overflow-x-hidden" style={{ fontFamily: 'Manrope, sans-serif' }}>
       <Navbar />
 
-      {/* ═══ HERO — Centered Typewriter + Floorplan ═══ */}
-      <section className="relative pt-28 pb-10 md:pt-36 md:pb-14" data-testid="hero-section">
+      {/* ═══ HERO — Split: Text left, Live Floorplan right ═══ */}
+      <section className="relative pt-24 pb-10 md:pt-28 md:pb-14 lg:min-h-[calc(100vh-4rem)] lg:flex lg:items-center" data-testid="hero-section">
         {/* Background glow */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-orange-500/[0.04] rounded-full blur-[150px] pointer-events-none" />
-        
-        <div className="max-w-6xl mx-auto px-6 md:px-12 lg:px-16 text-center relative z-10">
+        <div className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-orange-500/[0.05] rounded-full blur-[160px] pointer-events-none" />
 
-          {/* Floorplan auto-demo FIRST — visual hook */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }}
-            ref={demoRef} className="max-w-4xl mx-auto mb-10">
-            <Floorplan roomStates={roomStates} />
-          </motion.div>
+        <div className="max-w-7xl w-full mx-auto px-6 md:px-10 lg:px-16 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
 
-          {/* Pill badge */}
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }}
-            className="inline-flex items-center px-5 py-2 rounded-full bg-white/[0.04] border border-white/[0.08] mb-8">
-            <span className="text-[11px] tracking-[0.2em] uppercase text-zinc-400 font-medium">
-              Smart Automation for Every Space
-            </span>
-          </motion.div>
+            {/* LEFT COLUMN — Headline + CTAs */}
+            <div className="lg:col-span-6 text-center lg:text-left order-2 lg:order-1">
 
-          {/* Main headline */}
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5 }}
-            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight font-semibold leading-[1.05] mb-4"
-            style={{ fontFamily: 'Outfit, sans-serif' }} data-testid="hero-title">
-            YOUR SPACE
-          </motion.h1>
+              {/* Pill badge */}
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
+                className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] mb-6">
+                <span className="w-1.5 h-1.5 rounded-full bg-orange-500 mr-2 shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
+                <span className="text-[10px] tracking-[0.2em] uppercase text-zinc-400 font-medium">
+                  Smart Automation for Every Space
+                </span>
+              </motion.div>
 
-          {/* Typewriter line */}
-          <TypewriterLine text="SMARTER THAN EVER" delay={1.2} />
+              {/* Main headline */}
+              <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight font-semibold leading-[1.05] mb-3"
+                style={{ fontFamily: 'Outfit, sans-serif' }} data-testid="hero-title">
+                YOUR SPACE
+              </motion.h1>
 
-          {/* Subtitle */}
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 3 }}
-            className="text-base md:text-lg text-zinc-500 max-w-2xl mx-auto mt-6 mb-8 leading-relaxed">
-            Convenience, safety, security, and energy savings seamlessly integrated
-            — your space listens, adapts and responds. That's InHaus.
-          </motion.p>
+              {/* Typewriter line */}
+              <div className="flex justify-center lg:justify-start">
+                <TypewriterLine text="SMARTER THAN EVER" delay={0.9} />
+              </div>
 
-          {/* CTA buttons */}
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 3.3 }}
-            className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-            <button
-              onClick={() => document.getElementById('interactive-demo')?.scrollIntoView({ behavior: 'smooth' })}
-              className="group flex items-center gap-3 bg-orange-500 hover:bg-orange-600 text-white rounded-full px-8 py-4 font-semibold text-base transition-all duration-300 shadow-[0_0_30px_rgba(249,115,22,0.3)] hover:shadow-[0_0_45px_rgba(249,115,22,0.5)] hover:scale-[1.02]"
-              data-testid="try-demo-cta"
-            >
-              <Lightbulb size={18} />
-              Try our Interactive Demo
-              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-            </button>
-            <div className="flex gap-3">
-              <Link to="/products" data-testid="hero-cta-primary">
-                <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-full px-6 py-3.5 text-sm font-medium transition-all">
-                  Explore Products
-                </button>
-              </Link>
-              <Link to="/contact" data-testid="hero-cta-secondary">
-                <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-full px-6 py-3.5 text-sm font-medium transition-all">
-                  Contact Us
-                </button>
-              </Link>
-            </div>
-          </motion.div>
-
-          {/* Animated prompt after auto-demo */}
-          <AnimatePresence>
-            {heroAnimDone && !userInteracted && (
-              <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                className="text-sm text-orange-400 font-medium mt-6 flex items-center justify-center gap-2">
-                <motion.span animate={{ y: [0, -3, 0] }} transition={{ duration: 1, repeat: Infinity }}>
-                  <ArrowRight size={14} className="rotate-90" />
-                </motion.span>
-                See those lights? Scroll down to control them yourself
+              {/* Subtitle */}
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 2.2 }}
+                className="text-sm md:text-base text-zinc-500 max-w-xl mx-auto lg:mx-0 mt-5 mb-7 leading-relaxed">
+                Convenience, safety, security, and energy savings seamlessly integrated
+                — your space listens, adapts and responds. That's InHaus.
               </motion.p>
-            )}
-          </AnimatePresence>
+
+              {/* CTA buttons */}
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 2.5 }}
+                className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start items-center">
+                <button
+                  onClick={() => document.getElementById('interactive-demo')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="group flex items-center gap-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-full px-7 py-3.5 font-semibold text-sm transition-all duration-300 shadow-[0_0_30px_rgba(249,115,22,0.3)] hover:shadow-[0_0_45px_rgba(249,115,22,0.5)] hover:scale-[1.02]"
+                  data-testid="try-demo-cta"
+                >
+                  <Lightbulb size={16} />
+                  Try Interactive Demo
+                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+                <div className="flex gap-3">
+                  <Link to="/products" data-testid="hero-cta-primary">
+                    <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-full px-5 py-3 text-sm font-medium transition-all">
+                      Explore Products
+                    </button>
+                  </Link>
+                  <Link to="/contact" data-testid="hero-cta-secondary">
+                    <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-full px-5 py-3 text-sm font-medium transition-all">
+                      Contact
+                    </button>
+                  </Link>
+                </div>
+              </motion.div>
+
+              {/* Stats strip */}
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 2.8 }}
+                className="mt-8 pt-6 border-t border-white/[0.06] grid grid-cols-3 gap-4 max-w-md mx-auto lg:mx-0">
+                <div className="text-center lg:text-left">
+                  <div className="text-xl md:text-2xl font-semibold text-white" style={{ fontFamily: 'Outfit, sans-serif' }}>9</div>
+                  <div className="text-[10px] tracking-widest uppercase text-zinc-500 mt-1">Live Rooms</div>
+                </div>
+                <div className="text-center lg:text-left">
+                  <div className="text-xl md:text-2xl font-semibold text-white" style={{ fontFamily: 'Outfit, sans-serif' }}>3</div>
+                  <div className="text-[10px] tracking-widest uppercase text-zinc-500 mt-1">Control Modes</div>
+                </div>
+                <div className="text-center lg:text-left">
+                  <div className="text-xl md:text-2xl font-semibold text-white" style={{ fontFamily: 'Outfit, sans-serif' }}>60+</div>
+                  <div className="text-[10px] tracking-widest uppercase text-zinc-500 mt-1">Products</div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* RIGHT COLUMN — Live Floorplan */}
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              ref={demoRef} className="lg:col-span-6 order-1 lg:order-2 relative">
+              {/* Soft glow behind floorplan */}
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-transparent to-transparent blur-2xl -z-10" />
+              <Floorplan roomStates={roomStates} />
+
+              {/* Animated prompt after auto-demo */}
+              <AnimatePresence>
+                {heroAnimDone && !userInteracted && (
+                  <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                    className="text-xs text-orange-400 font-medium mt-4 flex items-center justify-center gap-2"
+                    data-testid="hero-scroll-hint">
+                    <motion.span animate={{ y: [0, -3, 0] }} transition={{ duration: 1, repeat: Infinity }}>
+                      <ArrowRight size={12} className="rotate-90" />
+                    </motion.span>
+                    See those lights? Scroll down to control them yourself
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </motion.div>
+
+          </div>
         </div>
       </section>
 
