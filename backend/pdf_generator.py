@@ -9,6 +9,10 @@ from datetime import datetime, timedelta
 from pathlib import Path
 import os
 import logging
+import hashlib
+import urllib.request
+import urllib.parse
+import ssl
 
 # Try to import PIL, but don't fail if it's not available
 try:
@@ -17,6 +21,67 @@ try:
 except ImportError:
     PIL_AVAILABLE = False
     logging.warning("PIL/Pillow not available, logo aspect ratio may not be preserved")
+
+# Local cache for remote product images
+PRODUCT_IMAGE_CACHE_DIR = Path('/app/backend/uploads/products/_remote_cache')
+PRODUCT_IMAGE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def resolve_product_image_path(image_url):
+    """Resolve a product image_url (local path or remote URL) to a local file path.
+
+    - Local paths (/uploads/products/xxx, /api/uploads/products/xxx, absolute paths) are returned as-is.
+    - Remote http(s) URLs are downloaded once and cached in PRODUCT_IMAGE_CACHE_DIR. The cache key is a
+      SHA1 of the URL so the same image is never downloaded twice. Returns the cached Path or None on failure.
+    """
+    if not image_url:
+        return None
+    try:
+        url = image_url.strip()
+        # Local — existing behaviour
+        if url.startswith('/uploads/products/') or url.startswith('/api/uploads/products/'):
+            return Path('/app/backend/uploads/products') / url.split('/')[-1]
+        if url.startswith('/api/uploads/'):
+            return Path('/app/backend/uploads') / url.replace('/api/uploads/', '', 1)
+        if url.startswith('/uploads/'):
+            return Path('/app/backend') / url.lstrip('/')
+        if url.startswith('/'):
+            # any other absolute-looking path — treat as local
+            return Path(url)
+
+        # Remote — download and cache
+        if url.startswith('http://') or url.startswith('https://'):
+            # Pick extension from URL path (default .img)
+            parsed = urllib.parse.urlparse(url)
+            ext = os.path.splitext(parsed.path)[1].lower() or ''
+            # Sanitise extension to common formats only
+            if ext not in ('.png', '.jpg', '.jpeg', '.webp', '.gif', '.bmp'):
+                ext = '.img'
+            cache_key = hashlib.sha1(url.encode('utf-8')).hexdigest()
+            cached = PRODUCT_IMAGE_CACHE_DIR / f"{cache_key}{ext}"
+            if cached.exists() and cached.stat().st_size > 0:
+                return cached
+            try:
+                ctx = ssl.create_default_context()
+                req = urllib.request.Request(url, headers={
+                    'User-Agent': 'Mozilla/5.0 (InHaus PDF Generator)'
+                })
+                with urllib.request.urlopen(req, timeout=10, context=ctx) as resp:
+                    data = resp.read()
+                cached.write_bytes(data)
+                if cached.stat().st_size == 0:
+                    cached.unlink(missing_ok=True)
+                    return None
+                return cached
+            except Exception as e:
+                logging.warning(f"Could not download product image {url}: {e}")
+                return None
+
+        # Fallback — treat as file path relative to backend/uploads/products
+        return Path('/app/backend/uploads/products') / os.path.basename(url)
+    except Exception as e:
+        logging.error(f"resolve_product_image_path error for {image_url}: {e}")
+        return None
 
 class PDFGenerator:
     def __init__(self):
@@ -1123,15 +1188,10 @@ class PDFGenerator:
             
             if item.get('image_url'):
                 try:
-                    # Convert URL path to file system path
                     image_url = item['image_url']
-                    if image_url.startswith('/uploads/products/') or image_url.startswith('/api/uploads/products/'):
-                        image_path = Path('/app/backend/uploads/products') / image_url.split('/')[-1]
-                    else:
-                        # If full path is provided
-                        image_path = Path(image_url)
-                    
-                    if image_path.exists():
+                    image_path = resolve_product_image_path(image_url)
+
+                    if image_path and image_path.exists() and image_path.stat().st_size > 0:
                         # Calculate proper dimensions maintaining aspect ratio
                         # Maximum space available in table cell
                         max_width = 0.7 * inch  # Max width for image column
@@ -1902,14 +1962,9 @@ class PDFGenerator:
                 if image_url:
                     try:
                         # Handle local path
-                        if image_url.startswith('/api/uploads/'):
-                            image_path = Path(__file__).parent / 'uploads' / image_url.replace('/api/uploads/', '')
-                        elif image_url.startswith('/uploads/'):
-                            image_path = Path(__file__).parent / image_url.lstrip('/')
-                        else:
-                            image_path = Path(__file__).parent / 'uploads' / 'products' / os.path.basename(image_url)
-                        
-                        if image_path.exists():
+                        image_path = resolve_product_image_path(image_url)
+
+                        if image_path and image_path.exists() and image_path.stat().st_size > 0:
                             img = Image(str(image_path), width=0.7*inch, height=0.7*inch)
                             img.hAlign = 'CENTER'
                             image_cell = img
