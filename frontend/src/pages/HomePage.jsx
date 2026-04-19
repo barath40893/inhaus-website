@@ -535,7 +535,7 @@ const HomePage = () => {
               </motion.h1>
               <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
                 className="text-base text-zinc-400 leading-relaxed mb-4 max-w-md">
-                Imagine walking into your home and every light responds to your touch, your phone, or just your voice. That's InHaus.
+                Imagine walking into your space and it listens, adapts and responds — lights, curtains, climate, security — all from your touch, your phone, or just your voice. That's InHaus.
               </motion.p>
 
               {/* Animated prompt after auto-demo */}
