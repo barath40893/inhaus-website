@@ -541,7 +541,11 @@ const TypewriterLine = ({ text, delay = 0.8 }) => {
 // ─── MAIN HOMEPAGE ──────────────────────────────────────────────
 // ═════════════════════════════════════════════════════════════════
 const HomePage = () => {
+  // Interactive demo state — controlled ONLY by Touch Panel, Phone, and Voice
   const [roomStates, setRoomStates] = useState({});
+  // Hero floorplan state — independent, driven by the walk-in/out narrative loop
+  const [heroRoomStates, setHeroRoomStates] = useState({});
+
   const demoRef = useRef(null);
   const demoInView = useInView(demoRef, { once: true, margin: '-100px' });
   const animTimers = useRef([]);
@@ -562,14 +566,10 @@ const HomePage = () => {
   const [heroAnimDone, setHeroAnimDone] = useState(false);
   const [heroPhase, setHeroPhase] = useState(0); // 0=walk-in, 1=lit, 2=walk-out, 3=resting
 
-  // Hero auto-demo: LOOPING "walk-in / walk-out" narrative (slow, human-readable pace)
-  // Phase 0: walk-in (lights cascade ON)   → ~3.2s — reads "Lights follow your path…"
-  // Phase 1: lit / wakes up                → ~3s   — reads "Every room, instantly ready."
-  // Phase 2: walk-out (lights cascade OFF) → ~3s   — reads "Fading gracefully as you leave."
-  // Phase 3: resting / energy saved        → ~3s   — reads "Ready when you return."
-  // Total loop ~12s. Stops when user interacts with the demo below.
+  // Hero floorplan auto-demo: LOOPING "walk-in / walk-out" narrative (INDEPENDENT of demo below)
+  // Drives heroRoomStates only. Runs forever regardless of user activity in the interactive demo.
+  // Paces are slow (~10s/cycle) for comfortable reading.
   useEffect(() => {
-    if (userInteracted) return;
     const timers = [];
     let cancelled = false;
 
@@ -591,7 +591,7 @@ const HomePage = () => {
       setHeroPhase(0);
       rooms.forEach((r, i) => {
         const t = setTimeout(() => {
-          if (!cancelled) setRoomStates((p) => ({ ...p, [r.id]: true }));
+          if (!cancelled) setHeroRoomStates((p) => ({ ...p, [r.id]: true }));
         }, i * WALK_IN_STEP);
         timers.push(t);
       });
@@ -608,7 +608,7 @@ const HomePage = () => {
         setHeroPhase(2);
         rooms.forEach((r, i) => {
           const t = setTimeout(() => {
-            if (!cancelled) setRoomStates((p) => ({ ...p, [r.id]: false }));
+            if (!cancelled) setHeroRoomStates((p) => ({ ...p, [r.id]: false }));
           }, i * WALK_OUT_STEP);
           timers.push(t);
         });
@@ -637,7 +637,7 @@ const HomePage = () => {
       cancelled = true;
       timers.forEach((t) => clearTimeout(t));
     };
-  }, [userInteracted]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white overflow-x-hidden" style={{ fontFamily: 'Manrope, sans-serif' }}>
@@ -676,14 +676,13 @@ const HomePage = () => {
               </div>
 
               {/* ── WALK-IN / WALK-OUT NARRATIVE (big, with arrow → floorplan) ─── */}
-              {!userInteracted && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 1.3 }}
-                  className="mt-6 flex items-center gap-4 justify-center lg:justify-start"
-                  data-testid="hero-narrative"
-                >
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 1.3 }}
+                className="mt-6 flex items-center gap-4 justify-center lg:justify-start"
+                data-testid="hero-narrative"
+              >
                   {/* Walking person icon */}
                   <motion.div
                     key={`icon-${heroPhase}`}
@@ -759,8 +758,7 @@ const HomePage = () => {
                       <ArrowRight size={12} className="text-orange-400" />
                     </div>
                   </motion.div>
-                </motion.div>
-              )}
+              </motion.div>
 
               {/* Subtitle */}
               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 1.6 }}
@@ -834,18 +832,18 @@ const HomePage = () => {
                 transition={{ duration: 1.2 }}
               />
 
-              <Floorplan roomStates={roomStates} />
+              <Floorplan roomStates={heroRoomStates} />
 
               {/* Scroll-down nudge after first loop */}
               <AnimatePresence>
-                {heroAnimDone && !userInteracted && (
+                {heroAnimDone && (
                   <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                     className="text-[11px] text-zinc-500 font-medium mt-4 flex items-center justify-center gap-2"
                     data-testid="hero-scroll-hint">
                     <motion.span animate={{ y: [0, -3, 0] }} transition={{ duration: 1, repeat: Infinity }}>
                       <ArrowRight size={11} className="rotate-90" />
                     </motion.span>
-                    Scroll to control it yourself
+                    Scroll to try the interactive demo below
                   </motion.p>
                 )}
               </AnimatePresence>
