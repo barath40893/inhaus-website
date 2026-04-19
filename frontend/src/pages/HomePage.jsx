@@ -297,36 +297,29 @@ const FloorplanSVG = ({ roomStates }) => {
   );
 };
 
-// ─── ROOM CONTROL PANEL (LEFT SIDE) ─────────────────────────────
-const RoomControl = ({ room, isOn, onToggle }) => {
-  const Icon = room.icon;
+// ─── ROOM TILE — NOVIQ STYLE ────────────────────────────────────
+const RoomTile = ({ room, isOn, onToggle }) => {
   return (
     <div
-      className={`flex items-center justify-between p-3 rounded-xl border transition-all duration-300 ${
+      className={`flex items-center justify-between p-4 rounded-2xl backdrop-blur-md transition-all duration-500 ${
         isOn
-          ? 'bg-orange-500/10 border-orange-500/30'
-          : 'bg-white/[0.02] border-white/5 hover:border-white/10'
+          ? 'bg-gradient-to-r from-orange-500/20 to-amber-500/15 border border-orange-500/30 shadow-[0_0_20px_rgba(249,115,22,0.1)]'
+          : 'bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.06]'
       }`}
+      data-testid={`room-tile-${room.id}`}
     >
-      <div className="flex items-center gap-3">
-        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
-          isOn ? 'bg-orange-500 shadow-[0_0_12px_rgba(249,115,22,0.4)]' : 'bg-white/5'
-        }`}>
-          <Icon size={14} className={isOn ? 'text-white' : 'text-neutral-500'} />
-        </div>
-        <div>
-          <div className="text-sm font-medium text-white">{room.name}</div>
-          <div className={`text-xs ${isOn ? 'text-orange-400' : 'text-neutral-600'}`}>
-            Lighting {isOn ? 'on' : 'off'}
-          </div>
+      <div>
+        <div className="font-semibold text-white text-sm mb-0.5">{room.name}</div>
+        <div className={`text-xs uppercase tracking-wider font-medium ${isOn ? 'text-orange-400' : 'text-neutral-600'}`}>
+          Lighting {isOn ? 'on' : 'off'}
         </div>
       </div>
       <button
         onClick={() => onToggle(room.id)}
-        className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${
+        className={`px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
           isOn
-            ? 'bg-orange-500 text-white shadow-[0_0_15px_rgba(249,115,22,0.3)]'
-            : 'bg-white/10 text-neutral-300 hover:bg-white/15'
+            ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-[0_4px_20px_rgba(249,115,22,0.35)] hover:shadow-[0_4px_25px_rgba(249,115,22,0.5)]'
+            : 'bg-white/10 text-neutral-300 hover:bg-white/15 border border-white/10'
         }`}
         data-testid={`room-toggle-${room.id}`}
       >
@@ -557,88 +550,93 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* ═══ SMART HOME DEMO — LIVE FLOORPLAN ═══ */}
+      {/* ═══ SMART HOME DEMO — NOVIQ LAYOUT ═══ */}
       <section className="py-24 md:py-32 relative" ref={demoRef} data-testid="smart-demo-section">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-orange-500/[0.03] to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-orange-500/[0.02] to-transparent" />
 
         <div className="container mx-auto px-4 md:px-8 lg:px-12 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center mb-16"
           >
-            <span className="text-sm text-orange-500 uppercase tracking-widest font-medium mb-4 block">
-              Interactive Demo
-            </span>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
-              Smart Lights{' '}
-              <span className="text-neutral-500">Demo</span>
+              Smart Lights Demo
             </h2>
             <p className="text-neutral-400 text-base md:text-lg max-w-2xl mx-auto">
-              Use the controls to toggle each room. Lights brighten the floorplan instantly,
+              Use the on-screen controller to toggle each room. Lights brighten the floorplan instantly,
               showing how InHaus automations respond in real time.
             </p>
           </motion.div>
 
-          {/* Two-column layout: Controls + Floorplan */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto items-start">
-            {/* LEFT — Control Panel */}
+          {/* NOVIQ-STYLE TWO COLUMN: Phone Controller + Floorplan */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 max-w-6xl mx-auto items-start">
+            
+            {/* LEFT — Phone Controller (2/5 width) */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
+              className="lg:col-span-2"
             >
-              {/* Voice Command Banner */}
-              <div className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20 mb-5">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-purple-500 flex items-center justify-center shrink-0">
-                  <Mic size={18} className="text-white" />
+              <div className="rounded-3xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-md p-5 shadow-[0_0_80px_rgba(0,0,0,0.3)]">
+                
+                {/* All On/Off */}
+                <div className="grid grid-cols-2 gap-3 mb-5">
+                  <button
+                    onClick={() => toggleAll(false)}
+                    className="py-3 rounded-2xl text-sm font-semibold bg-white/[0.04] border border-white/[0.08] text-neutral-300 hover:bg-white/[0.08] transition-all backdrop-blur-sm"
+                    data-testid="all-off-btn"
+                  >
+                    All Off
+                  </button>
+                  <button
+                    onClick={() => toggleAll(true)}
+                    className="py-3 rounded-2xl text-sm font-semibold bg-gradient-to-r from-orange-500 to-amber-500 text-white hover:from-orange-600 hover:to-amber-600 transition-all shadow-[0_4px_20px_rgba(249,115,22,0.3)]"
+                    data-testid="all-on-btn"
+                  >
+                    All On
+                  </button>
                 </div>
-                <div>
-                  <div className="text-xs text-neutral-400 uppercase tracking-wider font-medium">Voice Command</div>
-                  <div className="text-sm text-neutral-300">Tap mic and say "Hey InHaus..."</div>
+
+                {/* Voice Command */}
+                <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] mb-5">
+                  <button
+                    className="relative w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(249,115,22,0.3)] hover:shadow-[0_0_30px_rgba(249,115,22,0.5)] transition-all"
+                    data-testid="voice-cmd-btn"
+                  >
+                    <span className="absolute inset-0 rounded-full border-2 border-orange-400/30 animate-ping" />
+                    <Mic size={20} className="text-white relative z-10" />
+                  </button>
+                  <div>
+                    <div className="text-xs text-neutral-400 uppercase tracking-widest font-semibold">Voice Command</div>
+                    <div className="text-sm text-neutral-300">Tap mic and say "Hey InHaus..."</div>
+                  </div>
                 </div>
-              </div>
 
-              {/* All On/Off */}
-              <div className="flex gap-3 mb-5">
-                <button
-                  onClick={() => toggleAll(false)}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-medium bg-white/5 border border-white/10 text-neutral-300 hover:bg-white/10 transition-all"
-                  data-testid="all-off-btn"
-                >
-                  All Off
-                </button>
-                <button
-                  onClick={() => toggleAll(true)}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-medium bg-orange-500 text-white hover:bg-orange-600 transition-all shadow-[0_0_20px_rgba(249,115,22,0.3)]"
-                  data-testid="all-on-btn"
-                >
-                  All On
-                </button>
-              </div>
-
-              {/* Room Controls */}
-              <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
-                {rooms.map((room) => (
-                  <RoomControl
-                    key={room.id}
-                    room={room}
-                    isOn={!!roomStates[room.id]}
-                    onToggle={toggleRoom}
-                  />
-                ))}
+                {/* Room Tiles */}
+                <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1 custom-scrollbar">
+                  {rooms.map((room) => (
+                    <RoomTile
+                      key={room.id}
+                      room={room}
+                      isOn={!!roomStates[room.id]}
+                      onToggle={toggleRoom}
+                    />
+                  ))}
+                </div>
               </div>
             </motion.div>
 
-            {/* RIGHT — Live Floorplan */}
+            {/* RIGHT — Live Floorplan (3/5 width) */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="sticky top-32"
+              className="lg:col-span-3 sticky top-32"
             >
               <FloorplanSVG roomStates={roomStates} />
               
