@@ -40,13 +40,15 @@ const roomAliases = {
 };
 
 // ─── VOICE COMMAND HOOK ─────────────────────────────────────────
-const useVoiceCommand = (onCommand) => {
+const useVoiceCommand = ({ onToggleAll, onSetRoom }) => {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [feedback, setFeedback] = useState('');
   const [supported, setSupported] = useState(true);
   const recognitionRef = useRef(null);
   const feedbackTimer = useRef(null);
+  const callbacksRef = useRef({ onToggleAll, onSetRoom });
+  callbacksRef.current = { onToggleAll, onSetRoom };
 
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -55,34 +57,55 @@ const useVoiceCommand = (onCommand) => {
     recognition.continuous = false;
     recognition.interimResults = true;
     recognition.lang = 'en-US';
+    recognition.maxAlternatives = 1;
+    recognitionRef.current = recognition;
 
     recognition.onresult = (e) => {
-      const text = Array.from(e.results).map(r => r[0].transcript).join('').toLowerCase().trim();
-      setTranscript(text);
-      if (e.results[0].isFinal) {
-        const result = parseVoiceCommand(text);
-        if (result) {
-          onCommand(result);
-          setFeedback(result.feedback);
+      let finalText = '';
+      let interimText = '';
+      for (let i = 0; i < e.results.length; i++) {
+        const t = e.results[i][0].transcript;
+        if (e.results[i].isFinal) finalText += t;
+        else interimText += t;
+      }
+      setTranscript(finalText || interimText);
+      if (finalText) {
+        const cmd = parseVoiceCommand(finalText.toLowerCase().trim());
+        if (cmd) {
+          if (cmd.type === 'all') callbacksRef.current.onToggleAll(cmd.state);
+          else if (cmd.type === 'room') callbacksRef.current.onSetRoom(cmd.roomId, cmd.state);
+          setFeedback(cmd.feedback);
         } else {
-          setFeedback('Command not recognized. Try "turn on hall"');
+          setFeedback('Try: "turn on hall" or "all lights off"');
         }
         clearTimeout(feedbackTimer.current);
-        feedbackTimer.current = setTimeout(() => { setFeedback(''); setTranscript(''); }, 3000);
-        setIsListening(false);
+        feedbackTimer.current = setTimeout(() => { setFeedback(''); setTranscript(''); }, 4000);
       }
     };
-    recognition.onerror = () => setIsListening(false);
+    recognition.onerror = (e) => {
+      setIsListening(false);
+      if (e.error === 'not-allowed') setFeedback('Microphone access denied');
+      else if (e.error === 'no-speech') setFeedback('No speech detected. Try again.');
+      else if (e.error !== 'aborted') setFeedback('Error: ' + e.error);
+      clearTimeout(feedbackTimer.current);
+      feedbackTimer.current = setTimeout(() => { setFeedback(''); setTranscript(''); }, 3000);
+    };
     recognition.onend = () => setIsListening(false);
-    recognitionRef.current = recognition;
     return () => { recognition.abort(); clearTimeout(feedbackTimer.current); };
-  }, [onCommand]);
+  }, []);
 
   const toggle = useCallback(() => {
-    if (!recognitionRef.current) return;
-    if (isListening) { recognitionRef.current.stop(); setIsListening(false); }
-    else { setTranscript(''); setFeedback(''); recognitionRef.current.start(); setIsListening(true); }
-  }, [isListening]);
+    if (!recognitionRef.current || !supported) return;
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      setTranscript('');
+      setFeedback('');
+      try { recognitionRef.current.start(); setIsListening(true); }
+      catch (err) { setFeedback('Mic busy, try again'); }
+    }
+  }, [isListening, supported]);
 
   return { isListening, transcript, feedback, supported, toggle };
 };
@@ -228,13 +251,7 @@ const HomePage = () => {
     setRoomStates(s);
   };
 
-  // Voice command handler
-  const handleVoiceCommand = useCallback((cmd) => {
-    if (cmd.type === 'all') toggleAll(cmd.state);
-    else if (cmd.type === 'room') setRoom(cmd.roomId, cmd.state);
-  }, []);
-
-  const voice = useVoiceCommand(handleVoiceCommand);
+  const voice = useVoiceCommand({ onToggleAll: toggleAll, onSetRoom: setRoom });
 
   useEffect(() => {
     if (!demoInView) return;
