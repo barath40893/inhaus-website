@@ -42,7 +42,7 @@ const Navbar = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2.5 group" data-testid="nav-logo">
               <img 
-                src="/inhaus_logo_white.png" 
+                src="/inhaus_icon_white.png" 
                 alt="InHaus" 
                 className="h-10 w-auto"
               />
