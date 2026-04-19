@@ -98,7 +98,7 @@ const CartPage = () => {
                         <div className="w-24 h-24 bg-gray-200 rounded flex-shrink-0 overflow-hidden">
                           {item.image_url ? (
                             <img
-                              src={`${backendUrl}${item.image_url}`}
+                              src={item.image_url?.startsWith('http') ? item.image_url : `${backendUrl}${item.image_url}`}
                               alt={item.product_name}
                               className="w-full h-full object-cover"
                             />

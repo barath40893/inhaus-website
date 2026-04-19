@@ -216,7 +216,7 @@ const AdminProductsPage = () => {
     });
     // Set image preview if product has an image
     if (product.image_url) {
-      setImagePreview(`${backendUrl}${product.image_url}`);
+      setImagePreview(product.image_url?.startsWith('http') ? product.image_url : `${backendUrl}${product.image_url}`);
     } else {
       setImagePreview(null);
     }
@@ -276,7 +276,7 @@ const AdminProductsPage = () => {
                   {product.image_url && (
                     <div className="mb-4">
                       <img 
-                        src={`${backendUrl}${product.image_url}`} 
+                        src={product.image_url?.startsWith('http') ? product.image_url : `${backendUrl}${product.image_url}`} 
                         alt={product.name}
                         className="w-full h-40 object-cover rounded"
                         onError={(e) => e.target.style.display = 'none'}

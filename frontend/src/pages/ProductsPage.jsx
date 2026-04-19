@@ -328,7 +328,7 @@ const ProductsPage = () => {
                   <div className="aspect-square bg-neutral-800/50 relative overflow-hidden">
                     {product.image_url ? (
                       <img
-                        src={`${backendUrl}${product.image_url}`}
+                        src={product.image_url.startsWith('http') ? product.image_url : `${backendUrl}${product.image_url}`}
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                         onError={(e) => {

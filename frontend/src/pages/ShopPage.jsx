@@ -163,7 +163,7 @@ const ShopPage = () => {
                   <div className="h-48 bg-gray-200 flex items-center justify-center overflow-hidden">
                     {product.image_url ? (
                       <img
-                        src={`${backendUrl}${product.image_url}`}
+                        src={product.image_url?.startsWith('http') ? product.image_url : `${backendUrl}${product.image_url}`}
                         alt={product.name}
                         className="w-full h-full object-cover"
                         onError={(e) => {

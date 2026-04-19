@@ -547,7 +547,7 @@ const AdminCreateQuotationPage = () => {
                           <td className="px-4 py-2">
                             {item.image_url ? (
                               <img
-                                src={`${backendUrl}${item.image_url}`}
+                                src={item.image_url?.startsWith('http') ? item.image_url : `${backendUrl}${item.image_url}`}
                                 alt={item.product_name}
                                 className="w-10 h-10 object-cover rounded border"
                                 onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}

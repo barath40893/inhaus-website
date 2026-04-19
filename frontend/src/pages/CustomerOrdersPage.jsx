@@ -271,7 +271,7 @@ const CustomerOrdersPage = () => {
                                   <div className="w-12 h-12 bg-neutral-800 rounded overflow-hidden flex-shrink-0">
                                     {item.image_url && (
                                       <img
-                                        src={`${backendUrl}${item.image_url}`}
+                                        src={item.image_url?.startsWith('http') ? item.image_url : `${backendUrl}${item.image_url}`}
                                         alt={item.product_name}
                                         className="w-full h-full object-cover"
                                       />

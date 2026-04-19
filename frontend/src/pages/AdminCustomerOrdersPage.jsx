@@ -582,7 +582,7 @@ const AdminCustomerOrdersPage = () => {
                                 <div key={idx} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
                                   <div className="w-12 h-12 bg-gray-200 rounded flex-shrink-0 overflow-hidden">
                                     {item.image_url && (
-                                      <img src={`${backendUrl}${item.image_url}`} alt={item.product_name} className="w-full h-full object-cover" />
+                                      <img src={item.image_url?.startsWith('http') ? item.image_url : `${backendUrl}${item.image_url}`} alt={item.product_name} className="w-full h-full object-cover" />
                                     )}
                                   </div>
                                   <div className="flex-1">
