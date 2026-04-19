@@ -309,11 +309,11 @@ const HomePage = () => {
                   <div className="px-5 pb-8" style={{ background: 'radial-gradient(circle at 50% 0%, rgba(37,46,70,0.35), transparent 55%), linear-gradient(175deg, #0e1225 0%, #070810 60%)' }}>
                     
                     {/* InHaus App Header */}
-                    <div className="flex items-center gap-3 mb-5">
-                      <img src="/inhaus_logo_white.png" alt="InHaus" className="w-9 h-9 object-contain" />
+                    <div className="flex items-center gap-2.5 mb-5">
+                      <img src="/inhaus_logo_white.png" alt="InHaus" className="w-8 h-8 object-contain" />
                       <div>
-                        <h3 className="text-sm font-bold text-white tracking-[0.1em] uppercase" style={{ fontFamily: 'Outfit, sans-serif' }}>INHAUS</h3>
-                        <p className="text-[9px] text-zinc-500 tracking-[0.15em] uppercase">Smart Automation</p>
+                        <h3 className="text-[13px] font-bold text-white tracking-[0.12em] uppercase leading-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>INHAUS</h3>
+                        <p className="text-[8px] text-zinc-500 tracking-[0.18em] uppercase leading-tight">Smart Automation</p>
                       </div>
                     </div>
                     
