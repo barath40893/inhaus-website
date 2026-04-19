@@ -525,12 +525,12 @@ const HomePage = () => {
             <div className="lg:col-span-5">
               <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
                 className="text-xs tracking-[0.2em] uppercase text-orange-500 font-semibold mb-4">
-                Smart Home Automation
+                Smart Automation
               </motion.p>
               <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.05 }}
                 className="text-4xl sm:text-5xl lg:text-6xl tracking-tighter font-medium leading-[1.1] mb-5"
                 style={{ fontFamily: 'Outfit, sans-serif' }} data-testid="hero-title">
-                Your Lights.{' '}
+                Your Space.{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500">Your Control.</span>
               </motion.h1>
               <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
