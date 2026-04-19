@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ShoppingCart, User } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, ShoppingCart, User, LogOut, Package, ChevronDown } from 'lucide-react';
 import { useCustomerAuth } from '../context/CustomerAuthContext';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
   const location = useLocation();
-  const { customer, cart } = useCustomerAuth();
+  const navigate = useNavigate();
+  const { customer, cart, logout } = useCustomerAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,6 +19,24 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Close user dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    if (isUserMenuOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isUserMenuOpen]);
+
+  const handleSignOut = async () => {
+    setIsUserMenuOpen(false);
+    setIsMobileMenuOpen(false);
+    await logout();
+    navigate('/');
+  };
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -91,14 +112,53 @@ const Navbar = () => {
 
               {/* User / Login */}
               {customer ? (
-                <Link
-                  to="/customer/orders"
-                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm font-medium hover:bg-white/10 transition-all duration-300"
-                  data-testid="nav-account"
-                >
-                  <User size={16} />
-                  <span className="max-w-[100px] truncate">{customer.name?.split(' ')[0]}</span>
-                </Link>
+                <div className="relative" ref={userMenuRef}>
+                  <button
+                    onClick={() => setIsUserMenuOpen((v) => !v)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm font-medium hover:bg-white/10 transition-all duration-300"
+                    data-testid="nav-account"
+                    aria-haspopup="menu"
+                    aria-expanded={isUserMenuOpen}
+                  >
+                    <User size={16} />
+                    <span className="max-w-[100px] truncate">{customer.name?.split(' ')[0]}</span>
+                    <ChevronDown size={14} className={`transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {isUserMenuOpen && (
+                    <div
+                      className="absolute right-0 top-full mt-2 w-56 rounded-2xl bg-neutral-900/95 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden z-50"
+                      data-testid="user-dropdown"
+                      role="menu"
+                    >
+                      {/* Header */}
+                      <div className="px-4 py-3 border-b border-white/5">
+                        <p className="text-[10px] tracking-[2px] uppercase text-zinc-500 font-semibold">Signed in as</p>
+                        <p className="text-sm text-white font-medium truncate">{customer.name}</p>
+                        <p className="text-[11px] text-zinc-400 truncate">{customer.email}</p>
+                      </div>
+
+                      <Link
+                        to="/customer/orders"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white transition-colors"
+                        data-testid="user-menu-orders"
+                      >
+                        <Package size={15} />
+                        My Orders
+                      </Link>
+
+                      <button
+                        onClick={handleSignOut}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors border-t border-white/5"
+                        data-testid="user-menu-signout"
+                      >
+                        <LogOut size={15} />
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <Link
                   to="/login"
@@ -177,6 +237,18 @@ const Navbar = () => {
                   </Link>
                 )}
               </div>
+
+              {/* Mobile Sign Out button (only when logged in) */}
+              {customer && (
+                <button
+                  onClick={handleSignOut}
+                  className="mt-2 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 font-medium hover:bg-red-500/20 transition-colors"
+                  data-testid="mobile-signout"
+                >
+                  <LogOut size={16} />
+                  Sign Out
+                </button>
+              )}
             </div>
           </div>
         </div>
