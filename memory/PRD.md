@@ -87,7 +87,7 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
 - [x] **Price Calculator embed** - Added Price Calculator iframe as a popup modal (triggered by button) on both Create/Edit Quotation and Create/Edit Invoice pages (Feb 2026)
 - [x] **Invoice Payment Tracking** - Added Amount Paid input, auto-calculated Balance Due, and auto Payment Status (PENDING/PARTIAL/PAID) to Invoice create/edit form. Backend now correctly computes amount_due and payment_status on create and update. (Mar 2026)
 - [x] **Product Image Display** - Added Image column with thumbnails to quotation and invoice item tables. Added onError fallback for broken images. Product selector on invoice page now shows product images. (Mar 2026)
-- [x] **Homepage Redesign v2 (NOVIQ-inspired)** - Complete redesign with CSS 3D isometric floorplan (9 rooms with perspective transform, detailed furniture, warm glow lighting on toggle, NOVIQ-style phone controller panel with room tiles, All On/Off, Voice Command), scrolling tech ticker, glass-morphism capability cards, new InHaus logo, "Home, Reimagined by InHaus" tagline. Partners section retained. (Mar 2026)
+- [x] **Homepage Redesign v2 (NOVIQ-inspired)** - Complete redesign with true 3D isometric SVG floorplan (3BHK layout with 9 rooms: Living Room, Kitchen, Dining, Master Bedroom, Master Bath, Bedroom 2, Bedroom 3, Bathroom, Balcony). Isometric projection with visible wall heights, detailed furniture, warm glow lighting, NOVIQ-style controller panel. Scrolling tech ticker, glass-morphism capability cards, new InHaus logo, "Home, Reimagined by InHaus" tagline. (Mar 2026)
 
 ---
 

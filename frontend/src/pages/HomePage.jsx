@@ -5,17 +5,17 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { ArrowRight, Wifi, Bluetooth, Shield, Lightbulb, Lock, Mic, Power, Sun, Moon, Volume2, ChevronRight, CheckCircle, Play, Zap } from 'lucide-react';
 
-// ─── ROOM DATA FOR FLOORPLAN ────────────────────────────────────
+// ─── ROOM DATA FOR 3BHK FLOORPLAN ───────────────────────────────
 const rooms = [
-  { id: 'hall', name: 'Hall', icon: Lightbulb },
+  { id: 'hall', name: 'Living Room', icon: Lightbulb },
   { id: 'kitchen', name: 'Kitchen', icon: Sun },
+  { id: 'dining', name: 'Dining', icon: Lightbulb },
   { id: 'master', name: 'Master Bedroom', icon: Moon },
-  { id: 'bedroom2', name: 'Small Bedroom', icon: Lightbulb },
-  { id: 'parking', name: 'Parking', icon: Power },
-  { id: 'stairs', name: 'Stairs', icon: Lightbulb },
-  { id: 'hanging', name: 'Hanging Lights', icon: Lightbulb },
   { id: 'masterbath', name: 'Master Bath', icon: Lightbulb },
-  { id: 'guestbath', name: 'Guest Bath', icon: Lightbulb },
+  { id: 'bedroom2', name: 'Bedroom 2', icon: Moon },
+  { id: 'bedroom3', name: 'Bedroom 3', icon: Moon },
+  { id: 'bathroom', name: 'Bathroom', icon: Lightbulb },
+  { id: 'balcony', name: 'Balcony', icon: Sun },
 ];
 
 // ─── TICKER ITEMS ───────────────────────────────────────────────
@@ -48,296 +48,248 @@ const ScrollingTicker = () => (
   </div>
 );
 
-// ─── PREMIUM CSS 3D ISOMETRIC FLOORPLAN ─────────────────────────
+// ─── 3D ISOMETRIC FLOORPLAN FOR 3BHK ────────────────────────────
 const FloorplanSVG = ({ roomStates }) => {
   const isOn = (id) => !!roomStates[id];
 
-  const roomStyle = (id, extraStyle = {}) => ({
-    position: 'absolute',
-    transition: 'all 0.6s ease',
-    borderRadius: '2px',
-    ...extraStyle,
-    background: isOn(id)
-      ? 'linear-gradient(135deg, #2a2010 0%, #1a1408 100%)'
-      : '#0d0d0d',
-    boxShadow: isOn(id)
-      ? 'inset 0 0 60px rgba(255,165,0,0.15), inset 0 0 20px rgba(255,200,50,0.1)'
-      : 'inset 0 0 20px rgba(0,0,0,0.5)',
-  });
+  // Isometric projection helpers
+  const ISO = 0.866; // cos(30)
+  const wallH = 18; // wall height in pixels
 
-  const wallStyle = (side, isLit) => {
-    const base = {
-      position: 'absolute',
-      transition: 'all 0.6s ease',
-      background: isLit
-        ? 'linear-gradient(180deg, #d4c4a0 0%, #b8a880 100%)'
-        : 'linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 100%)',
-    };
-    return base;
+  // Convert grid (x, y) to isometric screen (sx, sy)
+  const isoX = (x, y) => 400 + (x - y) * ISO * 0.9;
+  const isoY = (x, y) => 60 + (x + y) * 0.45;
+
+  // Create isometric floor polygon points
+  const floorPoly = (x, y, w, h) => {
+    const tl = `${isoX(x, y)},${isoY(x, y)}`;
+    const tr = `${isoX(x + w, y)},${isoY(x + w, y)}`;
+    const br = `${isoX(x + w, y + h)},${isoY(x + w, y + h)}`;
+    const bl = `${isoX(x, y + h)},${isoY(x, y + h)}`;
+    return `${tl} ${tr} ${br} ${bl}`;
   };
 
-  const lightBulb = (id, left, top) => isOn(id) ? (
-    <div style={{ position: 'absolute', left, top, width: '6px', height: '6px', borderRadius: '50%', background: '#FFE4A0', boxShadow: '0 0 8px 4px rgba(255,200,50,0.6), 0 0 30px 15px rgba(255,165,0,0.3), 0 0 60px 30px rgba(255,140,0,0.1)', transition: 'all 0.6s', zIndex: 5 }} />
-  ) : (
-    <div style={{ position: 'absolute', left, top, width: '4px', height: '4px', borderRadius: '50%', background: '#333', transition: 'all 0.6s', zIndex: 5 }} />
-  );
+  // Left wall polygon
+  const leftWall = (x, y, h) => {
+    const b1 = `${isoX(x, y)},${isoY(x, y)}`;
+    const b2 = `${isoX(x, y + h)},${isoY(x, y + h)}`;
+    const t2 = `${isoX(x, y + h)},${isoY(x, y + h) - wallH}`;
+    const t1 = `${isoX(x, y)},${isoY(x, y) - wallH}`;
+    return `${b1} ${b2} ${t2} ${t1}`;
+  };
 
-  const label = (id, text, left, top) => (
-    <div style={{
-      position: 'absolute', left, top, fontSize: '8px', fontWeight: 700,
-      color: isOn(id) ? '#FFD700' : '#444', letterSpacing: '0.5px',
-      textTransform: 'uppercase', whiteSpace: 'nowrap', transition: 'color 0.6s',
-      textShadow: isOn(id) ? '0 0 10px rgba(255,215,0,0.5)' : 'none', zIndex: 10,
-    }}>{text}</div>
-  );
+  // Right wall polygon
+  const rightWall = (x, y, w) => {
+    const b1 = `${isoX(x + w, y)},${isoY(x + w, y)}`;
+    const b2 = `${isoX(x, y)},${isoY(x, y)}`;
+    const t2 = `${isoX(x, y)},${isoY(x, y) - wallH}`;
+    const t1 = `${isoX(x + w, y)},${isoY(x + w, y) - wallH}`;
+    return `${b1} ${b2} ${t2} ${t1}`;
+  };
 
-  // Furniture helper
-  const Furn = ({ left, top, w, h, lit, rx = 2, color }) => (
-    <div style={{
-      position: 'absolute', left, top, width: w, height: h, borderRadius: rx,
-      background: lit ? (color || '#3d3520') : '#1a1a1a',
-      border: `1px solid ${lit ? '#554a30' : '#222'}`,
-      transition: 'all 0.6s', zIndex: 2,
-    }} />
+  // Back wall (top-right wall)
+  const backWallR = (x, y, w) => {
+    const b1 = `${isoX(x, y)},${isoY(x, y)}`;
+    const b2 = `${isoX(x + w, y)},${isoY(x + w, y)}`;
+    const t2 = `${isoX(x + w, y)},${isoY(x + w, y) - wallH}`;
+    const t1 = `${isoX(x, y)},${isoY(x, y) - wallH}`;
+    return `${b1} ${b2} ${t2} ${t1}`;
+  };
+
+  // Back wall (top-left wall)
+  const backWallL = (x, y, h) => {
+    const b1 = `${isoX(x, y)},${isoY(x, y)}`;
+    const b2 = `${isoX(x, y + h)},${isoY(x, y + h)}`;
+    const t2 = `${isoX(x, y + h)},${isoY(x, y + h) - wallH}`;
+    const t1 = `${isoX(x, y)},${isoY(x, y) - wallH}`;
+    return `${b1} ${b2} ${t2} ${t1}`;
+  };
+
+  // Isometric rectangle (for furniture)
+  const isoRect = (x, y, w, h) => floorPoly(x, y, w, h);
+
+  // 3BHK Room definitions: {x, y, w, h} in grid units
+  const roomDefs = {
+    hall:       { x: 0, y: 0, w: 140, h: 100, name: 'Living Room' },
+    kitchen:    { x: 140, y: 0, w: 90, h: 70, name: 'Kitchen' },
+    dining:     { x: 140, y: 70, w: 90, h: 60, name: 'Dining' },
+    master:     { x: 0, y: 100, w: 110, h: 90, name: 'Master Bedroom' },
+    masterbath: { x: 0, y: 190, w: 50, h: 40, name: 'M. Bath' },
+    bedroom2:   { x: 110, y: 130, w: 80, h: 70, name: 'Bedroom 2' },
+    bedroom3:   { x: 190, y: 130, w: 80, h: 70, name: 'Bedroom 3' },
+    bathroom:   { x: 230, y: 0, w: 40, h: 70, name: 'Bathroom' },
+    balcony:    { x: 230, y: 70, w: 40, h: 60, name: 'Balcony' },
+  };
+
+  // Room component
+  const Room = ({ id, def }) => {
+    const { x, y, w, h, name } = def;
+    const lit = isOn(id);
+    const floorColor = lit ? '#2a2215' : '#0e0e0e';
+    const floorLitOverlay = lit ? 'rgba(255,165,0,0.08)' : 'transparent';
+    const wallLitLeft = lit ? '#d4c4a0' : '#3a3a3a';
+    const wallLitRight = lit ? '#b8a880' : '#2d2d2d';
+    const wallBack = lit ? '#c8b890' : '#333';
+    const cx = isoX(x + w / 2, y + h / 2);
+    const cy = isoY(x + w / 2, y + h / 2);
+
+    return (
+      <g style={{ transition: 'all 0.6s' }}>
+        {/* Floor */}
+        <polygon points={floorPoly(x, y, w, h)} fill={floorColor} stroke="#1a1a1a" strokeWidth="0.5" style={{ transition: 'fill 0.6s' }} />
+        {lit && <polygon points={floorPoly(x, y, w, h)} fill={floorLitOverlay} style={{ transition: 'fill 0.6s' }} />}
+
+        {/* Back walls (top-left and top-right) */}
+        <polygon points={backWallR(x, y, w)} fill={wallBack} stroke="#222" strokeWidth="0.3" opacity="0.9" style={{ transition: 'fill 0.6s' }} />
+        <polygon points={backWallL(x, y, h)} fill={wallLitLeft} stroke="#222" strokeWidth="0.3" opacity="0.85" style={{ transition: 'fill 0.6s' }} />
+
+        {/* Light glow effect */}
+        {lit && (
+          <>
+            <circle cx={cx} cy={cy - 5} r={Math.min(w, h) * 0.35} fill="url(#isoGlow)" opacity="0.5" />
+            <circle cx={cx} cy={cy - 8} r="3" fill="#FFE4A0" opacity="0.9">
+              <animate attributeName="opacity" values="0.9;0.6;0.9" dur="2s" repeatCount="indefinite" />
+            </circle>
+          </>
+        )}
+
+        {/* Room label */}
+        <text x={cx} y={cy + Math.min(w, h) * 0.3} textAnchor="middle" fill={lit ? '#FFD700' : '#3a3a3a'} fontSize="7" fontWeight="700" fontFamily="Inter, sans-serif" style={{ transition: 'fill 0.6s', textShadow: lit ? '0 0 8px rgba(255,215,0,0.5)' : 'none' }}>
+          {name}
+        </text>
+      </g>
+    );
+  };
+
+  // Isometric furniture piece
+  const Furniture = ({ x, y, w, h, lit, color = '#3d3520', darkColor = '#1a1a1a' }) => (
+    <polygon points={isoRect(x, y, w, h)} fill={lit ? color : darkColor} stroke={lit ? '#554a30' : '#222'} strokeWidth="0.5" style={{ transition: 'all 0.6s' }} />
   );
 
   return (
     <div className="relative w-full" data-testid="live-floorplan">
-      {/* 3D perspective container */}
-      <div style={{ perspective: '1400px', perspectiveOrigin: '50% 40%' }}>
-        <div style={{
-          transform: 'rotateX(12deg) rotateZ(-2deg) scale(1)',
-          transformStyle: 'preserve-3d',
-          position: 'relative',
-          width: '100%',
-          paddingBottom: '68%',
-          filter: 'drop-shadow(0 30px 80px rgba(0,0,0,0.6))',
-        }}>
-          {/* Base plate */}
-          <div style={{
-            position: 'absolute', inset: 0,
-            background: '#080808',
-            border: '3px solid #333',
-            borderRadius: '12px',
-            overflow: 'hidden',
-          }}>
-            {/* Outer wall border glow */}
-            <div style={{
-              position: 'absolute', inset: '3px',
-              border: '1px solid #222',
-              borderRadius: '10px',
-              pointerEvents: 'none', zIndex: 20,
-            }} />
+      <svg viewBox="0 30 800 350" className="w-full h-auto" style={{ filter: 'drop-shadow(0 20px 60px rgba(0,0,0,0.6))' }}>
+        <defs>
+          <radialGradient id="isoGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#FFA500" stopOpacity="0.35" />
+            <stop offset="60%" stopColor="#FF8C00" stopOpacity="0.1" />
+            <stop offset="100%" stopColor="#FF6600" stopOpacity="0" />
+          </radialGradient>
+          <linearGradient id="wallGradLight" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#e8dcc0" />
+            <stop offset="100%" stopColor="#c8b890" />
+          </linearGradient>
+        </defs>
 
-            {/* ═══ HALL — Top Left ═══ */}
-            <div style={roomStyle('hall', { left: '1.5%', top: '2%', width: '35%', height: '42%', border: `2px solid ${isOn('hall') ? '#4a3f28' : '#2a2a2a'}` })}>
-              {/* Sofa */}
-              <Furn left="8%" top="40%" w="30%" h="18%" lit={isOn('hall')} rx={6} />
-              <Furn left="8%" top="36%" w="30%" h="6%" lit={isOn('hall')} rx={4} color="#4a3f28" />
-              {/* Coffee table */}
-              <Furn left="15%" top="65%" w="18%" h="12%" lit={isOn('hall')} rx={3} color="#2a2418" />
-              {/* TV unit */}
-              <Furn left="60%" top="8%" w="30%" h="5%" lit={isOn('hall')} rx={2} color="#333" />
-              {/* Rug */}
-              <div style={{
-                position: 'absolute', left: '10%', top: '55%', width: '35%', height: '25%',
-                borderRadius: '50%', background: isOn('hall') ? 'rgba(42,32,21,0.5)' : 'rgba(17,17,17,0.5)',
-                transition: 'all 0.6s', zIndex: 1,
-              }} />
-              {lightBulb('hall', '45%', '35%')}
-              {label('hall', 'Hall', '35%', '88%')}
-            </div>
+        {/* Background */}
+        <rect x="0" y="30" width="800" height="350" fill="#080808" rx="12" />
 
-            {/* ═══ KITCHEN — Top Center ═══ */}
-            <div style={roomStyle('kitchen', { left: '37.5%', top: '2%', width: '24%', height: '42%', border: `2px solid ${isOn('kitchen') ? '#4a3f28' : '#2a2a2a'}` })}>
-              {/* Counter */}
-              <Furn left="5%" top="3%" w="90%" h="8%" lit={isOn('kitchen')} color="#3a3025" />
-              {/* Stove dots */}
-              <div style={{ position: 'absolute', left: '30%', top: '5%', width: '6px', height: '6px', borderRadius: '50%', background: isOn('kitchen') ? '#666' : '#222', transition: 'all 0.6s' }} />
-              {/* Island */}
-              <Furn left="15%" top="55%" w="65%" h="18%" lit={isOn('kitchen')} rx={4} color="#2a2418" />
-              {/* Fridge */}
-              <Furn left="80%" top="18%" w="14%" h="22%" lit={isOn('kitchen')} rx={3} color="#3a3a3a" />
-              {lightBulb('kitchen', '45%', '40%')}
-              {label('kitchen', 'Kitchen', '25%', '88%')}
-            </div>
+        {/* ═══ ROOMS ═══ */}
+        <Room id="hall" def={roomDefs.hall} />
+        <Room id="kitchen" def={roomDefs.kitchen} />
+        <Room id="dining" def={roomDefs.dining} />
+        <Room id="master" def={roomDefs.master} />
+        <Room id="masterbath" def={roomDefs.masterbath} />
+        <Room id="bedroom2" def={roomDefs.bedroom2} />
+        <Room id="bedroom3" def={roomDefs.bedroom3} />
+        <Room id="bathroom" def={roomDefs.bathroom} />
+        <Room id="balcony" def={roomDefs.balcony} />
 
-            {/* ═══ MASTER BEDROOM — Top Right ═══ */}
-            <div style={roomStyle('master', { left: '62.5%', top: '2%', width: '36%', height: '48%', border: `2px solid ${isOn('master') ? '#4a3f28' : '#2a2a2a'}` })}>
-              {/* Bed frame */}
-              <Furn left="15%" top="18%" w="55%" h="45%" lit={isOn('master')} rx={6} />
-              {/* Pillows */}
-              <Furn left="20%" top="22%" w="18%" h="12%" lit={isOn('master')} rx={6} color="#4a4030" />
-              <Furn left="45%" top="22%" w="18%" h="12%" lit={isOn('master')} rx={6} color="#4a4030" />
-              {/* Wardrobe */}
-              <Furn left="80%" top="10%" w="14%" h="45%" lit={isOn('master')} rx={3} color="#2a2418" />
-              {/* Bedside tables */}
-              <Furn left="5%" top="28%" w="8%" h="12%" lit={isOn('master')} rx={3} color="#2a2418" />
-              {lightBulb('master', '45%', '40%')}
-              {label('master', 'Master Bedroom', '18%', '88%')}
-            </div>
+        {/* ═══ FURNITURE ═══ */}
+        {/* Hall - L-shaped sofa */}
+        <Furniture x={15} y={15} w={60} h={20} lit={isOn('hall')} />
+        <Furniture x={15} y={35} w={20} h={30} lit={isOn('hall')} />
+        {/* Hall - Coffee table */}
+        <Furniture x={45} y={45} w={25} h={15} lit={isOn('hall')} color="#2a2418" darkColor="#151515" />
+        {/* Hall - TV unit */}
+        <Furniture x={90} y={10} w={40} h={8} lit={isOn('hall')} color="#444" darkColor="#1a1a1a" />
+        {/* Hall - Rug */}
+        <polygon points={isoRect(30, 40, 55, 35)} fill={isOn('hall') ? 'rgba(42,32,21,0.3)' : 'rgba(17,17,17,0.3)'} style={{ transition: 'fill 0.6s' }} />
 
-            {/* ═══ PARKING — Bottom Left ═══ */}
-            <div style={roomStyle('parking', { left: '1.5%', top: '46%', width: '35%', height: '35%', border: `2px solid ${isOn('parking') ? '#4a3f28' : '#2a2a2a'}`, background: isOn('parking') ? '#141210' : '#0a0a0a' })}>
-              {/* Car body */}
-              <div style={{
-                position: 'absolute', left: '12%', top: '15%', width: '55%', height: '55%',
-                borderRadius: '12px', background: isOn('parking') ? '#333' : '#191919',
-                border: `1.5px solid ${isOn('parking') ? '#444' : '#222'}`,
-                transition: 'all 0.6s', zIndex: 2,
-              }}>
-                {/* Windshield */}
-                <div style={{
-                  position: 'absolute', left: '5%', top: '10%', width: '35%', height: '45%',
-                  borderRadius: '6px', background: isOn('parking') ? '#4a5568' : '#1a1a1a',
-                  transition: 'all 0.6s',
-                }} />
-              </div>
-              {/* Wheels */}
-              <div style={{ position: 'absolute', left: '15%', top: '72%', width: '10%', height: '10%', borderRadius: '50%', background: isOn('parking') ? '#222' : '#111', border: `2px solid ${isOn('parking') ? '#333' : '#1a1a1a'}`, transition: 'all 0.6s', zIndex: 3 }} />
-              <div style={{ position: 'absolute', left: '52%', top: '72%', width: '10%', height: '10%', borderRadius: '50%', background: isOn('parking') ? '#222' : '#111', border: `2px solid ${isOn('parking') ? '#333' : '#1a1a1a'}`, transition: 'all 0.6s', zIndex: 3 }} />
-              {/* Bike */}
-              <div style={{ position: 'absolute', left: '78%', top: '55%', width: '8%', height: '8%', borderRadius: '50%', border: `1.5px solid ${isOn('parking') ? '#c0392b' : '#222'}`, transition: 'all 0.6s', zIndex: 2 }} />
-              <div style={{ position: 'absolute', left: '72%', top: '55%', width: '8%', height: '8%', borderRadius: '50%', border: `1.5px solid ${isOn('parking') ? '#c0392b' : '#222'}`, transition: 'all 0.6s', zIndex: 2 }} />
-              {lightBulb('parking', '45%', '35%')}
-              {label('parking', 'Parking', '32%', '88%')}
-            </div>
+        {/* Kitchen - Counter */}
+        <Furniture x={145} y={5} w={80} h={10} lit={isOn('kitchen')} color="#5a4d35" darkColor="#1e1e1e" />
+        {/* Kitchen - Island */}
+        <Furniture x={160} y={35} w={45} h={18} lit={isOn('kitchen')} color="#3a3025" darkColor="#151515" />
+        {/* Kitchen - Fridge */}
+        <Furniture x={215} y={10} w={10} h={18} lit={isOn('kitchen')} color="#4a4a4a" darkColor="#1a1a1a" />
 
-            {/* ═══ STAIRS — Center ═══ */}
-            <div style={roomStyle('stairs', { left: '37.5%', top: '46%', width: '12%', height: '22%', border: `2px solid ${isOn('stairs') ? '#4a3f28' : '#2a2a2a'}` })}>
-              {/* Stair treads */}
-              {[0, 1, 2, 3, 4, 5].map(i => (
-                <div key={i} style={{
-                  position: 'absolute', left: '8%', top: `${8 + i * 14}%`, width: '84%', height: '11%',
-                  borderRadius: '1px', background: isOn('stairs') ? '#2a2418' : '#141414',
-                  border: `0.5px solid ${isOn('stairs') ? '#3d3520' : '#1a1a1a'}`,
-                  transition: 'all 0.6s',
-                }} />
-              ))}
-              {lightBulb('stairs', '45%', '45%')}
-              {label('stairs', 'Stairs', '18%', '85%')}
-            </div>
+        {/* Dining - Table */}
+        <Furniture x={155} y={82} w={50} h={28} lit={isOn('dining')} color="#4a3f28" darkColor="#151515" />
+        {/* Dining - Chairs */}
+        {[0, 15, 30, 45].map(dx => (
+          <polygon key={dx} points={isoRect(155 + dx, 78, 8, 4)} fill={isOn('dining') ? '#3a3025' : '#141414'} style={{ transition: 'fill 0.6s' }} />
+        ))}
+        {[0, 15, 30, 45].map(dx => (
+          <polygon key={`b${dx}`} points={isoRect(155 + dx, 112, 8, 4)} fill={isOn('dining') ? '#3a3025' : '#141414'} style={{ transition: 'fill 0.6s' }} />
+        ))}
 
-            {/* ═══ MASTER BATH — Center Right ═══ */}
-            <div style={roomStyle('masterbath', { left: '50.5%', top: '46%', width: '11%', height: '22%', border: `2px solid ${isOn('masterbath') ? '#4a3f28' : '#2a2a2a'}` })}>
-              {/* Bathtub */}
-              <div style={{
-                position: 'absolute', left: '10%', top: '8%', width: '75%', height: '35%',
-                borderRadius: '8px', border: `1.5px solid ${isOn('masterbath') ? '#555' : '#222'}`,
-                transition: 'all 0.6s',
-              }} />
-              {/* Toilet */}
-              <div style={{
-                position: 'absolute', left: '15%', top: '55%', width: '30%', height: '25%',
-                borderRadius: '50%', background: isOn('masterbath') ? '#333' : '#181818',
-                border: `1px solid ${isOn('masterbath') ? '#444' : '#222'}`,
-                transition: 'all 0.6s',
-              }} />
-              {lightBulb('masterbath', '50%', '45%')}
-              {label('masterbath', 'M.Bath', '15%', '85%')}
-            </div>
+        {/* Master Bedroom - Bed */}
+        <Furniture x={20} y={115} w={55} h={45} lit={isOn('master')} />
+        {/* Master - Pillows */}
+        <Furniture x={25} y={118} w={18} h={10} lit={isOn('master')} color="#5a4d35" darkColor="#1e1e1e" />
+        <Furniture x={48} y={118} w={18} h={10} lit={isOn('master')} color="#5a4d35" darkColor="#1e1e1e" />
+        {/* Master - Wardrobe */}
+        <Furniture x={85} y={105} w={15} h={50} lit={isOn('master')} color="#2a2418" darkColor="#151515" />
+        {/* Master - Bedside tables */}
+        <Furniture x={8} y={130} w={10} h={10} lit={isOn('master')} color="#2a2418" darkColor="#151515" />
+        <Furniture x={78} y={130} w={10} h={10} lit={isOn('master')} color="#2a2418" darkColor="#151515" />
 
-            {/* ═══ SMALL BEDROOM — Right Middle ═══ */}
-            <div style={roomStyle('bedroom2', { left: '62.5%', top: '52%', width: '36%', height: '32%', border: `2px solid ${isOn('bedroom2') ? '#4a3f28' : '#2a2a2a'}` })}>
-              {/* Bed */}
-              <Furn left="12%" top="15%" w="45%" h="45%" lit={isOn('bedroom2')} rx={5} />
-              {/* Pillows */}
-              <Furn left="16%" top="20%" w="15%" h="12%" lit={isOn('bedroom2')} rx={5} color="#4a4030" />
-              <Furn left="36%" top="20%" w="15%" h="12%" lit={isOn('bedroom2')} rx={5} color="#4a4030" />
-              {/* Desk */}
-              <Furn left="70%" top="20%" w="22%" h="18%" lit={isOn('bedroom2')} rx={3} color="#2a2418" />
-              {/* Chair */}
-              <div style={{
-                position: 'absolute', left: '78%', top: '45%', width: '8%', height: '8%',
-                borderRadius: '50%', background: isOn('bedroom2') ? '#2a2418' : '#141414',
-                transition: 'all 0.6s', zIndex: 2,
-              }} />
-              {lightBulb('bedroom2', '45%', '40%')}
-              {label('bedroom2', 'Small Bedroom', '20%', '88%')}
-            </div>
+        {/* Master Bath - Bathtub */}
+        <polygon points={isoRect(8, 195, 30, 14)} fill="none" stroke={isOn('masterbath') ? '#666' : '#222'} strokeWidth="1" style={{ transition: 'stroke 0.6s' }} />
+        {/* Master Bath - Toilet */}
+        <polygon points={isoRect(10, 215, 10, 12)} fill={isOn('masterbath') ? '#444' : '#1a1a1a'} style={{ transition: 'fill 0.6s' }} />
 
-            {/* ═══ HANGING LIGHTS — Center Bottom ═══ */}
-            <div style={roomStyle('hanging', { left: '37.5%', top: '70%', width: '24%', height: '14%', border: `2px solid ${isOn('hanging') ? '#4a3f28' : '#2a2a2a'}` })}>
-              {/* 3 pendant lights */}
-              {[25, 45, 65].map((x, i) => (
-                <div key={i} style={{ position: 'absolute', left: `${x}%`, top: '15%' }}>
-                  <div style={{ width: '1px', height: '15px', background: isOn('hanging') ? '#FFD700' : '#333', margin: '0 auto', transition: 'all 0.6s' }} />
-                  <div style={{
-                    width: '10px', height: '10px', borderRadius: '50%', marginTop: '1px',
-                    background: isOn('hanging') ? '#FFB84D' : '#1a1a1a',
-                    border: `1px solid ${isOn('hanging') ? '#FFD700' : '#333'}`,
-                    boxShadow: isOn('hanging') ? '0 0 12px rgba(255,165,0,0.4)' : 'none',
-                    transition: 'all 0.6s',
-                  }} />
-                </div>
-              ))}
-              {label('hanging', 'Hanging Lights', '15%', '70%')}
-            </div>
+        {/* Bedroom 2 - Bed */}
+        <Furniture x={120} y={145} w={45} h={35} lit={isOn('bedroom2')} />
+        {/* Bedroom 2 - Pillows */}
+        <Furniture x={125} y={148} w={15} h={8} lit={isOn('bedroom2')} color="#5a4d35" darkColor="#1e1e1e" />
+        <Furniture x={145} y={148} w={15} h={8} lit={isOn('bedroom2')} color="#5a4d35" darkColor="#1e1e1e" />
+        {/* Bedroom 2 - Desk */}
+        <Furniture x={170} y={140} w={15} h={25} lit={isOn('bedroom2')} color="#2a2418" darkColor="#151515" />
 
-            {/* ═══ GUEST BATH — Bottom Left ═══ */}
-            <div style={roomStyle('guestbath', { left: '1.5%', top: '83%', width: '35%', height: '15%', border: `2px solid ${isOn('guestbath') ? '#4a3f28' : '#2a2a2a'}` })}>
-              {/* Shower */}
-              <div style={{
-                position: 'absolute', left: '5%', top: '12%', width: '18%', height: '65%',
-                borderRadius: '4px', border: `1px dashed ${isOn('guestbath') ? '#555' : '#222'}`,
-                transition: 'all 0.6s',
-              }} />
-              {/* Toilet */}
-              <div style={{
-                position: 'absolute', left: '32%', top: '20%', width: '10%', height: '50%',
-                borderRadius: '50%', background: isOn('guestbath') ? '#333' : '#181818',
-                border: `1px solid ${isOn('guestbath') ? '#444' : '#222'}`,
-                transition: 'all 0.6s',
-              }} />
-              {/* Vanity */}
-              <Furn left="55%" top="15%" w="30%" h="20%" lit={isOn('guestbath')} rx={2} color="#2a2418" />
-              {/* Mirror */}
-              <div style={{
-                position: 'absolute', left: '60%', top: '5%', width: '18%', height: '10%',
-                borderRadius: '1px', background: isOn('guestbath') ? '#4a5568' : '#1a1a1a',
-                transition: 'all 0.6s',
-              }} />
-              {lightBulb('guestbath', '45%', '40%')}
-              {label('guestbath', 'Guest Bath', '35%', '78%')}
-            </div>
+        {/* Bedroom 3 - Bed */}
+        <Furniture x={205} y={145} w={40} h={30} lit={isOn('bedroom3')} />
+        {/* Bedroom 3 - Pillow */}
+        <Furniture x={210} y={148} w={12} h={8} lit={isOn('bedroom3')} color="#5a4d35" darkColor="#1e1e1e" />
+        <Furniture x={228} y={148} w={12} h={8} lit={isOn('bedroom3')} color="#5a4d35" darkColor="#1e1e1e" />
+        {/* Bedroom 3 - Study corner */}
+        <Furniture x={255} y={140} w={12} h={20} lit={isOn('bedroom3')} color="#2a2418" darkColor="#151515" />
 
-            {/* ═══ BALCONY / TERRACE — Bottom Right ═══ */}
-            <div style={{
-              position: 'absolute', left: '62.5%', top: '86%', width: '36%', height: '12%',
-              background: '#080808', border: '2px solid #2a2a2a', borderRadius: '2px',
-            }}>
-              <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)',
-                fontSize: '8px', color: '#333', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase'
-              }}>Balcony</div>
-            </div>
+        {/* Common Bathroom - Fixtures */}
+        <polygon points={isoRect(235, 8, 28, 12)} fill="none" stroke={isOn('bathroom') ? '#666' : '#222'} strokeWidth="1" style={{ transition: 'stroke 0.6s' }} />
+        <polygon points={isoRect(240, 35, 10, 14)} fill={isOn('bathroom') ? '#444' : '#1a1a1a'} style={{ transition: 'fill 0.6s' }} />
+        <polygon points={isoRect(255, 40, 10, 8)} fill="none" stroke={isOn('bathroom') ? '#555' : '#222'} strokeWidth="0.8" style={{ transition: 'stroke 0.6s' }} />
 
-            {/* ═══ WALL DEPTH LINES (3D effect) ═══ */}
-            {/* Top wall depth */}
-            <div style={{
-              position: 'absolute', left: 0, top: 0, width: '100%', height: '2%',
-              background: 'linear-gradient(180deg, #444 0%, #333 50%, transparent 100%)',
-              opacity: 0.3, zIndex: 15, pointerEvents: 'none',
-            }} />
-            {/* Left wall depth */}
-            <div style={{
-              position: 'absolute', left: 0, top: 0, width: '1.5%', height: '100%',
-              background: 'linear-gradient(90deg, #444 0%, #333 50%, transparent 100%)',
-              opacity: 0.3, zIndex: 15, pointerEvents: 'none',
-            }} />
+        {/* Balcony - Plants */}
+        <circle cx={isoX(245, 85)} cy={isoY(245, 85)} r="4" fill={isOn('balcony') ? '#2d5016' : '#141414'} style={{ transition: 'fill 0.6s' }} />
+        <circle cx={isoX(255, 95)} cy={isoY(255, 95)} r="3" fill={isOn('balcony') ? '#2d5016' : '#141414'} style={{ transition: 'fill 0.6s' }} />
+        {/* Balcony railing */}
+        <line x1={isoX(270, 70)} y1={isoY(270, 70) - 8} x2={isoX(270, 130)} y2={isoY(270, 130) - 8} stroke={isOn('balcony') ? '#888' : '#333'} strokeWidth="1.5" style={{ transition: 'stroke 0.6s' }} />
 
-            {/* ═══ DOOR OPENINGS (wall gaps) ═══ */}
-            <div style={{ position: 'absolute', left: '34%', top: '16%', width: '4%', height: '1%', background: '#080808', zIndex: 10 }} />
-            <div style={{ position: 'absolute', left: '61%', top: '16%', width: '2%', height: '8%', background: '#080808', zIndex: 10 }} />
-            <div style={{ position: 'absolute', left: '34%', top: '52%', width: '4%', height: '1%', background: '#080808', zIndex: 10 }} />
-            <div style={{ position: 'absolute', left: '77%', top: '49%', width: '6%', height: '1%', background: '#080808', zIndex: 10 }} />
-          </div>
-        </div>
-      </div>
+        {/* ═══ OUTER WALLS (front edges) ═══ */}
+        {/* Front-right wall */}
+        <polygon points={`
+          ${isoX(270, 0)},${isoY(270, 0)}
+          ${isoX(270, 200)},${isoY(270, 200)}
+          ${isoX(270, 200)},${isoY(270, 200) - wallH}
+          ${isoX(270, 0)},${isoY(270, 0) - wallH}
+        `} fill="#2a2a2a" stroke="#333" strokeWidth="0.5" opacity="0.6" />
+        {/* Front-left wall */}
+        <polygon points={`
+          ${isoX(0, 230)},${isoY(0, 230)}
+          ${isoX(270, 230)},${isoY(270, 230)}
+          ${isoX(270, 230)},${isoY(270, 230) - wallH}
+          ${isoX(0, 230)},${isoY(0, 230) - wallH}
+        `} fill="#222" stroke="#333" strokeWidth="0.5" opacity="0.5" />
 
-      {/* LIVE FLOORPLAN badge */}
-      <div className="flex justify-center mt-4">
-        <div className="px-6 py-2 rounded-full bg-black/70 border border-white/10 backdrop-blur-sm">
-          <span className="text-[10px] font-semibold tracking-[3px] text-neutral-400 uppercase">Live Floorplan</span>
+        {/* ═══ FLOOR SHADOW ═══ */}
+        <polygon points={floorPoly(-5, -5, 280, 240)} fill="none" stroke="#1a1a1a" strokeWidth="2" opacity="0.3" />
+      </svg>
+
+      {/* Badge */}
+      <div className="flex justify-center mt-3">
+        <div className="px-6 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
+          <span className="text-[9px] font-bold tracking-[4px] text-neutral-500 uppercase">3BHK Live Floorplan</span>
         </div>
       </div>
     </div>
