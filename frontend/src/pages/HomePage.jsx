@@ -288,7 +288,93 @@ function parseVoiceCommand(text) {
   return null;
 }
 
-// ─── ROOM TILE ──────────────────────────────────────────────────
+// ─── TOUCH PANEL SWITCH ─────────────────────────────────────────
+const TouchSwitch = ({ room, isOn, onToggle }) => (
+  <button
+    onClick={() => onToggle(room.id)}
+    className="group relative flex flex-col items-center gap-2 py-4 px-2 outline-none"
+    data-testid={`touch-switch-${room.id}`}
+  >
+    {/* Switch circle */}
+    <div className={`relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
+      isOn
+        ? 'bg-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.5),0_0_4px_rgba(249,115,22,0.8)]'
+        : 'bg-white/[0.06] group-hover:bg-white/10'
+    }`}>
+      {/* Glow ring */}
+      {isOn && <div className="absolute inset-[-4px] rounded-full border border-orange-500/30 animate-pulse" />}
+      <Power size={18} className={`transition-colors duration-300 ${isOn ? 'text-white' : 'text-zinc-600 group-hover:text-zinc-400'}`} />
+    </div>
+    {/* Label */}
+    <span className={`text-[9px] text-center uppercase tracking-[1.5px] font-medium leading-tight transition-colors duration-300 ${
+      isOn ? 'text-orange-400' : 'text-zinc-600'
+    }`}>{room.name}</span>
+    {/* Tiny status dot */}
+    <div className={`w-1 h-1 rounded-full transition-all duration-300 ${isOn ? 'bg-orange-500 shadow-[0_0_6px_rgba(249,115,22,0.8)]' : 'bg-zinc-800'}`} />
+  </button>
+);
+
+// ─── GLASS TOUCH PANEL ──────────────────────────────────────────
+const TouchPanel = ({ roomStates, onToggle, onAllOn, onAllOff }) => {
+  const litCount = Object.values(roomStates).filter(Boolean).length;
+  return (
+    <div className="relative" data-testid="touch-panel">
+      {/* Panel frame — dark glass with subtle bevel */}
+      <div
+        className="rounded-[20px] overflow-hidden"
+        style={{
+          background: 'linear-gradient(145deg, rgba(20,20,28,0.95), rgba(10,10,15,0.98))',
+          boxShadow: '0 30px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04), inset 0 -1px 0 rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.03)',
+        }}
+      >
+        {/* Glass reflection */}
+        <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-white/[0.02] to-transparent rounded-t-[20px] pointer-events-none" />
+
+        {/* Panel header */}
+        <div className="flex items-center justify-between px-6 pt-5 pb-3">
+          <div>
+            <div className="text-[10px] text-zinc-500 uppercase tracking-[3px] font-medium">InHaus</div>
+            <div className="text-xs text-white font-semibold" style={{ fontFamily: 'Outfit, sans-serif' }}>Touch Panel</div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className={`w-1.5 h-1.5 rounded-full ${litCount > 0 ? 'bg-orange-500 shadow-[0_0_6px_rgba(249,115,22,0.6)]' : 'bg-zinc-700'}`} />
+            <span className="text-[9px] text-zinc-500 font-medium">{litCount} ON</span>
+          </div>
+        </div>
+
+        {/* Divider line */}
+        <div className="mx-5 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+
+        {/* Switch grid — 3 columns */}
+        <div className="grid grid-cols-3 gap-0 px-3 py-3">
+          {rooms.map((r) => (
+            <TouchSwitch key={r.id} room={r} isOn={!!roomStates[r.id]} onToggle={onToggle} />
+          ))}
+        </div>
+
+        {/* Bottom divider */}
+        <div className="mx-5 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+
+        {/* All On / All Off bar */}
+        <div className="flex items-center gap-2 px-5 py-4">
+          <button
+            onClick={onAllOff}
+            className="flex-1 py-2 rounded-xl text-[10px] font-semibold uppercase tracking-wider bg-white/[0.04] border border-white/[0.06] text-zinc-500 hover:bg-white/[0.08] hover:text-zinc-300 transition-all"
+            data-testid="touch-all-off"
+          >All Off</button>
+          <button
+            onClick={onAllOn}
+            className="flex-1 py-2 rounded-xl text-[10px] font-semibold uppercase tracking-wider bg-orange-500/10 border border-orange-500/20 text-orange-400 hover:bg-orange-500/20 transition-all"
+            data-testid="touch-all-on"
+          >All On</button>
+        </div>
+      </div>
+
+      {/* Panel wall-mount shadow */}
+      <div className="absolute -bottom-3 left-4 right-4 h-6 bg-black/30 blur-xl rounded-full -z-10" />
+    </div>
+  );
+};
 const RoomTile = ({ room, isOn, onToggle }) => (
   <div
     className={`relative flex flex-col rounded-2xl transition-all duration-200 overflow-hidden p-3 ${
@@ -541,7 +627,7 @@ const HomePage = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 max-w-6xl mx-auto items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-7 gap-8 max-w-7xl mx-auto items-start">
             {/* Controller — Mobile Phone Frame */}
             <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="lg:col-span-2">
               {/* Phone outer shell */}
@@ -722,6 +808,12 @@ const HomePage = () => {
                   </div>
                 </div>
               </div>
+            </motion.div>
+
+            {/* Touch Panel */}
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
+              className="lg:col-span-2 flex items-center">
+              <TouchPanel roomStates={roomStates} onToggle={toggleRoom} onAllOn={() => toggleAll(true)} onAllOff={() => toggleAll(false)} />
             </motion.div>
 
             {/* Floorplan */}
