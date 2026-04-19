@@ -1,194 +1,103 @@
 {
-  "design_strategy": {
-    "theme": "Cinematic Smart Home (Dark Mode Primary)",
-    "core_concept": "The Interface is the Home's Nervous System",
-    "emotional_tone": "Premium, Intelligent, Warm, Secure",
-    "visual_style": "Dark Luxury, Neon Accents, Glassmorphism, Cinematic Depth"
+  "theme": "dark",
+  "archetype": "5",
+  "archetype_name": "Jewel & Luxury (Tech Variant)",
+  "colors": {
+    "background": "#0A0A0A",
+    "surface": "#141414",
+    "surface_glass": "rgba(255, 255, 255, 0.03)",
+    "primary_accent": "#f97316",
+    "primary_accent_hover": "#ea580c",
+    "text_primary": "#FFFFFF",
+    "text_secondary": "#A1A1AA",
+    "border_subtle": "rgba(255, 255, 255, 0.1)"
   },
   "typography": {
-    "font_family_headings": "Outfit, sans-serif",
-    "font_family_body": "DM Sans, sans-serif",
-    "font_weights": {
-      "thin": 100,
-      "light": 300,
-      "regular": 400,
-      "medium": 500,
-      "bold": 700,
-      "black": 900
-    },
-    "heading_styles": {
-      "h1": "text-5xl md:text-7xl font-bold tracking-tight leading-none",
-      "h2": "text-4xl md:text-5xl font-bold tracking-tight",
-      "h3": "text-2xl md:text-3xl font-semibold tracking-wide"
-    },
-    "body_styles": {
-      "large": "text-lg md:text-xl font-light leading-relaxed",
-      "base": "text-base font-normal leading-relaxed text-neutral-400",
-      "small": "text-sm font-medium tracking-wider uppercase text-neutral-500"
-    }
-  },
-  "colors": {
-    "palette": {
-      "background": {
-        "primary": "#0A0A0A",
-        "secondary": "#171717",
-        "tertiary": "#262626"
-      },
-      "brand": {
-        "primary": "#F97316",
-        "primary_hover": "#EA580C",
-        "glow": "rgba(249, 115, 22, 0.5)"
-      },
-      "text": {
-        "primary": "#FFFFFF",
-        "secondary": "#A3A3A3",
-        "accent": "#F97316"
-      },
-      "border": {
-        "subtle": "rgba(255, 255, 255, 0.1)",
-        "active": "rgba(249, 115, 22, 0.5)"
-      },
-      "status": {
-        "success": "#10B981",
-        "error": "#EF4444",
-        "warning": "#F59E0B"
-      }
-    },
-    "gradients": {
-      "brand_glow": "linear-gradient(135deg, #F97316 0%, #EA580C 100%)",
-      "dark_overlay": "linear-gradient(to bottom, rgba(10,10,10,0) 0%, rgba(10,10,10,0.8) 50%, #0A0A0A 100%)",
-      "glass_surface": "linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)"
-    }
+    "heading_font": "Outfit",
+    "body_font": "Manrope",
+    "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tighter font-medium",
+    "h2": "text-3xl sm:text-4xl tracking-tight font-medium",
+    "h3": "text-xl sm:text-2xl tracking-tight font-medium",
+    "body": "text-base leading-relaxed text-zinc-400",
+    "overline": "text-xs tracking-[0.2em] uppercase text-orange-500 font-semibold"
   },
   "layout": {
-    "container": {
-      "max_width": "max-w-7xl",
-      "padding": "px-4 md:px-8 lg:px-12"
+    "spacing_scale": "Generous (p-8 to p-24)",
+    "container_padding": "px-6 md:px-12 lg:px-24",
+    "section_gap": "py-24 md:py-32",
+    "hero_grid": "grid grid-cols-1 lg:grid-cols-12 gap-12 items-center",
+    "bento_grid": "grid grid-cols-1 md:grid-cols-3 gap-6",
+    "control_room_grid": "grid grid-cols-2 md:grid-cols-4 gap-4"
+  },
+  "surfaces": {
+    "cards": "bg-[#141414] border border-white/10 rounded-2xl overflow-hidden hover:border-orange-500/50 transition-colors duration-300",
+    "glass_header": "fixed top-0 w-full z-50 backdrop-blur-xl bg-black/60 border-b border-white/10",
+    "buttons": "rounded-full px-8 py-3 font-medium transition-all duration-300"
+  },
+  "animations": {
+    "hover_state": "hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(249,115,22,0.2)]",
+    "entrance": "framer-motion initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}"
+  },
+  "media": {
+    "images": {
+      "residential_img": "https://images.pexels.com/photos/36353381/pexels-photo-36353381.png",
+      "commercial_img": "https://images.unsplash.com/photo-1599580546666-c26f15e00933",
+      "hotel_img": "https://images.unsplash.com/photo-1709431511158-0dce8198ecb1"
     },
-    "spacing": {
-      "section_gap": "py-24 md:py-32",
-      "component_gap": "gap-8 md:gap-12"
-    },
-    "grid_system": {
-      "bento": "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6",
-      "products": "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+    "demo_assets": {
+      "base": "NoLights.png",
+      "overlays": "9 room PNG overlays toggled via React state (preserve existing functionality)"
     }
   },
-  "components": {
-    "navbar": {
-      "style": "floating-glass",
-      "classes": "fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl rounded-full border border-white/10 bg-black/60 backdrop-blur-xl shadow-2xl z-50 px-6 py-4 flex items-center justify-between"
+  "components_needed": [
+    "lucide-react",
+    "framer-motion",
+    "react-fast-marquee"
+  ],
+  "sections": [
+    {
+      "name": "Header",
+      "design": "Crystal Glass surface (`backdrop-blur-xl bg-black/60`), sticky top. Logo left, Nav links center (hidden on mobile), CTA right. Mobile hamburger menu."
     },
-    "buttons": {
-      "primary": "bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-full font-medium transition-all duration-300 shadow-[0_0_20px_rgba(249,115,22,0.3)] hover:shadow-[0_0_30px_rgba(249,115,22,0.5)] hover:scale-105",
-      "secondary": "bg-white/5 border border-white/10 hover:bg-white/10 text-white px-8 py-3 rounded-full font-medium transition-all duration-300 backdrop-blur-sm",
-      "outline": "border border-orange-500/50 text-orange-500 hover:bg-orange-500/10 px-6 py-2 rounded-full font-medium transition-all"
+    {
+      "name": "Hero Section",
+      "design": "Grid split: Left 5 cols (Overline, H1, Subtitle, CTA buttons), Right 7 cols (Interactive Smart Lights Demo). Add a subtle, glowing orange ambient shadow (`bg-orange-500/10 blur-3xl`) behind the demo to make it pop."
     },
-    "cards": {
-      "product": "group relative bg-neutral-900/40 border border-white/5 rounded-2xl overflow-hidden hover:border-orange-500/30 transition-all duration-500",
-      "feature": "bg-neutral-900/20 border border-white/5 rounded-3xl p-8 hover:bg-neutral-900/40 transition-all duration-300 backdrop-blur-sm"
+    {
+      "name": "Tech Ticker",
+      "design": "Living Texture Marquee. Slow moving tech labels (Wi-Fi, Zigbee, Bluetooth, Alexa, Matter) using react-fast-marquee. Low contrast text (`text-zinc-700`) on black background. Wide tracking."
     },
-    "inputs": {
-      "style": "bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-neutral-500 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all"
+    {
+      "name": "Service Categories",
+      "design": "3-column Bento grid. Cards for Residential, Commercial, Hotels. Each has a background image with heavy black gradient overlay (`bg-gradient-to-t from-[#0A0A0A] via-black/60 to-transparent`). White text, orange accent icon on hover."
+    },
+    {
+      "name": "Stats & Social Proof",
+      "design": "Control Room grid (4 columns). Big numbers (`text-5xl font-light text-white`), small labels (`text-sm text-zinc-500`). Subtle 1px borders."
+    },
+    {
+      "name": "Features",
+      "design": "Grid Layout with Tracing Beam or Neumorphic dark cards. 'Smart Living', 'Why InHaus', 'Premium Devices'. High contrast icons."
+    },
+    {
+      "name": "CTA Section",
+      "design": "Massive typography. 'Ready to upgrade?'. Orange primary button. Generous padding (`py-32`)."
+    },
+    {
+      "name": "Footer",
+      "design": "Generous spacing (`py-24`). Deep black background. Big brand text (`text-[5vw]`), standard structured links. Contrast shifted from surface to base."
     }
-  },
-  "visual_enhancers": {
-    "glassmorphism": {
-      "light": "bg-white/5 backdrop-blur-lg border border-white/10",
-      "heavy": "bg-black/40 backdrop-blur-xl border border-white/5"
-    },
-    "shadows": {
-      "glow": "0 0 40px -10px rgba(249, 115, 22, 0.3)",
-      "ambient": "0 20px 40px -20px rgba(0,0,0,0.5)"
-    },
-    "borders": {
-      "tracing_beam": "relative overflow-hidden before:absolute before:inset-0 before:p-[1px] before:bg-gradient-to-r before:from-transparent before:via-orange-500/50 before:to-transparent before:animate-border-flow"
-    }
-  },
-  "motion": {
-    "libraries": ["framer-motion", "lenis"],
-    "animations": {
-      "fade_up": {
-        "initial": { "opacity": 0, "y": 20 },
-        "animate": { "opacity": 1, "y": 0 },
-        "transition": { "duration": 0.5, "ease": "easeOut" }
-      },
-      "stagger_children": {
-        "visible": {
-          "transition": {
-            "staggerChildren": 0.1
-          }
-        }
-      },
-      "hover_lift": {
-        "whileHover": { "y": -5, "scale": 1.02 }
-      }
-    }
-  },
-  "images": {
-    "hero_background": {
-      "url": "https://images.pexels.com/photos/30441226/pexels-photo-30441226.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-      "alt": "Warm, modern, intelligent living room interior",
-      "overlay": "dark_overlay"
-    },
-    "secondary_hero": {
-      "url": "https://images.unsplash.com/photo-1642610956697-99ead57cec7b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzV8MHwxfHNlYXJjaHwyfHxtb2Rlcm4lMjBsdXh1cnklMjBsaXZpbmclMjByb29tJTIwbmlnaHQlMjBzbWFydCUyMGxpZ2h0aW5nJTIwZGFyayUyMGludGVyaW9yfGVufDB8fHx8MTc3MTYwODQ1NHww&ixlib=rb-4.1.0&q=85",
-      "alt": "Moody cinematic smart home lighting"
-    },
-    "products": {
-      "smart_speaker": {
-        "url": "https://images.pexels.com/photos/14309805/pexels-photo-14309805.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-        "alt": "AI Smart Speaker with illuminated ring"
-      },
-      "thermostat": {
-        "url": "https://images.pexels.com/photos/7616651/pexels-photo-7616651.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-        "alt": "Digital Smart Thermostat close up"
-      },
-      "camera": {
-        "url": "https://images.pexels.com/photos/16423102/pexels-photo-16423102.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-        "alt": "Modern Security Camera"
-      },
-      "smart_lock": {
-        "url": "https://images.unsplash.com/photo-1737820254974-03006441c574?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODR8MHwxfHNlYXJjaHwxfHxzbWFydCUyMGRvb3IlMjBsb2NrJTIwbW9kZXJuJTIwYmxhY2slMjBmcm9udCUyMGRvb3IlMjBjbG9zZSUyMHVwfGVufDB8fHx8MTc3MTYwODQ2MXww&ixlib=rb-4.1.0&q=85",
-        "alt": "Smart Door Lock"
-      }
-    },
-    "about": {
-      "team": {
-        "url": "https://images.pexels.com/photos/7794060/pexels-photo-7794060.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-        "alt": "Diverse InHaus Team in modern office"
-      }
-    }
-  },
-  "component_path": {
-    "shadcn": "src/components/ui",
-    "pages": "src/pages",
-    "custom_components": "src/components"
+  ],
+  "testing": {
+    "rules": "All interactive elements MUST include `data-testid` attribute (e.g., `data-testid='hero-cta-button'`, `data-testid='nav-home-link'`)."
   },
   "instructions_to_main_agent": [
-    "Implement 'Dark Mode' as the DEFAULT and PRIMARY theme. Do not rely on system preference; force dark theme for public pages.",
-    "Use the 'Outfit' font for all headings. You must import it from Google Fonts in index.css.",
-    "Use 'DM Sans' for all body text. Import from Google Fonts.",
-    "The Navbar must be floating and glassmorphic, not attached to the top edge.",
-    "Hero sections must use full-screen background images with the specified gradients.",
-    "Product cards must use the 'Tracing Beam' or subtle border glow effect on hover.",
-    "Forms must use the custom input style defined above (transparent bg + white border), do not use default white inputs.",
-    "All interactive elements must have the 'data-testid' attribute.",
-    "Use 'lucide-react' for all icons.",
-    "Ensure the orange accent (#F97316) is used sparingly for impact (Buttons, active states, glows), not for large backgrounds.",
-    "For the 'About' page, create a story-driven layout with large typography and the team image.",
-    "Keep the 'Contact' page minimal with a large map and the transparent contact form.",
-    "Do not break existing Admin/Customer dashboard routes, but ensure the public pages feel distinctively premium."
-  ],
-  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
-    "You tend to converge toward generic outputs. Avoid this.",
-    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
-    "Don't make generic centered layouts. Use asymmetry.",
-    "Create depth through layered design elements with z-index hierarchy.",
-    "Use glass-morphism effects with backdrop filters (12-24px blur).",
-    "You MUST NOT apply universal transition (transition: all).",
-    "NEVER use AI assistant Emojis.",
-    "Use 2-3x more spacing than feels comfortable.",
-    "Subtle grain textures and noise overlays are encouraged."
+    "Install required dependencies: `yarn add framer-motion react-fast-marquee lucide-react`.",
+    "Use 'Outfit' for headings and 'Manrope' for body text. Import them via Google Fonts in index.html or global css.",
+    "Preserve the Interactive Smart Lights Demo exactly as built (NoLights.png + 9 overlays). Position it prominently in the right column of the Hero section.",
+    "Do NOT use pure #000000. Use the specified #0A0A0A base.",
+    "Ensure all cards use 1px subtle borders (`border-white/10`) and no flat backgrounds without texture or borders.",
+    "Apply `data-testid` to all actionable elements for automated testing.",
+    "For Partner logos, use simple text with `font-medium tracking-widest` or relevant Lucide icons if applicable, wrapped inside the `react-fast-marquee`."
   ]
 }
