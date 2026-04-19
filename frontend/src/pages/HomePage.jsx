@@ -184,31 +184,30 @@ const HomePage = () => {
                 &mdash; InHaus delivers seamless control of lights, locks, curtains and climate.
               </motion.p>
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15 }}
-                className="flex flex-wrap gap-3 mb-6">
-                <Link to="/products" data-testid="hero-cta-primary">
-                  <button className="group flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white rounded-full px-7 py-3 font-medium transition-all duration-300 shadow-[0_0_24px_rgba(249,115,22,0.25)] hover:shadow-[0_0_36px_rgba(249,115,22,0.4)]">
-                    Explore Products <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
-                  </button>
-                </Link>
-                <Link to="/contact" data-testid="hero-cta-secondary">
-                  <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-full px-7 py-3 font-medium transition-all">
-                    <Play size={14} className="text-orange-500" /> Get a Quote
-                  </button>
-                </Link>
-              </motion.div>
-              {/* Try Demo CTA */}
-              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.25 }}>
+                className="flex flex-col gap-4 mb-2">
+                {/* Primary — Try Interactive Demo (most prominent) */}
                 <button
                   onClick={() => document.getElementById('interactive-demo')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="group flex items-center gap-2 text-sm text-orange-400 hover:text-orange-300 font-medium transition-all"
+                  className="group flex items-center gap-3 bg-orange-500 hover:bg-orange-600 text-white rounded-full px-8 py-4 font-semibold text-base transition-all duration-300 shadow-[0_0_30px_rgba(249,115,22,0.3)] hover:shadow-[0_0_45px_rgba(249,115,22,0.5)] hover:scale-[1.02] w-fit"
                   data-testid="try-demo-cta"
                 >
-                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-orange-500/10 border border-orange-500/20 group-hover:bg-orange-500/20 transition-colors">
-                    <Lightbulb size={14} className="text-orange-500" />
-                  </span>
+                  <Lightbulb size={18} />
                   Try our Interactive Demo
-                  <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </button>
+                {/* Secondary row */}
+                <div className="flex flex-wrap gap-3">
+                  <Link to="/products" data-testid="hero-cta-primary">
+                    <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-full px-6 py-3 text-sm font-medium transition-all">
+                      Explore Products <ArrowRight size={14} />
+                    </button>
+                  </Link>
+                  <Link to="/contact" data-testid="hero-cta-secondary">
+                    <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-full px-6 py-3 text-sm font-medium transition-all">
+                      Contact Us
+                    </button>
+                  </Link>
+                </div>
               </motion.div>
             </div>
 
