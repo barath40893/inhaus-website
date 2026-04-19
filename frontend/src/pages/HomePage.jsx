@@ -7,20 +7,20 @@ import Footer from '../components/Footer';
 import {
   ArrowRight, Wifi, Bluetooth, Shield, Lightbulb, Lock, Mic, MicOff,
   Power, Sun, Moon, ChevronRight, Play, Zap, Home, Building2, Hotel,
-  Cpu, Eye, Headphones, Volume2
+  Cpu, Eye, Headphones, Volume2, ShowerHead, Plug, BatteryCharging, Lamp
 } from 'lucide-react';
 
 // ─── ROOM DATA (9 rooms matching NoLights.png overlays) ────────
 const rooms = [
-  { id: 'hall', name: 'Hall', overlay: '/overlay-living.png' },
-  { id: 'kitchen', name: 'Kitchen', overlay: '/overlay-kitchen.png' },
-  { id: 'master', name: 'Master Bedroom', overlay: '/overlay-bedroom.png' },
-  { id: 'small', name: 'Small Bedroom', overlay: '/overlay-office.png' },
-  { id: 'parking', name: 'Parking', overlay: '/overlay-garage.png' },
-  { id: 'stairs', name: 'Stairs', overlay: '/overlay-hallway.png' },
-  { id: 'hanging', name: 'Hanging Lights', overlay: '/overlay-hanging.png' },
-  { id: 'masterbath', name: 'Master Bath', overlay: '/overlay-masterbath.png' },
-  { id: 'guestbath', name: 'Guest Bath', overlay: '/overlay-guestbath.png' },
+  { id: 'hall', name: 'Hall', overlay: '/overlay-living.png', switchIcon: Lightbulb },
+  { id: 'kitchen', name: 'Kitchen', overlay: '/overlay-kitchen.png', switchIcon: Lamp },
+  { id: 'master', name: 'Master Bedroom', overlay: '/overlay-bedroom.png', switchIcon: Moon },
+  { id: 'small', name: 'Small Bedroom', overlay: '/overlay-office.png', switchIcon: Lightbulb },
+  { id: 'parking', name: 'Parking', overlay: '/overlay-garage.png', switchIcon: Power },
+  { id: 'stairs', name: 'Stairs', overlay: '/overlay-hallway.png', switchIcon: Zap },
+  { id: 'hanging', name: 'Hanging Lights', overlay: '/overlay-hanging.png', switchIcon: Sun },
+  { id: 'masterbath', name: 'Master Bath', overlay: '/overlay-masterbath.png', switchIcon: ShowerHead },
+  { id: 'guestbath', name: 'Guest Bath', overlay: '/overlay-guestbath.png', switchIcon: ShowerHead },
 ];
 
 // ─── TICKER ITEMS ───────────────────────────────────────────────
@@ -488,27 +488,29 @@ const HomePage = () => {
   const voice = useVoiceCommand({ onToggleAll: toggleAll, onSetRoom: setRoom });
   const [cmdInput, setCmdInput] = useState('');
   const [userInteracted, setUserInteracted] = useState(false);
+  const [heroAnimDone, setHeroAnimDone] = useState(false);
 
+  // Hero auto-demo: lights cascade on then off when page loads
   useEffect(() => {
-    if (!demoInView) return;
-    animTimers.current.forEach((t) => clearTimeout(t));
-    animTimers.current = [];
-    const main = setTimeout(() => {
+    const timers = [];
+    const t1 = setTimeout(() => {
       rooms.forEach((r, i) => {
-        const t = setTimeout(() => setRoomStates((p) => ({ ...p, [r.id]: true })), i * 180);
-        animTimers.current.push(t);
+        const t = setTimeout(() => setRoomStates((p) => ({ ...p, [r.id]: true })), i * 200);
+        timers.push(t);
       });
-      const off = setTimeout(() => {
+      const offDelay = setTimeout(() => {
         rooms.forEach((r, i) => {
-          const t = setTimeout(() => setRoomStates((p) => ({ ...p, [r.id]: false })), i * 120);
-          animTimers.current.push(t);
+          const t = setTimeout(() => setRoomStates((p) => ({ ...p, [r.id]: false })), i * 140);
+          timers.push(t);
         });
-      }, 2800);
-      animTimers.current.push(off);
-    }, 400);
-    animTimers.current.push(main);
-    return () => { animTimers.current.forEach((t) => clearTimeout(t)); animTimers.current = []; };
-  }, [demoInView]);
+        const done = setTimeout(() => setHeroAnimDone(true), rooms.length * 140 + 300);
+        timers.push(done);
+      }, rooms.length * 200 + 1200);
+      timers.push(offDelay);
+    }, 800);
+    timers.push(t1);
+    return () => timers.forEach(t => clearTimeout(t));
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white overflow-x-hidden" style={{ fontFamily: 'Manrope, sans-serif' }}>
@@ -523,22 +525,34 @@ const HomePage = () => {
             <div className="lg:col-span-5">
               <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
                 className="text-xs tracking-[0.2em] uppercase text-orange-500 font-semibold mb-4">
-                Smart Living Platform
+                Smart Home Automation
               </motion.p>
               <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.05 }}
                 className="text-4xl sm:text-5xl lg:text-6xl tracking-tighter font-medium leading-[1.1] mb-5"
                 style={{ fontFamily: 'Outfit, sans-serif' }} data-testid="hero-title">
-                Automation for{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500">Every Space</span>
+                Your Lights.{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500">Your Control.</span>
               </motion.h1>
               <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-base text-zinc-400 leading-relaxed mb-8 max-w-md">
-                From private residences to luxury hotels and commercial buildings
-                &mdash; InHaus delivers seamless control of lights, locks, curtains and climate.
+                className="text-base text-zinc-400 leading-relaxed mb-4 max-w-md">
+                Imagine walking into your home and every light responds to your touch, your phone, or just your voice. That's InHaus.
               </motion.p>
+
+              {/* Animated prompt after auto-demo */}
+              <AnimatePresence>
+                {heroAnimDone && !userInteracted && (
+                  <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                    className="text-sm text-orange-400 font-medium mb-4 flex items-center gap-2">
+                    <motion.span animate={{ x: [0, 4, 0] }} transition={{ duration: 1.2, repeat: Infinity }}>
+                      <ArrowRight size={14} />
+                    </motion.span>
+                    See how the lights turned on? Try it yourself below
+                  </motion.p>
+                )}
+              </AnimatePresence>
+
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15 }}
                 className="flex flex-col gap-4 mb-2">
-                {/* Primary — Try Interactive Demo (most prominent) */}
                 <button
                   onClick={() => document.getElementById('interactive-demo')?.scrollIntoView({ behavior: 'smooth' })}
                   className="group flex items-center gap-3 bg-orange-500 hover:bg-orange-600 text-white rounded-full px-8 py-4 font-semibold text-base transition-all duration-300 shadow-[0_0_30px_rgba(249,115,22,0.3)] hover:shadow-[0_0_45px_rgba(249,115,22,0.5)] hover:scale-[1.02] w-fit"
@@ -548,7 +562,6 @@ const HomePage = () => {
                   Try our Interactive Demo
                   <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </button>
-                {/* Secondary row */}
                 <div className="flex flex-wrap gap-3">
                   <Link to="/products" data-testid="hero-cta-primary">
                     <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-full px-6 py-3 text-sm font-medium transition-all">
@@ -678,43 +691,42 @@ const HomePage = () => {
                 </div>
                 <div className="rounded-2xl overflow-hidden" data-testid="demo-touch-panel"
                   style={{
-                    background: 'linear-gradient(145deg, rgba(18,18,24,0.97), rgba(10,10,14,0.98))',
-                    boxShadow: userInteracted
-                      ? '0 16px 50px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05), 0 0 0 1px rgba(255,255,255,0.04)'
-                      : '0 16px 50px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05), 0 0 0 2px rgba(249,115,22,0.15)',
+                    background: '#0a0a0a',
+                    boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 0 2px rgba(200,170,80,0.5), 0 0 0 5px rgba(200,170,80,0.12)',
                   }}
                 >
                   <div className="relative">
-                    <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-white/[0.015] to-transparent pointer-events-none rounded-t-2xl" />
+                    <div className="absolute top-0 left-0 right-0 h-1/4 bg-gradient-to-b from-white/[0.03] to-transparent pointer-events-none rounded-t-2xl" />
                     <div className="grid grid-cols-4">
                       {rooms.slice(0, 8).map((r, idx) => {
                         const isOn = !!roomStates[r.id];
+                        const Icon = r.switchIcon;
                         return (
                           <button key={r.id} onClick={() => { toggleRoom(r.id); setUserInteracted(true); }}
-                            className="group relative flex flex-col items-center justify-center py-4 hover:bg-white/[0.03] transition-all"
+                            className="group relative flex flex-col items-center justify-center py-5 hover:bg-white/[0.03] transition-all"
                             data-testid={`panel-touch-${r.id}`}
                           >
-                            {/* Pulse hint on first 3 switches before user interacts */}
                             {!userInteracted && idx < 3 && (
-                              <motion.div className="absolute inset-2 rounded-xl border border-orange-500/20"
-                                animate={{ opacity: [0, 0.5, 0] }}
+                              <motion.div className="absolute inset-3 rounded-xl border border-cyan-400/20"
+                                animate={{ opacity: [0, 0.6, 0] }}
                                 transition={{ duration: 2, repeat: Infinity, delay: idx * 0.4 }} />
                             )}
-                            <div className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-200 ${
-                              isOn ? 'bg-orange-500 shadow-[0_0_14px_rgba(249,115,22,0.5)]' : 'bg-white/[0.06] group-hover:bg-white/10'
-                            }`}>
-                              <Power size={16} className={isOn ? 'text-white' : 'text-zinc-600'} />
+                            <div className="w-12 h-12 flex items-center justify-center">
+                              <Icon size={24} strokeWidth={1.5} className={`transition-all duration-300 ${
+                                isOn ? 'text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.7)]' : 'text-zinc-700 group-hover:text-zinc-500'
+                              }`} />
                             </div>
-                            <span className={`mt-1.5 text-[8px] uppercase tracking-[0.5px] font-medium ${isOn ? 'text-orange-400' : 'text-zinc-700'}`}>
+                            <span className={`mt-1 text-[7px] uppercase tracking-[0.5px] font-medium ${isOn ? 'text-cyan-400' : 'text-zinc-700'}`}>
                               {r.name.length > 7 ? r.name.split(' ')[0] : r.name}
                             </span>
                           </button>
                         );
                       })}
                     </div>
-                    <div className="grid grid-cols-2 gap-2 px-4 pb-3">
-                      <button onClick={() => { toggleAll(false); setUserInteracted(true); }} className="py-2 rounded-xl text-[10px] font-semibold uppercase tracking-wider bg-white/[0.04] border border-white/[0.06] text-zinc-500 hover:bg-white/[0.08] transition-all" data-testid="touch-all-off">All Off</button>
-                      <button onClick={() => { toggleAll(true); setUserInteracted(true); }} className="py-2 rounded-xl text-[10px] font-semibold uppercase tracking-wider bg-orange-500/10 border border-orange-500/20 text-orange-400 hover:bg-orange-500/20 transition-all" data-testid="touch-all-on">All On</button>
+                    <div className="mx-4 h-px bg-gradient-to-r from-transparent via-amber-700/20 to-transparent" />
+                    <div className="grid grid-cols-2 gap-2 px-4 py-3">
+                      <button onClick={() => { toggleAll(false); setUserInteracted(true); }} className="py-2 rounded-xl text-[10px] font-semibold uppercase tracking-wider bg-white/[0.03] border border-white/[0.06] text-zinc-500 hover:text-cyan-400 hover:border-cyan-500/20 transition-all" data-testid="touch-all-off">All Off</button>
+                      <button onClick={() => { toggleAll(true); setUserInteracted(true); }} className="py-2 rounded-xl text-[10px] font-semibold uppercase tracking-wider bg-cyan-500/5 border border-cyan-500/15 text-cyan-400 hover:bg-cyan-500/10 transition-all" data-testid="touch-all-on">All On</button>
                     </div>
                   </div>
                 </div>
