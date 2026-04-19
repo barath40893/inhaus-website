@@ -614,17 +614,17 @@ const HomePage = () => {
       </section>
 
       {/* ═══ INTERACTIVE DEMO — TOUCH · TAP · TALK ═══ */}
-      <section id="interactive-demo" className="py-24 md:py-32 relative" data-testid="smart-demo-section">
+      <section id="interactive-demo" className="py-16 md:py-20 relative" data-testid="smart-demo-section">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-orange-500/[0.015] to-transparent pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 relative z-10">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12 relative z-10">
 
-          {/* Hook headline */}
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-6">
-            <p className="text-xs tracking-[0.2em] uppercase text-orange-500 font-semibold mb-3">Interactive Demo</p>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl tracking-tight font-medium leading-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>
+          {/* Headline */}
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8">
+            <p className="text-xs tracking-[0.2em] uppercase text-orange-500 font-semibold mb-2">Interactive Demo</p>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl tracking-tight font-medium leading-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>
               Want to control your lights?
             </h2>
-            <p className="text-lg text-zinc-400 mt-4 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-sm sm:text-base text-zinc-400 mt-2 max-w-xl mx-auto">
               <span className="text-white font-medium">Touch</span> the panel.{' '}
               <span className="text-white font-medium">Tap</span> the app.{' '}
               <span className="text-white font-medium">Talk</span> to your home.{' '}
@@ -632,197 +632,153 @@ const HomePage = () => {
             </p>
           </motion.div>
 
-          {/* Step indicators */}
-          <div className="flex items-center justify-center gap-3 sm:gap-6 mb-12">
-            {[
-              { num: 1, label: 'Touch', icon: Zap, desc: 'Switch panel' },
-              { num: 2, label: 'Tap', icon: Lightbulb, desc: 'Mobile app' },
-              { num: 3, label: 'Talk', icon: Mic, desc: 'Voice command' },
-            ].map((s, i) => (
-              <motion.div key={i} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="flex items-center gap-2 sm:gap-3"
-              >
+          {/* 3-column: Touch | Tap & Talk | Floorplan */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+            {/* COL 1 — TOUCH (4x2 Glass Panel) */}
+            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+              className="lg:col-span-3">
+              <div className="flex items-center gap-2 mb-3">
                 <div className="relative">
-                  <div className="w-10 h-10 rounded-full bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
-                    <span className="text-sm font-bold text-orange-500">{s.num}</span>
-                  </div>
-                  {/* Pulse ring */}
-                  <motion.div className="absolute inset-0 rounded-full border border-orange-500/20"
-                    animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0, 0.5] }}
-                    transition={{ duration: 2, repeat: Infinity, delay: i * 0.6 }} />
-                </div>
-                <div className="hidden sm:block">
-                  <div className="text-sm font-semibold text-white" style={{ fontFamily: 'Outfit, sans-serif' }}>{s.label}</div>
-                  <div className="text-[10px] text-zinc-500">{s.desc}</div>
-                </div>
-                {i < 2 && <ChevronRight size={14} className="text-zinc-700 ml-1 sm:ml-2" />}
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
-            {/* LEFT — Controls */}
-            <div className="space-y-6">
-
-              {/* ── STEP 1: TOUCH — 4x2 Glass Panel ── */}
-              <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="relative">
-                    <div className="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
-                      <span className="text-xs font-bold text-orange-500">1</span>
-                    </div>
-                    {!userInteracted && (
-                      <motion.div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-orange-500"
-                        animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }}
-                        transition={{ duration: 1.2, repeat: Infinity }} />
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="text-base font-semibold text-white" style={{ fontFamily: 'Outfit, sans-serif' }}>Touch</h3>
-                    <p className="text-[11px] text-zinc-500">{!userInteracted ? 'Tap any switch below to try it' : 'Smart switch panel'}</p>
+                  <div className="w-7 h-7 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+                    <span className="text-[10px] font-bold text-orange-500">1</span>
                   </div>
                   {!userInteracted && (
-                    <motion.span className="ml-auto text-[10px] text-orange-400 font-semibold px-2.5 py-1 rounded-full bg-orange-500/10 border border-orange-500/20"
-                      animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 1.5, repeat: Infinity }}>
-                      Try me
-                    </motion.span>
+                    <motion.div className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-orange-500"
+                      animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }}
+                      transition={{ duration: 1.2, repeat: Infinity }} />
                   )}
                 </div>
-                <div className="rounded-2xl overflow-hidden" data-testid="demo-touch-panel"
-                  style={{
-                    background: '#0a0a0a',
-                    boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 0 2px rgba(200,170,80,0.5), 0 0 0 5px rgba(200,170,80,0.12)',
-                  }}
-                >
-                  <div className="relative">
-                    <div className="absolute top-0 left-0 right-0 h-1/4 bg-gradient-to-b from-white/[0.03] to-transparent pointer-events-none rounded-t-2xl" />
-                    <div className="grid grid-cols-4">
-                      {rooms.slice(0, 8).map((r, idx) => {
-                        const isOn = !!roomStates[r.id];
-                        const Icon = r.switchIcon;
-                        return (
-                          <button key={r.id} onClick={() => { toggleRoom(r.id); setUserInteracted(true); }}
-                            className="group relative flex flex-col items-center justify-center py-5 hover:bg-white/[0.03] transition-all"
-                            data-testid={`panel-touch-${r.id}`}
-                          >
-                            {!userInteracted && idx < 3 && (
-                              <motion.div className="absolute inset-3 rounded-xl border border-cyan-400/20"
-                                animate={{ opacity: [0, 0.6, 0] }}
-                                transition={{ duration: 2, repeat: Infinity, delay: idx * 0.4 }} />
-                            )}
-                            <div className="w-12 h-12 flex items-center justify-center">
-                              <Icon size={24} strokeWidth={1.5} className={`transition-all duration-300 ${
-                                isOn ? 'text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.7)]' : 'text-zinc-700 group-hover:text-zinc-500'
-                              }`} />
-                            </div>
-                            <span className={`mt-1 text-[7px] uppercase tracking-[0.5px] font-medium ${isOn ? 'text-white' : 'text-zinc-700'}`}>
-                              {r.name.length > 7 ? r.name.split(' ')[0] : r.name}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <div className="mx-4 h-px bg-gradient-to-r from-transparent via-amber-700/20 to-transparent" />
-                    <div className="grid grid-cols-2 gap-2 px-4 py-3">
-                      <button onClick={() => { toggleAll(false); setUserInteracted(true); }} className="py-2 rounded-xl text-[10px] font-semibold uppercase tracking-wider bg-white/[0.03] border border-white/[0.06] text-zinc-500 hover:text-white hover:border-white/20 transition-all" data-testid="touch-all-off">All Off</button>
-                      <button onClick={() => { toggleAll(true); setUserInteracted(true); }} className="py-2 rounded-xl text-[10px] font-semibold uppercase tracking-wider bg-white/5 border border-white/15 text-white hover:bg-white/10 transition-all" data-testid="touch-all-on">All On</button>
-                    </div>
-                  </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-white" style={{ fontFamily: 'Outfit, sans-serif' }}>Touch</h3>
+                  <p className="text-[9px] text-zinc-500">{!userInteracted ? 'Tap any switch' : 'Switch panel'}</p>
                 </div>
-              </motion.div>
-
-              {/* ── STEP 2 & 3: TAP & TALK — Phone App ── */}
-              <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
-                    <span className="text-xs font-bold text-orange-500">2</span>
-                  </div>
-                  <div>
-                    <h3 className="text-base font-semibold text-white" style={{ fontFamily: 'Outfit, sans-serif' }}>Tap & Talk</h3>
-                    <p className="text-[11px] text-zinc-500">InHaus app — tap rooms or speak commands</p>
-                  </div>
-                  <div className="ml-auto flex items-center gap-1">
-                    <span className="text-[9px] text-zinc-600 bg-white/[0.03] rounded-full px-2 py-0.5">Step 3: Mic</span>
-                  </div>
-                </div>
-                <div className="relative mx-auto max-w-[340px]">
-                  <div className="rounded-[36px] border-[2px] border-zinc-700/50 overflow-hidden shadow-[0_16px_50px_rgba(0,0,0,0.5)]" style={{ background: '#000' }}>
-                    <div className="flex items-center justify-between px-6 pt-2.5 pb-0.5">
-                      <span className="text-[9px] text-white/60 font-medium">9:41</span>
-                      <div className="flex items-center gap-1">
-                        <Wifi size={9} className="text-white/60" />
-                        <div className="w-4 h-[8px] rounded-sm border border-white/50 flex items-center justify-end pr-px">
-                          <div className="w-2.5 h-[5px] rounded-sm bg-green-400" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex justify-center mb-2">
-                      <div className="w-20 h-5 rounded-full bg-black border border-white/[0.04]" />
-                    </div>
-                    <div className="px-4 pb-5" style={{ background: 'linear-gradient(175deg, #0e1225, #070810)' }}>
-                      <div className="flex items-center gap-2 mb-3">
-                        <img src="/inhaus_icon_white.png" alt="InHaus" className="w-6 h-6 object-contain" />
-                        <img src="/inhaus_text_logo_white.png" alt="INHAUS" className="h-4 w-auto" />
-                      </div>
-                      <div className="grid grid-cols-2 gap-1.5 mb-2">
-                        <button onClick={() => toggleAll(false)} className="py-1.5 rounded-lg text-[9px] font-medium bg-white/[0.04] border border-white/[0.06] text-zinc-400 hover:bg-white/[0.07] transition-all" data-testid="controller-all-off">All Off</button>
-                        <button onClick={() => toggleAll(true)} className="py-1.5 rounded-lg text-[9px] font-medium bg-white/[0.04] border border-white/[0.06] text-zinc-400 hover:bg-white/[0.07] transition-all" data-testid="controller-all-on">All On</button>
-                      </div>
-                      {/* Voice bar — Step 3 */}
-                      <div className="relative">
-                        <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
-                          <span className="text-[8px] font-bold text-orange-500">3</span>
-                        </div>
-                        <div className={`flex items-center gap-2 p-2 rounded-xl mb-2 ml-4 transition-all ${
-                          voice.mode === 'recording' ? 'bg-orange-500/10 border border-orange-500/30' : 'bg-white/[0.03] border border-white/[0.05]'
-                        }`}>
-                          <button onClick={voice.toggleMic}
-                            className={`relative w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all ${
-                              voice.mode === 'recording' ? 'bg-orange-500 shadow-[0_0_12px_rgba(249,115,22,0.4)]'
-                              : 'bg-gradient-to-br from-orange-500/80 to-amber-500/80'
-                            }`} data-testid="voice-mic-btn">
-                            {voice.mode === 'recording' && <span className="absolute inset-0 rounded-full border border-orange-400/40 animate-ping" />}
-                            <Mic size={12} className="text-white" />
-                          </button>
-                          <div className="flex-1 min-w-0">
-                            {voice.mode === 'recording' ? <span className="text-[9px] text-orange-400 font-semibold">Listening...</span>
-                            : voice.mode === 'processing' ? <span className="text-[9px] text-amber-400">Processing...</span>
-                            : voice.feedback ? <span className="text-[9px] text-green-400 truncate block">{voice.feedback}</span>
-                            : <span className="text-[9px] text-zinc-500">Tap mic or type below</span>}
+                {!userInteracted && (
+                  <motion.span className="ml-auto text-[8px] text-orange-400 font-semibold px-2 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/20"
+                    animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 1.5, repeat: Infinity }}>
+                    Try me
+                  </motion.span>
+                )}
+              </div>
+              <div className="rounded-2xl overflow-hidden" data-testid="demo-touch-panel"
+                style={{
+                  background: '#0a0a0a',
+                  boxShadow: '0 16px 50px rgba(0,0,0,0.5), 0 0 0 2px rgba(200,170,80,0.5), 0 0 0 5px rgba(200,170,80,0.12)',
+                }}
+              >
+                <div className="relative">
+                  <div className="absolute top-0 left-0 right-0 h-1/4 bg-gradient-to-b from-white/[0.03] to-transparent pointer-events-none rounded-t-2xl" />
+                  <div className="grid grid-cols-4">
+                    {rooms.slice(0, 8).map((r, idx) => {
+                      const isOn = !!roomStates[r.id];
+                      const Icon = r.switchIcon;
+                      return (
+                        <button key={r.id} onClick={() => { toggleRoom(r.id); setUserInteracted(true); }}
+                          className="group relative flex flex-col items-center justify-center py-3.5 hover:bg-white/[0.03] transition-all"
+                          data-testid={`panel-touch-${r.id}`}
+                        >
+                          {!userInteracted && idx < 3 && (
+                            <motion.div className="absolute inset-2 rounded-lg border border-white/10"
+                              animate={{ opacity: [0, 0.5, 0] }}
+                              transition={{ duration: 2, repeat: Infinity, delay: idx * 0.4 }} />
+                          )}
+                          <div className="w-9 h-9 flex items-center justify-center">
+                            <Icon size={20} strokeWidth={1.5} className={`transition-all duration-300 ${
+                              isOn ? 'text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.7)]' : 'text-zinc-700 group-hover:text-zinc-500'
+                            }`} />
                           </div>
-                        </div>
-                      </div>
-                      <form className="flex gap-1 mb-2" onSubmit={(e) => { e.preventDefault(); if (cmdInput.trim()) { voice.processText(cmdInput.trim()); setCmdInput(''); } }}>
-                        <input type="text" value={cmdInput} onChange={(e) => setCmdInput(e.target.value)} placeholder='"turn on hall"'
-                          className="flex-1 bg-white/[0.04] border border-white/[0.06] rounded-lg px-2 py-1.5 text-[9px] text-white placeholder-zinc-600 outline-none focus:border-orange-500/40"
-                          data-testid="voice-text-input" />
-                        <button type="submit" className="px-2 py-1.5 rounded-lg bg-orange-500/20 border border-orange-500/30 text-[8px] font-semibold text-orange-400"
-                          data-testid="voice-text-submit">Go</button>
-                      </form>
-                      <div className="grid grid-cols-2 gap-1.5 max-h-[200px] overflow-y-auto custom-scrollbar">
-                        {rooms.map((r) => (
-                          <RoomTile key={r.id} room={r} isOn={!!roomStates[r.id]} onToggle={toggleRoom} />
-                        ))}
-                      </div>
-                    </div>
-                    <div className="flex justify-center pb-1.5 pt-0.5 bg-[#070810]">
-                      <div className="w-20 h-0.5 rounded-full bg-white/20" />
-                    </div>
+                          <span className={`mt-0.5 text-[6px] uppercase tracking-[0.5px] font-medium ${isOn ? 'text-white' : 'text-zinc-700'}`}>
+                            {r.name.length > 7 ? r.name.split(' ')[0] : r.name}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="mx-3 h-px bg-gradient-to-r from-transparent via-amber-700/20 to-transparent" />
+                  <div className="grid grid-cols-2 gap-1.5 px-3 py-2">
+                    <button onClick={() => { toggleAll(false); setUserInteracted(true); }} className="py-1.5 rounded-lg text-[8px] font-semibold uppercase tracking-wider bg-white/[0.03] border border-white/[0.06] text-zinc-500 hover:text-white transition-all" data-testid="touch-all-off">All Off</button>
+                    <button onClick={() => { toggleAll(true); setUserInteracted(true); }} className="py-1.5 rounded-lg text-[8px] font-semibold uppercase tracking-wider bg-white/5 border border-white/15 text-white hover:bg-white/10 transition-all" data-testid="touch-all-on">All On</button>
                   </div>
                 </div>
-              </motion.div>
-            </div>
+              </div>
+            </motion.div>
 
-            {/* RIGHT — Floorplan (sticky) */}
-            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
-              className="sticky top-24">
+            {/* COL 2 — TAP & TALK (Phone App) */}
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
+              className="lg:col-span-3">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-7 h-7 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+                  <span className="text-[10px] font-bold text-orange-500">2</span>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-white" style={{ fontFamily: 'Outfit, sans-serif' }}>Tap & Talk</h3>
+                  <p className="text-[9px] text-zinc-500">InHaus app</p>
+                </div>
+              </div>
+              <div className="relative mx-auto max-w-[260px]">
+                <div className="rounded-[32px] border-[2px] border-zinc-700/50 overflow-hidden shadow-[0_16px_50px_rgba(0,0,0,0.5)]" style={{ background: '#000' }}>
+                  <div className="flex items-center justify-between px-5 pt-2 pb-0">
+                    <span className="text-[8px] text-white/60 font-medium">9:41</span>
+                    <Wifi size={8} className="text-white/50" />
+                  </div>
+                  <div className="flex justify-center mb-1">
+                    <div className="w-16 h-4 rounded-full bg-black border border-white/[0.04]" />
+                  </div>
+                  <div className="px-3 pb-4" style={{ background: 'linear-gradient(175deg, #0e1225, #070810)' }}>
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <img src="/inhaus_icon_white.png" alt="InHaus" className="w-5 h-5 object-contain" />
+                      <img src="/inhaus_text_logo_white.png" alt="INHAUS" className="h-3 w-auto" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-1 mb-1.5">
+                      <button onClick={() => toggleAll(false)} className="py-1 rounded-md text-[7px] font-medium bg-white/[0.04] border border-white/[0.06] text-zinc-400 hover:bg-white/[0.07] transition-all" data-testid="controller-all-off">Off</button>
+                      <button onClick={() => toggleAll(true)} className="py-1 rounded-md text-[7px] font-medium bg-white/[0.04] border border-white/[0.06] text-zinc-400 hover:bg-white/[0.07] transition-all" data-testid="controller-all-on">On</button>
+                    </div>
+                    {/* Voice — Step 3 */}
+                    <div className={`flex items-center gap-1.5 p-1.5 rounded-lg mb-1.5 transition-all ${
+                      voice.mode === 'recording' ? 'bg-orange-500/10 border border-orange-500/30' : 'bg-white/[0.03] border border-white/[0.05]'
+                    }`}>
+                      <button onClick={voice.toggleMic}
+                        className={`relative w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-all ${
+                          voice.mode === 'recording' ? 'bg-orange-500' : 'bg-gradient-to-br from-orange-500/80 to-amber-500/80'
+                        }`} data-testid="voice-mic-btn">
+                        <Mic size={10} className="text-white" />
+                      </button>
+                      <div className="flex-1 min-w-0">
+                        {voice.mode === 'recording' ? <span className="text-[8px] text-orange-400 font-semibold">Listening...</span>
+                        : voice.mode === 'processing' ? <span className="text-[8px] text-amber-400">Processing...</span>
+                        : voice.feedback ? <span className="text-[8px] text-green-400 truncate block">{voice.feedback}</span>
+                        : <span className="text-[8px] text-zinc-500">Tap mic or type</span>}
+                      </div>
+                      <span className="text-[7px] text-zinc-600 bg-white/[0.03] rounded px-1">3</span>
+                    </div>
+                    <form className="flex gap-1 mb-1.5" onSubmit={(e) => { e.preventDefault(); if (cmdInput.trim()) { voice.processText(cmdInput.trim()); setCmdInput(''); } }}>
+                      <input type="text" value={cmdInput} onChange={(e) => setCmdInput(e.target.value)} placeholder='"turn on hall"'
+                        className="flex-1 bg-white/[0.04] border border-white/[0.06] rounded px-1.5 py-1 text-[8px] text-white placeholder-zinc-600 outline-none focus:border-orange-500/40"
+                        data-testid="voice-text-input" />
+                      <button type="submit" className="px-1.5 py-1 rounded bg-orange-500/20 border border-orange-500/30 text-[7px] font-semibold text-orange-400"
+                        data-testid="voice-text-submit">Go</button>
+                    </form>
+                    <div className="grid grid-cols-2 gap-1 max-h-[160px] overflow-y-auto custom-scrollbar">
+                      {rooms.map((r) => (
+                        <RoomTile key={r.id} room={r} isOn={!!roomStates[r.id]} onToggle={toggleRoom} />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex justify-center pb-1 bg-[#070810]">
+                    <div className="w-14 h-0.5 rounded-full bg-white/20" />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* COL 3 — FLOORPLAN */}
+            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.15 }}
+              className="lg:col-span-6">
               <Floorplan roomStates={roomStates} />
-              {/* Feedback toast */}
               <AnimatePresence>
                 {Object.values(roomStates).some(Boolean) && (
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                    className="flex items-center justify-center gap-2 mt-4">
+                    className="flex items-center justify-center gap-2 mt-3">
                     <div className="w-2 h-2 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.6)]" />
                     <span className="text-xs text-zinc-400">{Object.values(roomStates).filter(Boolean).length} of {rooms.length} lights on</span>
                   </motion.div>
