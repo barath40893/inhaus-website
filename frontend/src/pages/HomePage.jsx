@@ -790,6 +790,15 @@ const HomePage = () => {
             {/* COL 3 — FLOORPLAN */}
             <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.15 }}
               className="lg:col-span-6">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                  <Eye size={14} className="text-zinc-400" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-white" style={{ fontFamily: 'Outfit, sans-serif' }}>Live Preview</h3>
+                  <p className="text-[9px] text-zinc-500">Watch the floorplan respond</p>
+                </div>
+              </div>
               <Floorplan roomStates={roomStates} />
               <AnimatePresence>
                 {Object.values(roomStates).some(Boolean) && (
