@@ -42,9 +42,9 @@ const Navbar = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center group" data-testid="nav-logo">
               <img 
-                src="/inhaus/fulllogo_transparent.png" 
+                src="/inhaus_logo_white.png" 
                 alt="InHaus" 
-                className="h-12 w-auto brightness-0 invert"
+                className="h-12 w-auto"
               />
             </Link>
 
