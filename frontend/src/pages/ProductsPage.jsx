@@ -265,129 +265,161 @@ const ProductsPage = () => {
         </div>
       </section>
 
-      {/* Search and Filters */}
-      <section className="py-6 border-y border-white/5">
+      {/* Search Bar */}
+      <section className="py-4 border-b border-white/5 sticky top-16 z-30 bg-[#0A0A0A]/95 backdrop-blur-sm">
         <div className="container mx-auto px-4 md:px-8 lg:px-12">
-          <div className="flex flex-col md:flex-row gap-4 max-w-4xl mx-auto">
+          <div className="flex items-center gap-3 max-w-3xl">
             <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-neutral-500 h-5 w-5" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-neutral-500 h-4 w-4" />
               <input
                 type="text"
                 placeholder="Search products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-neutral-500 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all"
+                className="w-full pl-11 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-orange-500/50 transition-all"
                 data-testid="search-input"
               />
             </div>
-            <div className="flex items-center gap-3">
-              <Filter className="text-neutral-500 h-5 w-5" />
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-orange-500/50 transition-all appearance-none cursor-pointer min-w-[180px]"
-                data-testid="category-filter"
-              >
-                {categories.map(category => (
-                  <option key={category} value={category} className="bg-neutral-900 text-white">
-                    {category === 'all' ? 'All Categories' : category}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <span className="text-xs text-zinc-500">{filteredProducts.length} products</span>
           </div>
         </div>
       </section>
 
-      {/* Products Grid */}
-      <section className="py-16" data-testid="products-grid">
+      {/* Main Layout: Sidebar + Products */}
+      <section className="py-8" data-testid="products-grid">
         <div className="container mx-auto px-4 md:px-8 lg:px-12">
-          {loading ? (
-            <div className="text-center py-20">
-              <Loader2 className="h-12 w-12 animate-spin text-orange-500 mx-auto mb-4" />
-              <p className="text-neutral-400">Loading products...</p>
-            </div>
-          ) : filteredProducts.length === 0 ? (
-            <div className="bg-neutral-900/50 border border-white/5 rounded-2xl p-16 text-center max-w-md mx-auto">
-              <Package className="h-16 w-16 text-neutral-600 mx-auto mb-4" />
-              <p className="text-neutral-400 text-lg">No products found</p>
-              <p className="text-neutral-600 mt-2">Try adjusting your search or filter</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredProducts.map((product, index) => (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}
-                  className="group relative bg-neutral-900/40 border border-white/5 rounded-2xl overflow-hidden hover:border-orange-500/30 transition-all duration-500"
-                  data-testid={`product-card-${product.id}`}
+          <div className="flex gap-8">
+            {/* Left Sidebar — Category List */}
+            <div className="hidden lg:block w-56 shrink-0 sticky top-32 self-start">
+              <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-3">Categories</h3>
+              <div className="space-y-0.5">
+                <button
+                  onClick={() => setSelectedCategory('all')}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                    selectedCategory === 'all' ? 'bg-orange-500/10 text-orange-400 border-l-2 border-orange-500' : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                  }`}
+                  data-testid="category-all"
                 >
-                  {/* Product Image */}
-                  <div className="aspect-square bg-neutral-800/50 relative overflow-hidden">
-                    {product.image_url ? (
-                      <img
-                        src={product.image_url.startsWith('http') ? product.image_url : `${backendUrl}${product.image_url}`}
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                          e.target.nextSibling.style.display = 'flex';
-                        }}
-                      />
-                    ) : null}
-                    <div 
-                      className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-neutral-800 to-neutral-900" 
-                      style={{ display: product.image_url ? 'none' : 'flex' }}
+                  All Products
+                  <span className="text-xs text-zinc-600 ml-1">({products.length})</span>
+                </button>
+                {categories.filter(c => c !== 'all').map(cat => {
+                  const count = products.filter(p => p.category === cat).length;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedCategory(cat)}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                        selectedCategory === cat ? 'bg-orange-500/10 text-orange-400 border-l-2 border-orange-500' : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                      }`}
+                      data-testid={`category-${cat.toLowerCase().replace(/\s+/g, '-')}`}
                     >
-                      <Package className="h-16 w-16 text-neutral-700" />
-                    </div>
-                    
-                    {/* Overlay gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent opacity-60" />
-                    
-                    {/* Category badge */}
-                    <div className="absolute top-4 left-4">
-                      <span className="px-3 py-1 text-xs font-medium bg-black/50 backdrop-blur-sm border border-white/10 rounded-full text-neutral-300">
-                        {product.category || 'General'}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Product Details */}
-                  <div className="p-5">
-                    <h3 className="text-lg font-semibold text-white mb-1 line-clamp-1 group-hover:text-orange-500 transition-colors">
-                      {product.name}
-                    </h3>
-                    <p className="text-sm text-neutral-500 mb-3">Model: {product.model_no}</p>
-                    <p className="text-sm text-neutral-400 mb-4 line-clamp-2">{product.description}</p>
-                    
-                    <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                      <div>
-                        <p className="text-2xl font-bold text-orange-500">
-                          Rs. {product.list_price?.toLocaleString()}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => handleAddToCart(product)}
-                        className="flex items-center gap-2 px-4 py-2 bg-orange-500/10 hover:bg-orange-500 border border-orange-500/30 hover:border-orange-500 text-orange-500 hover:text-white rounded-full font-medium transition-all duration-300"
-                        data-testid={`add-to-cart-${product.id}`}
-                      >
-                        <Plus className="h-4 w-4" />
-                        Add
-                      </button>
-                    </div>
-                  </div>
-                  
-                  {/* Hover glow effect */}
-                  <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                    <div className="absolute inset-0 bg-gradient-to-t from-orange-500/10 via-transparent to-transparent" />
-                  </div>
-                </motion.div>
-              ))}
+                      {cat}
+                      <span className="text-xs text-zinc-600 ml-1">({count})</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          )}
+
+            {/* Mobile Category Bar */}
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0A0A0A]/95 backdrop-blur-md border-t border-white/10 px-4 py-2">
+              <div className="flex gap-2 overflow-x-auto no-scrollbar">
+                <button onClick={() => setSelectedCategory('all')}
+                  className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${selectedCategory === 'all' ? 'bg-orange-500 text-white' : 'bg-white/5 text-zinc-400'}`}>
+                  All
+                </button>
+                {categories.filter(c => c !== 'all').map(cat => (
+                  <button key={cat} onClick={() => setSelectedCategory(cat)}
+                    className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap ${selectedCategory === cat ? 'bg-orange-500 text-white' : 'bg-white/5 text-zinc-400'}`}>
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Products — Grouped by Category */}
+            <div className="flex-1 min-w-0">
+              {loading ? (
+                <div className="text-center py-20">
+                  <Loader2 className="h-12 w-12 animate-spin text-orange-500 mx-auto mb-4" />
+                  <p className="text-neutral-400">Loading products...</p>
+                </div>
+              ) : filteredProducts.length === 0 ? (
+                <div className="bg-neutral-900/50 border border-white/5 rounded-2xl p-16 text-center max-w-md mx-auto">
+                  <Package className="h-16 w-16 text-neutral-600 mx-auto mb-4" />
+                  <p className="text-neutral-400 text-lg">No products found</p>
+                  <p className="text-neutral-600 mt-2">Try adjusting your search or filter</p>
+                </div>
+              ) : (
+                <div className="space-y-10">
+                  {/* Group by category */}
+                  {(selectedCategory === 'all' ? categories.filter(c => c !== 'all') : [selectedCategory]).map(cat => {
+                    const catProducts = filteredProducts.filter(p => p.category === cat);
+                    if (catProducts.length === 0) return null;
+                    return (
+                      <div key={cat}>
+                        {/* Category Header */}
+                        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/5">
+                          <h2 className="text-lg font-semibold text-white" style={{ fontFamily: 'Outfit, sans-serif' }}>{cat}</h2>
+                          <span className="text-xs text-zinc-600 bg-white/5 px-2 py-0.5 rounded-full">{catProducts.length}</span>
+                        </div>
+                        {/* Product List */}
+                        <div className="space-y-3">
+                          {catProducts.map((product, index) => (
+                            <motion.div
+                              key={product.id}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.3, delay: index * 0.03 }}
+                              className="group flex items-center gap-4 p-3 bg-white/[0.02] border border-white/5 rounded-xl hover:border-orange-500/20 hover:bg-white/[0.04] transition-all"
+                              data-testid={`product-card-${product.id}`}
+                            >
+                              {/* Image */}
+                              <div className="w-20 h-20 rounded-lg bg-neutral-800/50 overflow-hidden shrink-0">
+                                {product.image_url ? (
+                                  <img
+                                    src={product.image_url.startsWith('http') ? product.image_url : `${backendUrl}${product.image_url}`}
+                                    alt={product.name}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                                  />
+                                ) : null}
+                                <div className="w-full h-full flex items-center justify-center bg-neutral-800/50" style={{ display: product.image_url ? 'none' : 'flex' }}>
+                                  <Package className="h-8 w-8 text-neutral-700" />
+                                </div>
+                              </div>
+                              {/* Name + Description */}
+                              <div className="flex-1 min-w-0">
+                                <h3 className="text-sm font-semibold text-white group-hover:text-orange-400 transition-colors line-clamp-1">{product.name}</h3>
+                                <p className="text-xs text-zinc-500 mt-0.5 line-clamp-1">{product.description}</p>
+                                {product.model_no && <p className="text-[10px] text-zinc-600 mt-0.5">Model: {product.model_no}</p>}
+                              </div>
+                              {/* Price */}
+                              <div className="text-right shrink-0">
+                                <p className="text-base font-bold text-orange-500">
+                                  Rs. {product.list_price?.toLocaleString('en-IN')}
+                                </p>
+                              </div>
+                              {/* Add to Cart */}
+                              <button
+                                onClick={() => handleAddToCart(product)}
+                                className="shrink-0 flex items-center gap-1.5 px-4 py-2 bg-orange-500/10 hover:bg-orange-500 border border-orange-500/30 hover:border-orange-500 text-orange-500 hover:text-white rounded-full text-xs font-semibold transition-all duration-300"
+                                data-testid={`add-to-cart-${product.id}`}
+                              >
+                                <Plus className="h-3.5 w-3.5" />
+                                Add
+                              </button>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </section>
 
