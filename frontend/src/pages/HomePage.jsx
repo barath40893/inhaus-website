@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
 import Marquee from 'react-fast-marquee';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import {
-  ArrowRight, Wifi, Bluetooth, Shield, Lightbulb, Lock, Mic,
+  ArrowRight, Wifi, Bluetooth, Shield, Lightbulb, Lock, Mic, MicOff,
   Power, Sun, Moon, ChevronRight, Play, Zap, Home, Building2, Hotel,
   Cpu, Eye, Headphones, Volume2
 } from 'lucide-react';
@@ -25,6 +25,97 @@ const rooms = [
 
 // ─── TICKER ITEMS ───────────────────────────────────────────────
 const techLabels = ['Wi-Fi', 'Zigbee', 'Bluetooth', 'Alexa', 'Scenes', 'Security', 'Lighting', 'Curtains', 'Locks', 'Panels', 'Voice Control', 'Matter'];
+
+// ─── ROOM NAME ALIASES FOR VOICE MATCHING ───────────────────────
+const roomAliases = {
+  hall: ['hall', 'living', 'living room', 'lounge'],
+  kitchen: ['kitchen'],
+  master: ['master', 'master bedroom', 'main bedroom', 'master room'],
+  small: ['small', 'small bedroom', 'guest room', 'second bedroom', 'bedroom 2', 'bedroom two'],
+  parking: ['parking', 'garage', 'car'],
+  stairs: ['stairs', 'staircase', 'stairway'],
+  hanging: ['hanging', 'hanging lights', 'chandelier', 'pendant'],
+  masterbath: ['master bath', 'master bathroom', 'main bathroom', 'main bath'],
+  guestbath: ['guest bath', 'guest bathroom', 'small bath', 'second bathroom'],
+};
+
+// ─── VOICE COMMAND HOOK ─────────────────────────────────────────
+const useVoiceCommand = (onCommand) => {
+  const [isListening, setIsListening] = useState(false);
+  const [transcript, setTranscript] = useState('');
+  const [feedback, setFeedback] = useState('');
+  const [supported, setSupported] = useState(true);
+  const recognitionRef = useRef(null);
+  const feedbackTimer = useRef(null);
+
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) { setSupported(false); return; }
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    recognition.onresult = (e) => {
+      const text = Array.from(e.results).map(r => r[0].transcript).join('').toLowerCase().trim();
+      setTranscript(text);
+      if (e.results[0].isFinal) {
+        const result = parseVoiceCommand(text);
+        if (result) {
+          onCommand(result);
+          setFeedback(result.feedback);
+        } else {
+          setFeedback('Command not recognized. Try "turn on hall"');
+        }
+        clearTimeout(feedbackTimer.current);
+        feedbackTimer.current = setTimeout(() => { setFeedback(''); setTranscript(''); }, 3000);
+        setIsListening(false);
+      }
+    };
+    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => setIsListening(false);
+    recognitionRef.current = recognition;
+    return () => { recognition.abort(); clearTimeout(feedbackTimer.current); };
+  }, [onCommand]);
+
+  const toggle = useCallback(() => {
+    if (!recognitionRef.current) return;
+    if (isListening) { recognitionRef.current.stop(); setIsListening(false); }
+    else { setTranscript(''); setFeedback(''); recognitionRef.current.start(); setIsListening(true); }
+  }, [isListening]);
+
+  return { isListening, transcript, feedback, supported, toggle };
+};
+
+// ─── PARSE VOICE COMMAND ────────────────────────────────────────
+function parseVoiceCommand(text) {
+  const t = text.toLowerCase().replace(/[^a-z0-9 ]/g, '');
+
+  // All on/off
+  if (/\b(all|every|everything)\b.*\b(on|open|bright)\b/.test(t) || /\bturn on (all|every|everything)\b/.test(t) || t === 'all on' || t === 'lights on') {
+    return { type: 'all', state: true, feedback: 'All lights turned on' };
+  }
+  if (/\b(all|every|everything)\b.*\b(off|close|dark)\b/.test(t) || /\bturn off (all|every|everything)\b/.test(t) || t === 'all off' || t === 'lights off') {
+    return { type: 'all', state: false, feedback: 'All lights turned off' };
+  }
+
+  // Determine action
+  const turnOn = /\b(on|open|bright|enable|activate|switch on|light up)\b/.test(t);
+  const turnOff = /\b(off|close|dark|disable|deactivate|switch off|shut)\b/.test(t);
+  if (!turnOn && !turnOff) return null;
+  const state = turnOn;
+
+  // Find room
+  for (const [roomId, aliases] of Object.entries(roomAliases)) {
+    for (const alias of aliases) {
+      if (t.includes(alias)) {
+        const roomName = rooms.find(r => r.id === roomId)?.name || roomId;
+        return { type: 'room', roomId, state, feedback: `${roomName} light ${state ? 'on' : 'off'}` };
+      }
+    }
+  }
+  return null;
+}
 
 // ─── ROOM TILE ──────────────────────────────────────────────────
 const RoomTile = ({ room, isOn, onToggle }) => (
@@ -128,6 +219,7 @@ const HomePage = () => {
   const animTimers = useRef([]);
 
   const toggleRoom = (id) => setRoomStates((p) => ({ ...p, [id]: !p[id] }));
+  const setRoom = (id, state) => setRoomStates((p) => ({ ...p, [id]: state }));
   const toggleAll = (state) => {
     animTimers.current.forEach((t) => clearTimeout(t));
     animTimers.current = [];
@@ -135,6 +227,14 @@ const HomePage = () => {
     rooms.forEach((r) => { s[r.id] = state; });
     setRoomStates(s);
   };
+
+  // Voice command handler
+  const handleVoiceCommand = useCallback((cmd) => {
+    if (cmd.type === 'all') toggleAll(cmd.state);
+    else if (cmd.type === 'room') setRoom(cmd.roomId, cmd.state);
+  }, []);
+
+  const voice = useVoiceCommand(handleVoiceCommand);
 
   useEffect(() => {
     if (!demoInView) return;
@@ -320,15 +420,75 @@ const HomePage = () => {
                       <button onClick={() => toggleAll(true)} className="py-2 rounded-xl text-[11px] font-medium bg-white/[0.04] border border-white/[0.06] text-zinc-400 hover:bg-white/[0.07] transition-all" data-testid="controller-all-on">All On</button>
                     </div>
 
-                    {/* Voice Command */}
-                    <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] mb-3">
-                      <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 bg-gradient-to-br from-orange-500/80 to-amber-500/80 shadow-[0_0_12px_rgba(249,115,22,0.2)]">
-                        <Mic size={14} className="text-white" />
+                    {/* Voice Command — Interactive */}
+                    <div className={`relative p-2.5 rounded-xl mb-3 transition-all duration-300 ${
+                      voice.isListening 
+                        ? 'bg-orange-500/10 border border-orange-500/30 shadow-[0_0_20px_rgba(249,115,22,0.15)]' 
+                        : 'bg-white/[0.03] border border-white/[0.05]'
+                    }`} data-testid="voice-command-panel">
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={voice.toggle}
+                          disabled={!voice.supported}
+                          className={`relative w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
+                            voice.isListening
+                              ? 'bg-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.4)]'
+                              : 'bg-gradient-to-br from-orange-500/80 to-amber-500/80 shadow-[0_0_12px_rgba(249,115,22,0.2)] hover:shadow-[0_0_18px_rgba(249,115,22,0.35)]'
+                          } ${!voice.supported ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
+                          data-testid="voice-mic-btn"
+                        >
+                          {voice.isListening && (
+                            <span className="absolute inset-0 rounded-full border-2 border-orange-400/40 animate-ping" />
+                          )}
+                          {voice.isListening ? <Mic size={16} className="text-white animate-pulse" /> : <Mic size={14} className="text-white" />}
+                        </button>
+                        <div className="flex-1 min-w-0">
+                          {voice.isListening ? (
+                            <>
+                              <div className="text-[9px] text-orange-400 uppercase tracking-[2px] font-semibold">Listening...</div>
+                              <div className="text-[11px] text-white truncate">{voice.transcript || 'Say a command...'}</div>
+                            </>
+                          ) : voice.feedback ? (
+                            <>
+                              <div className="text-[9px] text-green-400 uppercase tracking-[2px] font-semibold">Done</div>
+                              <div className="text-[11px] text-zinc-300 truncate">{voice.feedback}</div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="text-[9px] text-zinc-500 uppercase tracking-[2px] font-medium">Voice</div>
+                              <div className="text-[11px] text-zinc-400">{voice.supported ? 'Tap mic to speak' : 'Not supported in this browser'}</div>
+                            </>
+                          )}
+                        </div>
                       </div>
-                      <div>
-                        <div className="text-[9px] text-zinc-500 uppercase tracking-[2px] font-medium">Voice</div>
-                        <div className="text-[11px] text-zinc-400">"Hey InHaus, lights on"</div>
-                      </div>
+                      {/* Voice waveform when listening */}
+                      <AnimatePresence>
+                        {voice.isListening && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="flex items-center justify-center gap-[3px] mt-2 pt-2 border-t border-white/[0.05]"
+                          >
+                            {[...Array(12)].map((_, i) => (
+                              <motion.div
+                                key={i}
+                                className="w-[3px] rounded-full bg-orange-500/70"
+                                animate={{ height: [4, 12 + Math.random() * 10, 4] }}
+                                transition={{ duration: 0.5 + Math.random() * 0.4, repeat: Infinity, delay: i * 0.05 }}
+                              />
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                      {/* Command hints */}
+                      {!voice.isListening && !voice.feedback && voice.supported && (
+                        <div className="flex flex-wrap gap-1 mt-2 pt-2 border-t border-white/[0.04]">
+                          {['"Turn on hall"', '"All lights off"', '"Kitchen on"'].map((hint, i) => (
+                            <span key={i} className="text-[9px] text-zinc-600 bg-white/[0.03] rounded-full px-2 py-0.5">{hint}</span>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     {/* Room Tiles */}
