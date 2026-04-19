@@ -415,21 +415,27 @@ const TouchPanel = ({ roomStates, onToggle, onAllOn, onAllOff }) => {
     </div>
   );
 };
-const RoomTile = ({ room, isOn, onToggle }) => (
+const RoomTile = ({ room, isOn, onToggle, compact = false }) => (
   <div
-    className={`relative flex flex-col rounded-2xl transition-all duration-200 overflow-hidden p-3 ${
+    className={`relative flex flex-col justify-between rounded-xl transition-all duration-200 overflow-hidden shrink-0 ${
+      compact ? 'p-2 min-h-[76px]' : 'p-3'
+    } ${
       isOn ? 'bg-[#141828] border border-indigo-500/20' : 'bg-white/[0.04] border border-transparent hover:border-white/[0.06]'
     }`}
     data-testid={`room-tile-${room.id}`}
   >
     {isOn && <div className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-gradient-to-b from-indigo-400 to-purple-400" />}
-    <div className="font-semibold text-white text-[13px] mb-0.5 pl-1" style={{ fontFamily: 'Outfit, sans-serif' }}>{room.name}</div>
-    <div className={`text-[10px] uppercase tracking-[2px] font-medium mb-3 pl-1 ${isOn ? 'text-indigo-300' : 'text-neutral-600'}`}>
-      Lighting {isOn ? 'on' : 'off'}
+    <div>
+      <div className={`font-semibold text-white ${compact ? 'text-[11px] leading-tight' : 'text-[13px]'} mb-0.5 pl-1 truncate`} style={{ fontFamily: 'Outfit, sans-serif' }}>{room.name}</div>
+      <div className={`${compact ? 'text-[8px] tracking-[1.5px] mb-1.5' : 'text-[10px] tracking-[2px] mb-3'} uppercase font-medium pl-1 ${isOn ? 'text-indigo-300' : 'text-neutral-600'}`}>
+        {isOn ? 'ON' : 'OFF'}
+      </div>
     </div>
     <button
       onClick={() => onToggle(room.id)}
-      className={`w-full py-1.5 rounded-full text-[11px] font-semibold tracking-wide transition-all duration-200 ${
+      className={`w-full rounded-full font-semibold tracking-wide transition-all duration-200 ${
+        compact ? 'py-1 text-[9px]' : 'py-1.5 text-[11px]'
+      } ${
         isOn
           ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-[0_2px_12px_rgba(249,115,22,0.25)]'
           : 'bg-gradient-to-r from-[#f5f7ff] to-[#cfd6f7] text-[#1a1a2e] font-bold'
@@ -1039,15 +1045,23 @@ const HomePage = () => {
                         style={{ fontFamily: 'Outfit, sans-serif' }}
                         data-testid="voice-text-submit">Go</button>
                     </form>
-                    {/* Room tiles — scrollable (9 rooms, 2 cols) */}
+                    {/* Room tiles — scrollable list (9 rooms, 2 cols). Fixed tile heights keep Turn On/Off visible. */}
                     <div
-                      className="grid grid-cols-2 gap-1.5 flex-1 min-h-0 overflow-y-auto pr-1"
-                      style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'thin', scrollbarColor: 'rgba(249,115,22,0.4) transparent' }}
+                      className="grid grid-cols-2 gap-1.5 flex-1 min-h-0 overflow-y-auto pr-1.5 phone-scroll"
+                      style={{
+                        WebkitOverflowScrolling: 'touch',
+                        gridAutoRows: '76px',
+                      }}
                       data-testid="phone-room-tiles"
                     >
                       {rooms.map((r) => (
-                        <RoomTile key={r.id} room={r} isOn={!!roomStates[r.id]} onToggle={toggleRoom} />
+                        <RoomTile key={r.id} room={r} isOn={!!roomStates[r.id]} onToggle={toggleRoom} compact />
                       ))}
+                    </div>
+                    {/* Subtle scroll nudge */}
+                    <div className="flex items-center justify-center gap-1 pt-1 pb-0.5 text-[7px] uppercase tracking-[2px] text-zinc-600 font-semibold">
+                      <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-bounce"><path d="M7 13l5 5 5-5"/><path d="M7 6l5 5 5-5"/></svg>
+                      <span>Scroll for more</span>
                     </div>
                   </div>
                   {/* Home indicator */}
