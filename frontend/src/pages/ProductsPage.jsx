@@ -203,7 +203,7 @@ const ProductsPage = () => {
               transition={{ delay: 0.1 }}
               className="text-4xl md:text-6xl font-bold mb-6"
             >
-              Premium Smart
+              Smart
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-400">
                 Devices
@@ -215,7 +215,7 @@ const ProductsPage = () => {
               transition={{ delay: 0.2 }}
               className="text-lg text-neutral-400 mb-10 max-w-2xl mx-auto"
             >
-              Discover our curated range of IoT products designed to transform any space into an intelligent environment.
+              Discover our curated range of smart products designed to transform any space into an intelligent environment.
             </motion.p>
             
             {/* Auth Status & Cart */}
