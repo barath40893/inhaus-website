@@ -73,18 +73,12 @@ Build and refine an internal tool for the "InHaus" e-commerce business. This inc
 ### April 2026
 
 #### Homepage Interactive Floorplan (Completed)
-- [x] NOVIQ-inspired homepage redesign with cinematic dark theme
-- [x] Replaced SVG-based 3D isometric floorplan with user-provided NoLights.png image
-- [x] Image-based interactive floorplan with CSS radial gradient overlays
-- [x] 8 toggleable rooms: Living Room, Kitchen, Bedroom, Office/Study, Garage, Hallway, Bathroom 1, Bathroom 2
-- [x] Soft warm-white ambient glow overlays (mix-blend-mode: screen)
-- [x] NOVIQ-matching controller panel: dark navy bg, phone dynamic island, "Smart Home" header
-- [x] 2-column grid room tiles with orange left-border accent when ON
-- [x] Centered hero section matching NOVIQ's layout
-- [x] "LIVE FLOORPLAN" badge centered at bottom of image
-- [x] Expanded capability cards with sub-feature labels + descriptions
-- [x] Auto-animation on scroll-into-view with proper timer cleanup
-- [x] Scrolling tech ticker, glass-morphism capability cards, partner logos section
+- [x] NOVIQ-matching homepage with pre-rendered PNG overlay lighting approach
+- [x] NoLights.png base + 9 transparent PNG overlays per room (same approach as NOVIQ)
+- [x] 9 rooms: Hall, Kitchen, Master Bedroom, Small Bedroom, Parking, Stairs, Hanging Lights, Master Bath, Guest Bath
+- [x] NOVIQ-matching controller: dark blue gradient, phone dynamic island, "Smart Life" header
+- [x] 2-column grid room tiles, indigo left-border accent when ON, white/blue Turn On button
+- [x] Centered hero, "LIVE FLOORPLAN" badge, scrolling ticker, capability cards, partner logos
 
 ---
 

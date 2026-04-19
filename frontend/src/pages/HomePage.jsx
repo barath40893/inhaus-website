@@ -7,28 +7,16 @@ import { ArrowRight, Wifi, Bluetooth, Shield, Lightbulb, Lock, Mic, Power, Sun, 
 
 // ─── ROOM DATA FOR FLOORPLAN (matches NoLights.png) ─────────────
 const rooms = [
-  { id: 'living', name: 'Living Room', icon: Lightbulb },
-  { id: 'kitchen', name: 'Kitchen', icon: Sun },
-  { id: 'bedroom', name: 'Bedroom', icon: Moon },
-  { id: 'office', name: 'Office / Study', icon: Lightbulb },
-  { id: 'garage', name: 'Garage', icon: Power },
-  { id: 'hallway', name: 'Hallway', icon: Lightbulb },
-  { id: 'bath1', name: 'Bathroom 1', icon: Lightbulb },
-  { id: 'bath2', name: 'Bathroom 2', icon: Lightbulb },
+  { id: 'hall', name: 'Hall', icon: Lightbulb, overlay: '/overlay-living.png' },
+  { id: 'kitchen', name: 'Kitchen', icon: Sun, overlay: '/overlay-kitchen.png' },
+  { id: 'master', name: 'Master Bedroom', icon: Moon, overlay: '/overlay-bedroom.png' },
+  { id: 'small', name: 'Small Bedroom', icon: Moon, overlay: '/overlay-office.png' },
+  { id: 'parking', name: 'Parking', icon: Power, overlay: '/overlay-garage.png' },
+  { id: 'stairs', name: 'Stairs', icon: Lightbulb, overlay: '/overlay-hallway.png' },
+  { id: 'hanging', name: 'Hanging Lights', icon: Lightbulb, overlay: '/overlay-hanging.png' },
+  { id: 'masterbath', name: 'Master Bath', icon: Lightbulb, overlay: '/overlay-masterbath.png' },
+  { id: 'guestbath', name: 'Guest Bath', icon: Lightbulb, overlay: '/overlay-guestbath.png' },
 ];
-
-// ─── ROOM LIGHT OVERLAY POSITIONS (% of image 1000x678) ────────
-// Soft warm-white ambient glow — mimics natural room lighting
-const roomOverlays = {
-  living: { cx: 44.3, cy: 53.7, rx: 13, ry: 13 },
-  kitchen: { cx: 28.6, cy: 29, rx: 10, ry: 12 },
-  bedroom: { cx: 74.3, cy: 50.3, rx: 10, ry: 12 },
-  office: { cx: 14.3, cy: 42.5, rx: 6, ry: 7 },
-  garage: { cx: 71.8, cy: 92, rx: 14, ry: 11 },
-  hallway: { cx: 43.2, cy: 41.3, rx: 7, ry: 11 },
-  bath1: { cx: 32.5, cy: 45.7, rx: 4.5, ry: 6 },
-  bath2: { cx: 65, cy: 35.1, rx: 5, ry: 7 },
-};
 
 // ─── TICKER ITEMS ───────────────────────────────────────────────
 const tickerItems = [
@@ -60,51 +48,38 @@ const ScrollingTicker = () => (
   </div>
 );
 
-// ─── IMAGE-BASED INTERACTIVE FLOORPLAN ───────────────────────────
+// ─── IMAGE-BASED INTERACTIVE FLOORPLAN (PNG OVERLAYS) ────────────
 const ImageFloorplan = ({ roomStates }) => {
-  const litCount = Object.values(roomStates).filter(Boolean).length;
-  
   return (
     <div className="relative w-full" data-testid="live-floorplan">
-      <div className="relative w-full rounded-xl overflow-hidden" style={{ aspectRatio: '1000 / 678', background: '#111' }}>
-        {/* Base floorplan image — always reasonably visible */}
+      <div className="relative w-full overflow-hidden rounded-[20px]" style={{ aspectRatio: '1000 / 678' }}>
+        {/* Base floorplan — always visible at full brightness */}
         <img
           src="/NoLights.png"
-          alt="3D Isometric Floorplan"
-          className="absolute inset-0 w-full h-full object-contain select-none pointer-events-none transition-[filter] duration-700"
+          alt="House floorplan"
+          className="block w-full h-full object-contain select-none pointer-events-none"
           draggable={false}
-          style={{
-            filter: litCount > 0
-              ? `brightness(${0.65 + litCount * 0.04}) saturate(0.85)`
-              : 'brightness(0.6) saturate(0.5)',
-          }}
         />
 
-        {/* Soft ambient glow per room — warm white, very diffuse */}
-        {Object.entries(roomOverlays).map(([id, ov]) => {
-          const isOn = !!roomStates[id];
-          return (
-            <div
-              key={id}
-              data-testid={`light-overlay-${id}`}
-              className="absolute pointer-events-none rounded-[50%]"
-              style={{
-                left: `${ov.cx - ov.rx * 1.3}%`,
-                top: `${ov.cy - ov.ry * 1.3}%`,
-                width: `${ov.rx * 2.6}%`,
-                height: `${ov.ry * 2.6}%`,
-                background: 'radial-gradient(ellipse at center, rgba(255,240,200,0.45) 0%, rgba(255,230,180,0.2) 40%, rgba(255,220,160,0.06) 70%, transparent 100%)',
-                opacity: isOn ? 1 : 0,
-                transition: 'opacity 0.5s ease',
-                mixBlendMode: 'screen',
-              }}
-            />
-          );
-        })}
+        {/* Per-room light overlay PNGs — toggled via opacity */}
+        {rooms.map((room) => (
+          <img
+            key={room.id}
+            src={room.overlay}
+            alt={`${room.name} lighting`}
+            data-testid={`light-overlay-${room.id}`}
+            className="absolute inset-0 w-full h-full object-contain select-none pointer-events-none"
+            draggable={false}
+            style={{
+              opacity: roomStates[room.id] ? 1 : 0,
+              transition: 'opacity 0.2s ease',
+            }}
+          />
+        ))}
 
-        {/* LIVE FLOORPLAN badge — bottom-center like NOVIQ */}
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10">
-          <div className="px-5 py-1.5 rounded-md bg-black/50 backdrop-blur-sm">
+        {/* LIVE FLOORPLAN badge */}
+        <div className="absolute bottom-4 right-4 z-10">
+          <div className="px-4 py-2 rounded-lg bg-black/50 backdrop-blur-sm">
             <span className="text-[10px] font-semibold tracking-[3px] text-neutral-300 uppercase">Live Floorplan</span>
           </div>
         </div>
@@ -117,27 +92,26 @@ const ImageFloorplan = ({ roomStates }) => {
 const RoomTile = ({ room, isOn, onToggle }) => {
   return (
     <div
-      className={`relative flex flex-col p-3.5 rounded-xl transition-all duration-400 overflow-hidden ${
+      className={`relative flex flex-col rounded-2xl transition-all duration-200 overflow-hidden p-3 ${
         isOn
-          ? 'bg-[#1a1a2e] border border-indigo-500/25'
-          : 'bg-white/[0.03] border border-white/[0.06] hover:border-white/10'
+          ? 'bg-[#141828] border border-indigo-500/20'
+          : 'bg-white/[0.04] border border-transparent hover:border-white/[0.06]'
       }`}
       data-testid={`room-tile-${room.id}`}
     >
-      {/* Accent left border when ON */}
       {isOn && (
-        <div className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-gradient-to-b from-orange-400 to-amber-500" />
+        <div className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-gradient-to-b from-indigo-400 to-purple-400" />
       )}
       <div className="font-semibold text-white text-[13px] mb-0.5 pl-1">{room.name}</div>
-      <div className={`text-[10px] uppercase tracking-widest font-medium mb-3 pl-1 ${isOn ? 'text-orange-400' : 'text-neutral-600'}`}>
+      <div className={`text-[10px] uppercase tracking-[2px] font-medium mb-3 pl-1 ${isOn ? 'text-indigo-300' : 'text-neutral-600'}`}>
         Lighting {isOn ? 'on' : 'off'}
       </div>
       <button
         onClick={() => onToggle(room.id)}
-        className={`w-full py-1.5 rounded-full text-[11px] font-semibold tracking-wide transition-all duration-300 ${
+        className={`w-full py-1.5 rounded-full text-[11px] font-semibold tracking-wide transition-all duration-200 ${
           isOn
             ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-[0_2px_12px_rgba(249,115,22,0.25)]'
-            : 'bg-white/[0.06] text-neutral-400 hover:bg-white/10 border border-white/[0.08]'
+            : 'bg-gradient-to-r from-[#f5f7ff] to-[#cfd6f7] text-[#1a1a2e] font-bold'
         }`}
         data-testid={`room-toggle-${room.id}`}
       >
@@ -391,19 +365,19 @@ const HomePage = () => {
               transition={{ duration: 0.6 }}
               className="lg:col-span-2"
             >
-              <div className="rounded-[28px] bg-[#0d0d1a] border border-white/[0.06] p-5 shadow-[0_8px_60px_rgba(0,0,0,0.5)]">
+              <div className="rounded-[42px] border border-white/[0.05] px-7 pt-16 pb-11" style={{ background: 'radial-gradient(circle at 50% 0%, rgba(37,46,70,0.45), transparent 62%), linear-gradient(170deg, #0f1322, #05060c 78%)' }}>
                 
                 {/* Phone Dynamic Island */}
-                <div className="flex justify-center mb-5">
-                  <div className="flex items-center gap-2 px-5 py-1.5 rounded-full bg-[#181828] border border-white/[0.05]">
-                    <div className="w-1.5 h-1.5 rounded-full bg-orange-500/60" />
-                    <div className="w-14 h-[3px] rounded-full bg-white/[0.08]" />
+                <div className="flex justify-center mb-6">
+                  <div className="flex items-center gap-2 px-5 py-1.5 rounded-full bg-black/60">
+                    <div className="w-2 h-2 rounded-full bg-[#5a76ff]/50" />
+                    <div className="w-16 h-[3px] rounded-full bg-white/[0.06]" />
                   </div>
                 </div>
 
-                {/* Smart Home Header */}
+                {/* Smart Life Header */}
                 <div className="mb-5">
-                  <h3 className="text-lg font-bold text-white">Smart Home</h3>
+                  <h3 className="text-lg font-bold text-white">Smart Life</h3>
                   <p className="text-xs text-neutral-500">Tap to illuminate each space</p>
                 </div>
                 
@@ -428,7 +402,8 @@ const HomePage = () => {
                 {/* Voice Command */}
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.05] mb-4">
                   <button
-                    className="relative w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(249,115,22,0.2)]"
+                    className="relative w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+                    style={{ background: 'linear-gradient(150deg, rgba(90,118,255,0.65), rgba(255,125,215,0.65))' }}
                     data-testid="voice-cmd-btn"
                   >
                     <Mic size={16} className="text-white" />
