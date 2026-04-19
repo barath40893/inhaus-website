@@ -3052,7 +3052,7 @@ async def voice_transcribe(file: UploadFile = File(...)):
                 model="whisper-1",
                 response_format="json",
                 language="en",
-                prompt="Hey InHaus. Turn on hall. Turn off kitchen. All lights on. All lights off. Turn on master bedroom. Turn on small bedroom. Turn on parking. Turn on stairs. Turn on hanging lights. Turn on master bath. Turn on guest bath."
+                prompt="InHaus. InHaus turn on hall. InHaus turn off kitchen. InHaus all lights on. InHaus all lights off. Turn on master bedroom. Turn on parking. Turn on stairs. Turn on hanging lights."
             )
 
         os.unlink(tmp_path)

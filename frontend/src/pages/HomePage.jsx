@@ -55,16 +55,14 @@ function speak(text) {
 function matchesWakeWord(text) {
   const t = text.toLowerCase().replace(/[^a-z ]/g, '').trim();
   const patterns = [
-    'hey inhaus', 'hey in house', 'hey in haus', 'hey inhous',
-    'a inhaus', 'he inhaus', 'hey in has', 'hey inhos',
-    'hey and house', 'hey in-house', 'hey en house', 'hey enhaus',
-    'hey n house', 'hey in hose', 'hey inhouse',
+    'inhaus', 'in house', 'in haus', 'inhous', 'in has',
+    'inhos', 'in hose', 'inhouse', 'enhaus', 'en house', 'n house',
   ];
   return patterns.some(p => t.includes(p));
 }
 
 function stripWakeWord(text) {
-  return text.replace(/^(hey\s*(in\s*haus|inhaus|in\s*house|inhous|in\s*has|inhouse)[,.\s!?]*)/i, '').trim();
+  return text.replace(/^(hey\s*)?(in\s*haus|inhaus|in\s*house|inhous|in\s*has|inhouse|enhaus|en\s*house)[,.\s!?]*/i, '').trim();
 }
 
 // ─── VOICE COMMAND HOOK (Whisper + Wake Word + TTS) ─────────────
@@ -147,44 +145,58 @@ const useVoiceCommand = ({ onToggleAll, onSetRoom }) => {
     setMode('wakeListening');
 
     try {
-      // Record 3 seconds for wake word detection
+      // Record 3s — enough for "InHaus, turn on hall" in one breath
       const blob = await recordClip(stream, 3000);
       if (!wakeEnabledRef.current) { wakeLoopActive.current = false; return; }
-      if (blob.size < 200) { setTimeout(() => runWakeLoop(stream), 200); return; }
+      if (blob.size < 200) { setTimeout(() => runWakeLoop(stream), 100); return; }
 
       const text = await transcribeBlob(blob);
       if (!wakeEnabledRef.current) { wakeLoopActive.current = false; return; }
 
       if (matchesWakeWord(text)) {
-        // Wake word detected!
-        speak('OK');
-        setFeedback('Listening for command...');
-        setMode('recording');
-        await new Promise(r => setTimeout(r, 900));
+        // Strip wake word and check if command was included in same clip
+        const cmdPart = stripWakeWord(text);
+        const cmd = cmdPart ? parseVoiceCommand(cmdPart.toLowerCase()) : null;
 
-        // Record command for 3 seconds
-        const cmdBlob = await recordClip(stream, 3000);
-        setMode('processing');
-        setFeedback('Processing...');
-        const cmdText = await transcribeBlob(cmdBlob);
-
-        if (cmdText) {
-          const cleaned = stripWakeWord(cmdText);
-          processText(cleaned || cmdText);
+        if (cmd) {
+          // Wake word + command in one shot — fastest path
+          speak('OK. ' + cmd.feedback);
+          if (cmd.type === 'all') callbacksRef.current.onToggleAll(cmd.state);
+          else if (cmd.type === 'room') callbacksRef.current.onSetRoom(cmd.roomId, cmd.state);
+          setFeedback(cmd.feedback);
+          setTranscript(cmdPart);
+          setMode('idle');
+          clearTimeout(feedbackTimer.current);
+          feedbackTimer.current = setTimeout(() => { setFeedback(''); setTranscript(''); }, 3000);
+          // Resume listening after voice finishes
+          if (wakeEnabledRef.current) setTimeout(() => runWakeLoop(stream), 2500);
         } else {
-          setFeedback('No command heard. Say "Hey InHaus" again.');
-          speak('No command heard.');
+          // Wake word detected but no command — record separately
+          speak('OK');
+          setFeedback('Listening...');
+          setMode('recording');
+          await new Promise(r => setTimeout(r, 600));
+
+          const cmdBlob = await recordClip(stream, 3000);
+          setMode('processing');
+          const cmdText = await transcribeBlob(cmdBlob);
+
+          if (cmdText) {
+            const cleaned = stripWakeWord(cmdText);
+            processText(cleaned || cmdText);
+          } else {
+            setFeedback('No command heard. Say "InHaus" again.');
+          }
+          if (wakeEnabledRef.current) setTimeout(() => runWakeLoop(stream), 2500);
+          else wakeLoopActive.current = false;
         }
-        // Resume after pause
-        if (wakeEnabledRef.current) setTimeout(() => runWakeLoop(stream), 3000);
-        else wakeLoopActive.current = false;
       } else {
-        // No wake word, keep looping immediately
-        if (wakeEnabledRef.current) setTimeout(() => runWakeLoop(stream), 100);
+        // No wake word — loop immediately
+        if (wakeEnabledRef.current) setTimeout(() => runWakeLoop(stream), 50);
         else wakeLoopActive.current = false;
       }
     } catch (err) {
-      if (wakeEnabledRef.current) setTimeout(() => runWakeLoop(stream), 1500);
+      if (wakeEnabledRef.current) setTimeout(() => runWakeLoop(stream), 1000);
       else wakeLoopActive.current = false;
     }
   }, [recordClip, transcribeBlob, processText]);
@@ -205,8 +217,8 @@ const useVoiceCommand = ({ onToggleAll, onSetRoom }) => {
         streamRef.current = stream;
         setWakeEnabled(true);
         wakeEnabledRef.current = true;
-        setFeedback('Say "Hey InHaus" to start...');
-        speak('Wake word activated. Say Hey InHaus.');
+        setFeedback('Say "InHaus" followed by a command...');
+        speak('Listening. Say InHaus.');
         setTimeout(() => runWakeLoop(stream), 800);
       } catch {
         setFeedback('Microphone access denied.');
@@ -614,7 +626,7 @@ const HomePage = () => {
                           ) : voice.mode === 'wakeListening' ? (
                             <>
                               <div className="text-[9px] text-indigo-400 uppercase tracking-[2px] font-semibold">Waiting for wake word</div>
-                              <div className="text-[11px] text-zinc-400">Say "Hey InHaus"...</div>
+                              <div className="text-[11px] text-zinc-400">Say "InHaus"...</div>
                             </>
                           ) : voice.feedback ? (
                             <>
@@ -664,7 +676,7 @@ const HomePage = () => {
                           >
                             <span className="flex items-center gap-2">
                               <Volume2 size={12} />
-                              "Hey InHaus" mode
+                              "InHaus" mode
                             </span>
                             <span className={`text-[9px] uppercase tracking-wider font-bold ${voice.wakeEnabled ? 'text-green-400' : 'text-zinc-600'}`}>
                               {voice.wakeEnabled ? 'ON' : 'OFF'}
