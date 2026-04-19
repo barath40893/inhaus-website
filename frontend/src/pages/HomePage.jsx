@@ -184,7 +184,7 @@ const HomePage = () => {
                 &mdash; InHaus delivers seamless control of lights, locks, curtains and climate.
               </motion.p>
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15 }}
-                className="flex flex-wrap gap-3">
+                className="flex flex-wrap gap-3 mb-6">
                 <Link to="/products" data-testid="hero-cta-primary">
                   <button className="group flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white rounded-full px-7 py-3 font-medium transition-all duration-300 shadow-[0_0_24px_rgba(249,115,22,0.25)] hover:shadow-[0_0_36px_rgba(249,115,22,0.4)]">
                     Explore Products <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
@@ -195,6 +195,20 @@ const HomePage = () => {
                     <Play size={14} className="text-orange-500" /> Get a Quote
                   </button>
                 </Link>
+              </motion.div>
+              {/* Try Demo CTA */}
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.25 }}>
+                <button
+                  onClick={() => document.getElementById('interactive-demo')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="group flex items-center gap-2 text-sm text-orange-400 hover:text-orange-300 font-medium transition-all"
+                  data-testid="try-demo-cta"
+                >
+                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-orange-500/10 border border-orange-500/20 group-hover:bg-orange-500/20 transition-colors">
+                    <Lightbulb size={14} className="text-orange-500" />
+                  </span>
+                  Try our Interactive Demo
+                  <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                </button>
               </motion.div>
             </div>
 
@@ -222,10 +236,10 @@ const HomePage = () => {
       </section>
 
       {/* ═══ TECH TICKER ═══ */}
-      <div className="border-y border-white/5 py-4" data-testid="scrolling-ticker">
+      <div className="border-y border-white/5 py-5" data-testid="scrolling-ticker">
         <Marquee speed={30} gradient={false} pauseOnHover>
           {techLabels.map((label, i) => (
-            <span key={i} className="mx-8 text-xs tracking-[0.15em] uppercase text-zinc-700 font-medium">{label}</span>
+            <span key={i} className="mx-8 text-sm tracking-[0.15em] uppercase text-zinc-400 font-bold">{label}</span>
           ))}
         </Marquee>
       </div>
@@ -249,7 +263,7 @@ const HomePage = () => {
       </section>
 
       {/* ═══ SMART HOME DEMO — FULL CONTROLLER ═══ */}
-      <section className="py-24 md:py-32 relative" data-testid="smart-demo-section">
+      <section id="interactive-demo" className="py-24 md:py-32 relative" data-testid="smart-demo-section">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-orange-500/[0.015] to-transparent pointer-events-none" />
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 relative z-10">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-14">
@@ -263,36 +277,78 @@ const HomePage = () => {
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 max-w-6xl mx-auto items-start">
-            {/* Controller */}
+            {/* Controller — Mobile Phone Frame */}
             <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="lg:col-span-2">
-              <div className="rounded-[42px] border border-white/[0.05] px-7 pt-14 pb-10" style={{ background: 'radial-gradient(circle at 50% 0%, rgba(37,46,70,0.45), transparent 62%), linear-gradient(170deg, #0f1322, #05060c 78%)' }}>
-                <div className="flex justify-center mb-5">
-                  <div className="flex items-center gap-2 px-5 py-1.5 rounded-full bg-black/60">
-                    <div className="w-2 h-2 rounded-full bg-[#5a76ff]/50" />
-                    <div className="w-16 h-[3px] rounded-full bg-white/[0.06]" />
+              {/* Phone outer shell */}
+              <div className="relative mx-auto max-w-[360px]">
+                {/* Phone frame */}
+                <div className="rounded-[44px] border-[3px] border-zinc-700/50 overflow-hidden shadow-[0_20px_80px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.04)]" style={{ background: '#000' }}>
+                  
+                  {/* Phone status bar */}
+                  <div className="flex items-center justify-between px-7 pt-3 pb-1">
+                    <span className="text-[10px] text-white/60 font-medium">9:41</span>
+                    <div className="flex items-center gap-1.5">
+                      <Wifi size={11} className="text-white/60" />
+                      <div className="flex items-end gap-px">
+                        <div className="w-[3px] h-[5px] rounded-sm bg-white/60" />
+                        <div className="w-[3px] h-[7px] rounded-sm bg-white/60" />
+                        <div className="w-[3px] h-[9px] rounded-sm bg-white/60" />
+                        <div className="w-[3px] h-[11px] rounded-sm bg-white/40" />
+                      </div>
+                      <div className="w-5 h-[10px] rounded-sm border border-white/50 flex items-center justify-end pr-px">
+                        <div className="w-3 h-[6px] rounded-sm bg-green-400" />
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="mb-4">
-                  <h3 className="text-lg font-bold text-white" style={{ fontFamily: 'Outfit, sans-serif' }}>Smart Life</h3>
-                  <p className="text-xs text-zinc-500">Tap to illuminate each space</p>
-                </div>
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  <button onClick={() => toggleAll(false)} className="py-2.5 rounded-xl text-xs font-medium bg-white/[0.04] border border-white/[0.06] text-zinc-400 hover:bg-white/[0.07] transition-all" data-testid="controller-all-off">All Off</button>
-                  <button onClick={() => toggleAll(true)} className="py-2.5 rounded-xl text-xs font-medium bg-white/[0.04] border border-white/[0.06] text-zinc-400 hover:bg-white/[0.07] transition-all" data-testid="controller-all-on">All On</button>
-                </div>
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.05] mb-4">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(150deg, rgba(90,118,255,0.65), rgba(255,125,215,0.65))' }}>
-                    <Mic size={16} className="text-white" />
+
+                  {/* Dynamic island */}
+                  <div className="flex justify-center mb-3">
+                    <div className="w-28 h-7 rounded-full bg-black border border-white/[0.04]" />
                   </div>
-                  <div>
-                    <div className="text-[10px] text-zinc-500 uppercase tracking-[2px] font-medium">Voice Command</div>
-                    <div className="text-xs text-zinc-400">Tap mic and say "Hey InHaus..."</div>
+
+                  {/* App content area */}
+                  <div className="px-5 pb-8" style={{ background: 'radial-gradient(circle at 50% 0%, rgba(37,46,70,0.35), transparent 55%), linear-gradient(175deg, #0e1225 0%, #070810 60%)' }}>
+                    
+                    {/* InHaus App Header */}
+                    <div className="flex items-center gap-3 mb-5">
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-[0_2px_10px_rgba(249,115,22,0.3)]">
+                        <Home size={16} className="text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-white tracking-wide" style={{ fontFamily: 'Outfit, sans-serif' }}>InHaus Home</h3>
+                        <p className="text-[10px] text-zinc-500">Tap to illuminate each space</p>
+                      </div>
+                    </div>
+                    
+                    {/* All On/Off */}
+                    <div className="grid grid-cols-2 gap-2 mb-3">
+                      <button onClick={() => toggleAll(false)} className="py-2 rounded-xl text-[11px] font-medium bg-white/[0.04] border border-white/[0.06] text-zinc-400 hover:bg-white/[0.07] transition-all" data-testid="controller-all-off">All Off</button>
+                      <button onClick={() => toggleAll(true)} className="py-2 rounded-xl text-[11px] font-medium bg-white/[0.04] border border-white/[0.06] text-zinc-400 hover:bg-white/[0.07] transition-all" data-testid="controller-all-on">All On</button>
+                    </div>
+
+                    {/* Voice Command */}
+                    <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] mb-3">
+                      <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 bg-gradient-to-br from-orange-500/80 to-amber-500/80 shadow-[0_0_12px_rgba(249,115,22,0.2)]">
+                        <Mic size={14} className="text-white" />
+                      </div>
+                      <div>
+                        <div className="text-[9px] text-zinc-500 uppercase tracking-[2px] font-medium">Voice</div>
+                        <div className="text-[11px] text-zinc-400">"Hey InHaus, lights on"</div>
+                      </div>
+                    </div>
+
+                    {/* Room Tiles */}
+                    <div className="grid grid-cols-2 gap-2 max-h-[340px] overflow-y-auto pr-0.5 custom-scrollbar">
+                      {rooms.map((r) => (
+                        <RoomTile key={r.id} room={r} isOn={!!roomStates[r.id]} onToggle={toggleRoom} />
+                      ))}
+                    </div>
                   </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2.5 max-h-[380px] overflow-y-auto pr-0.5 custom-scrollbar">
-                  {rooms.map((r) => (
-                    <RoomTile key={r.id} room={r} isOn={!!roomStates[r.id]} onToggle={toggleRoom} />
-                  ))}
+
+                  {/* Phone home indicator */}
+                  <div className="flex justify-center pb-2 pt-1 bg-[#070810]">
+                    <div className="w-32 h-1 rounded-full bg-white/20" />
+                  </div>
                 </div>
               </div>
             </motion.div>
