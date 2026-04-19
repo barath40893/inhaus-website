@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Search, Package, Plus } from 'lucide-react';
 
 const AdminProductsPage = () => {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ const AdminProductsPage = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
   const [formData, setFormData] = useState({
@@ -237,6 +240,36 @@ const AdminProductsPage = () => {
     });
   };
 
+  // Build category list with counts from products
+  const categories = useMemo(() => {
+    const counts = {};
+    for (const p of products) {
+      const cat = p.category || 'Uncategorized';
+      counts[cat] = (counts[cat] || 0) + 1;
+    }
+    return Object.entries(counts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [products]);
+
+  // Unique category names (for the Add/Edit form dropdown)
+  const categoryNames = useMemo(() => categories.map((c) => c.name), [categories]);
+
+  // Apply category + search filter
+  const filteredProducts = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return products.filter((p) => {
+      const matchesCat = selectedCategory === 'All' || (p.category || 'Uncategorized') === selectedCategory;
+      if (!matchesCat) return false;
+      if (!q) return true;
+      return (
+        p.name?.toLowerCase().includes(q) ||
+        p.model_no?.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q)
+      );
+    });
+  }, [products, selectedCategory, searchQuery]);
+
   return (
     <>
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -245,19 +278,22 @@ const AdminProductsPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Product Master</h1>
-              <p className="text-gray-600 mt-2">Manage your product catalog</p>
+              <p className="text-gray-600 mt-1">
+                {products.length} products across {categories.length} categories
+              </p>
             </div>
             <button
               onClick={() => {
                 resetForm();
                 setShowModal(true);
               }}
-              className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+              className="inline-flex items-center gap-2 px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+              data-testid="admin-add-product"
             >
-              + Add Product
+              <Plus size={18} /> Add Product
             </button>
           </div>
 
@@ -270,52 +306,130 @@ const AdminProductsPage = () => {
               <p className="text-gray-500 text-lg">No products found</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((product) => (
-                <div key={product.id} className="bg-white rounded-lg shadow p-6">
-                  {product.image_url && (
-                    <div className="mb-4">
-                      <img 
-                        src={product.image_url?.startsWith('http') ? product.image_url : `${backendUrl}${product.image_url}`} 
-                        alt={product.name}
-                        className="w-full h-40 object-cover rounded"
-                        onError={(e) => e.target.style.display = 'none'}
-                      />
-                    </div>
-                  )}
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="font-bold text-lg">{product.name}</h3>
-                      <p className="text-sm text-gray-500">{product.model_no}</p>
-                    </div>
+            <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-6">
+              {/* ── Category Sidebar ─────────────────────────────── */}
+              <aside className="lg:sticky lg:top-6 lg:self-start">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                  <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
+                    <p className="text-[10px] uppercase tracking-[2px] text-gray-500 font-bold">Categories</p>
                   </div>
-                  <p className="text-sm text-gray-600 mb-4">{product.description.substring(0, 100)}...</p>
-                  <div className="border-t pt-4">
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm text-gray-600">List Price:</span>
-                      <span className="font-semibold">₹ {product.list_price.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between mb-4">
-                      <span className="text-sm text-gray-600">Cost:</span>
-                      <span className="font-semibold text-green-600">₹ {product.company_cost.toLocaleString()}</span>
-                    </div>
-                    <div className="flex gap-2">
+                  <div className="py-1 max-h-[70vh] overflow-y-auto">
+                    <button
+                      onClick={() => setSelectedCategory('All')}
+                      className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors ${
+                        selectedCategory === 'All'
+                          ? 'bg-orange-50 text-orange-600 font-semibold border-l-[3px] border-orange-500'
+                          : 'text-gray-700 hover:bg-gray-50 border-l-[3px] border-transparent'
+                      }`}
+                      data-testid="admin-cat-all"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Package size={14} /> All Products
+                      </span>
+                      <span className="text-xs text-gray-500 tabular-nums">{products.length}</span>
+                    </button>
+                    {categories.map((cat) => (
                       <button
-                        onClick={() => openEditModal(product)}
-                        className="flex-1 px-4 py-2 border border-blue-500 text-blue-500 rounded hover:bg-blue-50"
+                        key={cat.name}
+                        onClick={() => setSelectedCategory(cat.name)}
+                        className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors text-left ${
+                          selectedCategory === cat.name
+                            ? 'bg-orange-50 text-orange-600 font-semibold border-l-[3px] border-orange-500'
+                            : 'text-gray-700 hover:bg-gray-50 border-l-[3px] border-transparent'
+                        }`}
+                        data-testid={`admin-cat-${cat.name.toLowerCase().replace(/\s+/g, '-')}`}
                       >
-                        Edit
+                        <span className="truncate pr-2">{cat.name}</span>
+                        <span className="text-xs text-gray-500 tabular-nums shrink-0">{cat.count}</span>
                       </button>
-                      <button
-                        onClick={() => deleteProduct(product.id)}
-                        className="flex-1 px-4 py-2 border border-red-500 text-red-500 rounded hover:bg-red-50"
-                      >
-                        Delete
-                      </button>
-                    </div>
+                    ))}
                   </div>
                 </div>
-              ))}
+              </aside>
+
+              {/* ── Products Panel ─────────────────────────────── */}
+              <div>
+                {/* Search + filter summary */}
+                <div className="mb-4 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                  <div className="relative flex-1">
+                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="search"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search by name, model no. or description…"
+                      className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-400"
+                      data-testid="admin-search-products"
+                    />
+                  </div>
+                  <div className="text-sm text-gray-600 whitespace-nowrap">
+                    <span className="font-semibold text-gray-900">{filteredProducts.length}</span>{' '}
+                    {selectedCategory === 'All' ? 'total' : 'in'}{' '}
+                    {selectedCategory !== 'All' && (
+                      <span className="font-medium text-orange-600">{selectedCategory}</span>
+                    )}
+                  </div>
+                </div>
+
+                {filteredProducts.length === 0 ? (
+                  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+                    <p className="text-gray-500">No products match your filters.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                    {filteredProducts.map((product) => (
+                      <div key={product.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 hover:shadow-md transition-shadow">
+                        {product.image_url && (
+                          <div className="mb-3">
+                            <img
+                              src={product.image_url?.startsWith('http') ? product.image_url : `${backendUrl}${product.image_url}`}
+                              alt={product.name}
+                              className="w-full h-36 object-cover rounded"
+                              onError={(e) => e.target.style.display = 'none'}
+                            />
+                          </div>
+                        )}
+                        <div className="flex justify-between items-start mb-2 gap-2">
+                          <div className="min-w-0">
+                            <h3 className="font-bold text-base truncate">{product.name}</h3>
+                            <p className="text-xs text-gray-500 truncate">{product.model_no}</p>
+                          </div>
+                          {product.category && (
+                            <span className="shrink-0 text-[10px] uppercase tracking-wider font-semibold bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full">
+                              {product.category.split(' ')[0]}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-600 mb-3 line-clamp-2">{product.description}</p>
+                        <div className="border-t pt-3">
+                          <div className="flex justify-between mb-1.5 text-sm">
+                            <span className="text-gray-600">List Price:</span>
+                            <span className="font-semibold">₹ {product.list_price.toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between mb-3 text-sm">
+                            <span className="text-gray-600">Cost:</span>
+                            <span className="font-semibold text-green-600">₹ {product.company_cost.toLocaleString()}</span>
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => openEditModal(product)}
+                              className="flex-1 px-3 py-1.5 text-sm border border-blue-500 text-blue-500 rounded hover:bg-blue-50"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => deleteProduct(product.id)}
+                              className="flex-1 px-3 py-1.5 text-sm border border-red-500 text-red-500 rounded hover:bg-red-50"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </motion.div>
@@ -362,10 +476,18 @@ const AdminProductsPage = () => {
                   <label className="block text-sm font-medium mb-2">Category</label>
                   <input
                     type="text"
+                    list="admin-categories"
                     value={formData.category}
                     onChange={(e) => setFormData({...formData, category: e.target.value})}
+                    placeholder="Type or select..."
                     className="w-full px-4 py-2 border rounded-lg"
+                    data-testid="admin-form-category"
                   />
+                  <datalist id="admin-categories">
+                    {categoryNames.map((name) => (
+                      <option key={name} value={name} />
+                    ))}
+                  </datalist>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Product Image (Optional)</label>
